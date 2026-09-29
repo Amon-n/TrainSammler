@@ -656,3 +656,34 @@ public struct TrainDetailView: View {
         .transition(.move(edge: .top).combined(with: .opacity))
     }
 }
+
+// MARK: - Fact Pill Component
+private struct FactPill: View {
+    let icon: String
+    let title: String
+    let value: String
+    var valueColor: Color = .primary
+    
+    var body: some View {
+        VStack(spacing: 6) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundStyle(Color.accentColor)
+            
+            Text(title)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+            
+            Text(value)
+                .font(.subheadline.weight(.semibold))
+                .foregroundStyle(valueColor)
+                .lineLimit(1)
+                .minimumScaleFactor(0.8)
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.vertical, 12)
+        .padding(.horizontal, 8)
+        .background(Color(uiColor: .secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+}
