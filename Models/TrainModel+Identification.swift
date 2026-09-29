@@ -33,7 +33,11 @@ extension TrainModel {
             images.append("ice_2_front")
         case _ where seriesCode.contains("403") && !seriesCode.contains("Tz 304"): // ICE 3
             images.append("ice_3_front")
+            images.append("ice_3_velaro")
         case _ where seriesCode.contains("406") && !seriesCode.contains("Tz 4601"): // ICE 3M
+            images.append("ice_3_front")
+            images.append("ice_3_velaro")
+        case _ where seriesCode.contains("407"): // Velaro D
             images.append("ice_3_front")
         case _ where seriesCode.contains("411") || seriesCode.contains("415"): // ICE-T
             images.append("ice_t_front")
@@ -42,17 +46,42 @@ extension TrainModel {
         case _ where seriesCode.contains("Tz 4601"): // Europa
             images.append("ice_3_front")
         case _ where seriesCode.contains("9457"): // Bundesrepublik
-            images.append("ice_4_brd")
             images.append("ice_4")
+            images.append("ice_4_altengronau")
+        case _ where seriesCode.contains("9015"): // Female ICE
             images.append("ice_4_altengronau")
         case _ where seriesCode.contains("412"): // ICE 4
-            images.append("ice_4")
             images.append("ice_4_altengronau")
         case _ where seriesCode.contains("105"): // ICE L
-            images.append("ice_l")
             images.append("ice_l_side")
         case _ where seriesCode.contains("101"): // BR 101
-            images.append("br_101")
+            images.append("br_101_2")
+        case _ where seriesCode.contains("4110"): // IC2 KISS
+            images.append("ic2_kiss_2")
+        case _ where seriesCode.contains("146") || seriesCode.contains("147"): // IC2 Twindexx
+            images.append("twindexx_vario_2")
+        case _ where seriesCode.contains("462"): // Desiro HC
+            images.append("desiro_hc_2")
+        case _ where seriesCode.contains("442"): // Talent 2
+            images.append("talent_2_2")
+        case _ where seriesCode.contains("1428") || seriesCode.contains("1429"): // FLIRT 3
+            images.append("flirt_3_2")
+        case _ where seriesCode.contains("463"): // Mireo
+            images.append("mireo_2")
+        case _ where seriesCode.contains("445") || seriesCode.contains("446"): // Twindexx Vario
+            images.append("twindexx_vario_2")
+        case _ where seriesCode.contains("1440"): // Coradia Continental
+            images.append("coradia_lint_2")
+        case _ where seriesCode.contains("622") || seriesCode.contains("648"): // Coradia LINT
+            images.append("coradia_lint_2")
+        case _ where seriesCode.contains("423") || seriesCode.contains("430"): // S-Bahn
+            images.append("et_423_2")
+        case _ where seriesCode.contains("425"): // ET 425
+            images.append("et_425_2")
+        case _ where seriesCode.contains("410"): // ICE S
+            images.append("ice_3_front")
+        case _ where seriesCode.contains("605"): // TrainLab / ICE-TD
+            images.append("ice_s")
         default:
             break
         }

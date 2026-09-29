@@ -1,5 +1,20 @@
 import SwiftUI
 import SwiftData
+import PhotosUI
+
+public enum DetailPhotoItem: Identifiable, Hashable {
+    case user(id: UUID, data: Data, station: String?, date: Date)
+    case catalog(name: String, label: String)
+    
+    public var id: String {
+        switch self {
+        case .user(let uid, _, _, _):
+            return "user_\(uid.uuidString)"
+        case .catalog(let name, _):
+            return "cat_\(name)"
+        }
+    }
+}
 
 @MainActor
 public struct TrainDetailView: View {
@@ -9,12 +24,15 @@ public struct TrainDetailView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
-    @State private var selectedImageIndex: Int = 0
-    @State private var showSpotConfirmation = false
+    @State private var selectedPhotoIndex: Int = 0
+    @State private var isShowingSpotSheet = false
     @State private var spotSuccessToast = false
+    
+    // Direkt-Spotting Form
     @State private var tzInput: String = ""
     @State private var notesInput: String = ""
-    @State private var isShowingSpotSheet = false
+    @State private var selectedPhotoItem: PhotosPickerItem?
+    @State private var capturedPhotoData: Data?
     
     private let locationManager = LocationManager()
     
@@ -23,30 +41,67 @@ public struct TrainDetailView: View {
         self.onSpotThisTrain = onSpotThisTrain
     }
     
+    /// Alle verfügbaren Fotos: Zuerst persönliche Nutzer-Fotos, dann alle offiziellen Katalog-Bilder
+    private var allPhotos: [DetailPhotoItem] {
+        var items: [DetailPhotoItem] = []
+        
+        // 1. Eigene Fotos des Nutzers für diesen Zug
+        for spot in train.spottings.sorted(by: { $0.spottedAt > $1.spottedAt }) {
+            if let data = spot.photoData {
+                items.append(.user(id: spot.id, data: data, station: spot.stationOrLocationName, date: spot.spottedAt))
+            }
+        }
+        
+        // 2. Offizielle Katalog-Bilder (immer sichtbar, auch vor Freischaltung!)
+        let catalogImages = train.galleryImageNames
+        for (idx, name) in catalogImages.enumerated() {
+            let label: String
+            if idx == 0 {
+                label = "Hauptansicht"
+            } else if name.contains("front") {
+                label = "Frontpartie"
+            } else if name.contains("side") {
+                label = "Seitenprofil"
+            } else if name.contains("altengronau") || name.contains("scenic") {
+                label = "Streckenfahrt"
+            } else if name.contains("_2") {
+                label = "Detail / Innen"
+            } else {
+                label = "Perspektive \(idx + 1)"
+            }
+            items.append(.catalog(name: name, label: label))
+        }
+        
+        return items
+    }
+    
     public var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(alignment: .leading, spacing: 20) {
+                VStack(alignment: .leading, spacing: 18) {
                     
-                    // 1. Hero Image Galerie (IMMER IN FARBE!)
-                    heroGallery
+                    // 1. Flüssig wischbare Bildergalerie & Thumbnail-Leiste
+                    heroGallerySection
                     
-                    // 2. Schnell-Fakten (Speed, Category, Status)
+                    // 2. Titel & Baureihe & Seltenheit
+                    titleCard
+                    
+                    // 3. Schnell-Fakten (Speed, Category, Status)
                     quickFactsSection
                     
-                    // 3. Neu: "Woran erkenne ich ihn?" (Spotter-Erkennungsmerkmale)
+                    // 4. Spotter-Guide ("Woran erkenne ich ihn?")
                     spotterGuideSection
                     
-                    // 4. Beschreibung & Details
+                    // 5. Beschreibung & Details
                     overviewSection
                     
-                    // 5. Deine Sichtungen
+                    // 6. Deine Sichtungen (inkl. Fotovorschau)
                     pastSpottingsSection
                     
-                    // 6. Action Button: Jetzt erfassen
+                    // 7. Action Button: Jetzt erfassen
                     spotActionButton
                 }
-                .padding(.top, 10)
+                .padding(.top, 8)
             }
             .background(Color(uiColor: .systemGroupedBackground))
             .navigationTitle(train.seriesCode)
@@ -54,6 +109,7 @@ public struct TrainDetailView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Fertig") { dismiss() }
+                        .fontWeight(.semibold)
                 }
             }
             .sheet(isPresented: $isShowingSpotSheet) {
@@ -70,67 +126,178 @@ public struct TrainDetailView: View {
         }
     }
     
-    // MARK: - 1. Hero Image Galerie
+    // MARK: - 1. Hero Gallery & Thumbnails
     
-    private var heroGallery: some View {
-        ZStack(alignment: .bottomLeading) {
-            let images = train.galleryImageNames
+    private var heroGallerySection: some View {
+        VStack(spacing: 10) {
+            let photos = allPhotos
             
-            TabView(selection: $selectedImageIndex) {
-                ForEach(0..<images.count, id: \.self) { idx in
-                    TrainImageView(assetName: images[idx], isSilhouette: false)
-                        .tag(idx)
-                        .frame(height: 230)
-                        .clipped()
+            // A. Großer wischbarer Image Slider
+            TabView(selection: $selectedPhotoIndex) {
+                ForEach(Array(photos.enumerated()), id: \.element.id) { index, photo in
+                    ZStack(alignment: .bottomLeading) {
+                        switch photo {
+                        case .user(_, let data, _, _):
+                            if let uiImg = UIImage(data: data) {
+                                Image(uiImage: uiImg)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(maxWidth: .infinity)
+                                    .frame(height: 235)
+                                    .clipped()
+                            } else {
+                                Color.secondary.opacity(0.12)
+                                    .frame(height: 235)
+                            }
+                        case .catalog(let assetName, _):
+                            TrainImageView(assetName: assetName, isSilhouette: false)
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 235)
+                                .clipped()
+                        }
+                        
+                        // Dezenter Gradient am Boden für Badge-Kontrast
+                        LinearGradient(
+                            colors: [.clear, .black.opacity(0.65)],
+                            startPoint: .center,
+                            endPoint: .bottom
+                        )
+                        .allowsHitTesting(false)
+                        
+                        // Badge: "Dein Foto" vs "Katalog"
+                        HStack {
+                            switch photo {
+                            case .user(_, _, let station, _):
+                                HStack(spacing: 5) {
+                                    Image(systemName: "camera.fill")
+                                        .font(.system(size: 11))
+                                    Text("Dein Foto" + (station != nil ? " · \(station!)" : ""))
+                                        .font(.caption2.weight(.bold))
+                                }
+                                .foregroundColor(.black)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 5)
+                                .background(Color.yellow)
+                                .clipShape(Capsule())
+                                .shadow(radius: 4)
+                            case .catalog(_, let label):
+                                HStack(spacing: 5) {
+                                    Image(systemName: "photo.on.rectangle.angled")
+                                        .font(.system(size: 11))
+                                    Text("Katalog · \(label)")
+                                        .font(.caption2.weight(.bold))
+                                }
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 5)
+                                .background(.ultraThinMaterial)
+                                .clipShape(Capsule())
+                            }
+                            
+                            Spacer()
+                            
+                            // Bild-Zähler (z.B. 1 / 3)
+                            Text("\(index + 1) / \(photos.count)")
+                                .font(.caption2.weight(.bold))
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 4)
+                                .background(Color.black.opacity(0.6))
+                                .clipShape(Capsule())
+                        }
+                        .padding(12)
+                        .allowsHitTesting(false) // Wichtig: Blockiert keine Wischgesten!
+                    }
+                    .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+                    .tag(index)
                 }
             }
-            .frame(height: 230)
-            .tabViewStyle(.page(indexDisplayMode: images.count > 1 ? .always : .never))
+            .frame(height: 235)
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .padding(.horizontal, 16)
             
-            // Subtiler Verlauf für Lesbarkeit des Titels
-            LinearGradient(
-                colors: [.clear, .black.opacity(0.85)],
-                startPoint: .center,
-                endPoint: .bottom
-            )
-            
-            // Header Info & Rarity
-            HStack(alignment: .bottom) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(train.seriesCode)
-                        .font(.title2.weight(.heavy))
-                        .foregroundColor(.white)
-                    
-                    Text(train.commercialName)
-                        .font(.subheadline.weight(.medium))
-                        .foregroundColor(.white.opacity(0.9))
+            // B. Interaktive Thumbnail-Leiste
+            if photos.count > 1 {
+                ScrollViewReader { proxy in
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(Array(photos.enumerated()), id: \.element.id) { index, photo in
+                                Button {
+                                    let impact = UIImpactFeedbackGenerator(style: .light)
+                                    impact.impactOccurred()
+                                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                                        selectedPhotoIndex = index
+                                    }
+                                } label: {
+                                    ZStack(alignment: .bottomTrailing) {
+                                        switch photo {
+                                        case .user(_, let data, _, _):
+                                            if let uiImg = UIImage(data: data) {
+                                                Image(uiImage: uiImg)
+                                                    .resizable()
+                                                    .aspectRatio(contentMode: .fill)
+                                                    .frame(width: 58, height: 40)
+                                                    .clipped()
+                                            }
+                                            // Mini Kamera-Icon für eigenes Foto
+                                            Image(systemName: "camera.fill")
+                                                .font(.system(size: 7))
+                                                .foregroundColor(.black)
+                                                .padding(3)
+                                                .background(Color.yellow)
+                                                .clipShape(Circle())
+                                                .padding(2)
+                                        case .catalog(let name, _):
+                                            TrainImageView(assetName: name, isSilhouette: false)
+                                                .frame(width: 58, height: 40)
+                                                .clipped()
+                                        }
+                                    }
+                                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                    .overlay(
+                                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                                            .stroke(selectedPhotoIndex == index ? Color.accentColor : Color.clear, lineWidth: 2.5)
+                                    )
+                                    .opacity(selectedPhotoIndex == index ? 1.0 : 0.5)
+                                }
+                                .id(index)
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 2)
+                    }
+                    .onChange(of: selectedPhotoIndex) { _, newIndex in
+                        withAnimation {
+                            proxy.scrollTo(newIndex, anchor: .center)
+                        }
+                    }
                 }
-                Spacer()
-                RarityBadgeView(rarity: train.rarity, style: train.rarity == .legendary ? .glowing : .standard)
             }
-            .padding(16)
         }
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .overlay(alignment: .topTrailing) {
-            if train.galleryImageNames.count > 1 {
-                HStack(spacing: 4) {
-                    Image(systemName: "photo.stack.fill")
-                        .font(.system(size: 10))
-                    Text("\(selectedImageIndex + 1)/\(train.galleryImageNames.count)")
-                        .font(.system(size: 11, weight: .bold))
-                }
-                .foregroundColor(.white)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(.ultraThinMaterial)
-                .clipShape(Capsule())
-                .padding(12)
+    }
+    
+    // MARK: - 2. Titel-Karte
+    
+    private var titleCard: some View {
+        HStack(alignment: .center) {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(train.seriesCode)
+                    .font(.title2.weight(.heavy))
+                    .foregroundStyle(.primary)
+                
+                Text(train.commercialName)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
             }
+            
+            Spacer()
+            
+            RarityBadgeView(rarity: train.rarity, style: train.rarity == .legendary ? .glowing : .standard)
         }
         .padding(.horizontal, 16)
     }
     
-    // MARK: - 2. Schnell-Fakten
+    // MARK: - 3. Schnell-Fakten
     
     private var quickFactsSection: some View {
         HStack(spacing: 12) {
@@ -154,7 +321,7 @@ public struct TrainDetailView: View {
         .padding(.horizontal, 16)
     }
     
-    // MARK: - 3. Spotter-Guide ("Woran erkenne ich ihn?")
+    // MARK: - 4. Spotter-Guide
     
     private var spotterGuideSection: some View {
         VStack(alignment: .leading, spacing: 14) {
@@ -205,7 +372,7 @@ public struct TrainDetailView: View {
         .padding(.horizontal, 16)
     }
     
-    // MARK: - 4. Übersicht & Besonderheiten
+    // MARK: - 5. Übersicht & Besonderheiten
     
     private var overviewSection: some View {
         VStack(alignment: .leading, spacing: 10) {
@@ -239,7 +406,7 @@ public struct TrainDetailView: View {
         .padding(.horizontal, 16)
     }
     
-    // MARK: - 5. Deine Sichtungen
+    // MARK: - 6. Deine Sichtungen
     
     private var pastSpottingsSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -255,7 +422,7 @@ public struct TrainDetailView: View {
                     Text("Noch kein Eintrag im Logbuch")
                         .font(.subheadline.weight(.semibold))
                         .foregroundStyle(.secondary)
-                    Text("Sobald du diesen Zug erfasst, erscheint er hier in deiner Historie.")
+                    Text("Sobald du diesen Zug am Gleis erfasst, wird er mit deinen Fotos hier gespeichert.")
                         .font(.caption)
                         .foregroundStyle(.tertiary)
                         .multilineTextAlignment(.center)
@@ -270,11 +437,19 @@ public struct TrainDetailView: View {
                 VStack(spacing: 8) {
                     ForEach(train.spottings.sorted { $0.spottedAt > $1.spottedAt }) { spot in
                         HStack(spacing: 12) {
-                            Image(systemName: "tram.fill")
-                                .foregroundColor(train.rarity.color)
-                                .padding(10)
-                                .background(train.rarity.color.opacity(0.12))
-                                .clipShape(Circle())
+                            if let data = spot.photoData, let uiImg = UIImage(data: data) {
+                                Image(uiImage: uiImg)
+                                    .resizable()
+                                    .aspectRatio(contentMode: .fill)
+                                    .frame(width: 44, height: 44)
+                                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                            } else {
+                                Image(systemName: "tram.fill")
+                                    .foregroundColor(train.rarity.color)
+                                    .padding(10)
+                                    .background(train.rarity.color.opacity(0.12))
+                                    .clipShape(Circle())
+                            }
                             
                             VStack(alignment: .leading, spacing: 2) {
                                 Text(spot.stationOrLocationName ?? "Standort erfasst")
@@ -302,7 +477,7 @@ public struct TrainDetailView: View {
         }
     }
     
-    // MARK: - 6. Action Button
+    // MARK: - 7. Action Button
     
     private var spotActionButton: some View {
         Button {
@@ -360,6 +535,47 @@ public struct TrainDetailView: View {
                     TextField("Triebzug-Nummer (z.B. Tz 408 015)", text: $tzInput)
                     TextField("Notizen (optional)", text: $notesInput)
                 }
+                
+                Section("Eigenes Foto (Optional)") {
+                    if let data = capturedPhotoData, let uiImage = UIImage(data: data) {
+                        ZStack(alignment: .topTrailing) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 150)
+                                .clipped()
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                            
+                            Button {
+                                capturedPhotoData = nil
+                                selectedPhotoItem = nil
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.title2)
+                                    .foregroundStyle(.white, .black.opacity(0.6))
+                                    .padding(8)
+                            }
+                        }
+                    } else {
+                        PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "camera.fill")
+                                Text("Foto aufnehmen oder auswählen")
+                            }
+                            .foregroundColor(.accentColor)
+                        }
+                        .onChange(of: selectedPhotoItem) { _, newItem in
+                            Task {
+                                if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                                    await MainActor.run {
+                                        capturedPhotoData = data
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
             .navigationTitle("Zug erfassen")
             .navigationBarTitleDisplayMode(.inline)
@@ -375,7 +591,7 @@ public struct TrainDetailView: View {
                 }
             }
         }
-        .presentationDetents([.medium])
+        .presentationDetents([.medium, .large])
     }
     
     private func saveDirectSpot() {
@@ -386,7 +602,7 @@ public struct TrainDetailView: View {
             latitude: coord?.latitude,
             longitude: coord?.longitude,
             stationOrLocationName: locationManager.currentPlaceName.isEmpty ? nil : locationManager.currentPlaceName,
-            photoData: nil,
+            photoData: capturedPhotoData,
             notes: notesInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : notesInput,
             trainModel: train
         )
@@ -396,6 +612,12 @@ public struct TrainDetailView: View {
             let generator = UINotificationFeedbackGenerator()
             generator.notificationOccurred(.success)
             isShowingSpotSheet = false
+            capturedPhotoData = nil
+            selectedPhotoItem = nil
+            tzInput = ""
+            notesInput = ""
+            // Galerie auf das neue Bild setzen
+            selectedPhotoIndex = 0
             withAnimation(.spring()) {
                 spotSuccessToast = true
             }
@@ -432,40 +654,5 @@ public struct TrainDetailView: View {
         .padding(.horizontal, 16)
         .padding(.top, 8)
         .transition(.move(edge: .top).combined(with: .opacity))
-    }
-}
-
-public struct FactPill: View {
-    let icon: String
-    let title: String
-    let value: String
-    var valueColor: Color = .primary
-    
-    public init(icon: String, title: String, value: String, valueColor: Color = .primary) {
-        self.icon = icon
-        self.title = title
-        self.value = value
-        self.valueColor = valueColor
-    }
-    
-    public var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack(spacing: 4) {
-                Image(systemName: icon)
-                    .font(.caption2)
-                Text(title)
-                    .font(.caption2.weight(.medium))
-            }
-            .foregroundStyle(.secondary)
-            
-            Text(value)
-                .font(.footnote.weight(.bold))
-                .foregroundColor(valueColor)
-                .lineLimit(1)
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(12)
-        .background(Color(uiColor: .secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
     }
 }
