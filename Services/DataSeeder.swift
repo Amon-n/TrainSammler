@@ -189,7 +189,7 @@ public struct DataSeeder {
                     rarity: .rare,
                     category: .highSpeed,
                     overviewDescription: "Die neueste Generation barrierefreier Fernverkehrszüge von Talgo mit stufenlosem Einstieg für Urlauberlinien.",
-                    assetName: "ice_3neo",
+                    assetName: "ice_l",
                     maxSpeedKmH: 230
                 ),
                 TrainModel(
@@ -199,7 +199,7 @@ public struct DataSeeder {
                     rarity: .uncommon,
                     category: .highSpeed,
                     overviewDescription: "Die legendäre Schnellzuglokomotive der 90er Jahre vor traditionellen Intercity-Wagengarnituren.",
-                    assetName: "ice_1",
+                    assetName: "br_101",
                     maxSpeedKmH: 220
                 ),
                 TrainModel(
@@ -219,7 +219,7 @@ public struct DataSeeder {
                     rarity: .rare,
                     category: .highSpeed,
                     overviewDescription: "Ursprünglich für die österreichische WESTbahn gebaute, besonders spurtschnelle Doppelstock-Triebzüge auf der Gäubahn und Ostseeküste.",
-                    assetName: "twindexx_vario",
+                    assetName: "ic2_kiss",
                     maxSpeedKmH: 200
                 ),
                 TrainModel(
@@ -241,7 +241,7 @@ public struct DataSeeder {
                     rarity: .uncommon,
                     category: .regional,
                     overviewDescription: "Teil-Doppelstocktriebzug mit einstöckigen Endwagen und doppelstöckigen Mittelwagen für hohe Fahrgastströme.",
-                    assetName: "twindexx_vario",
+                    assetName: "desiro_hc",
                     maxSpeedKmH: 160
                 ),
                 TrainModel(
@@ -251,7 +251,7 @@ public struct DataSeeder {
                     rarity: .common,
                     category: .regional,
                     overviewDescription: "Charakteristischer Regionaltriebzug von Bombardier mit prägnantem Frontdesign, in ganz Deutschland im RE- und S-Bahn-Einsatz.",
-                    assetName: "twindexx_vario",
+                    assetName: "talent_2",
                     maxSpeedKmH: 160
                 ),
                 TrainModel(
@@ -261,7 +261,7 @@ public struct DataSeeder {
                     rarity: .common,
                     category: .regional,
                     overviewDescription: "Spurtschneller Niederflurtriebzug mit hervorragender Beschleunigung auf elektrifizierten Nahverkehrslinien.",
-                    assetName: "ice_t",
+                    assetName: "flirt_3",
                     maxSpeedKmH: 160
                 ),
                 TrainModel(
@@ -271,7 +271,7 @@ public struct DataSeeder {
                     rarity: .uncommon,
                     category: .regional,
                     overviewDescription: "Extrem energieeffizienter, leichter Nahverkehrszug, auch als Batterie- (Plus B) und Wasserstoffvariante (Plus H) im Einsatz.",
-                    assetName: "ice_3neo",
+                    assetName: "mireo",
                     maxSpeedKmH: 160
                 ),
                 TrainModel(
@@ -301,7 +301,7 @@ public struct DataSeeder {
                     rarity: .common,
                     category: .regional,
                     overviewDescription: "Der unbestrittene König nicht elektrifizierter Nebenbahnen im ländlichen Raum Deutschlands.",
-                    assetName: "ice_1",
+                    assetName: "coradia_lint",
                     maxSpeedKmH: 140
                 ),
                 TrainModel(
@@ -311,7 +311,7 @@ public struct DataSeeder {
                     rarity: .common,
                     category: .regional,
                     overviewDescription: "Das unermüdliche Rückgrat der großen S-Bahn-Netze in München, Frankfurt am Main, Stuttgart und Köln.",
-                    assetName: "twindexx_vario",
+                    assetName: "et_423",
                     maxSpeedKmH: 140
                 ),
                 TrainModel(
@@ -321,7 +321,7 @@ public struct DataSeeder {
                     rarity: .common,
                     category: .regional,
                     overviewDescription: "Kult-Regionalbahn mit unverwechselbarem Frequenzumrichter-Quietschen beim Anfahren.",
-                    assetName: "ice_2",
+                    assetName: "et_425",
                     maxSpeedKmH: 160
                 )
             ]

@@ -10,6 +10,7 @@ files = [
     "App/TrainSammlerApp.swift",
     "Models/Enums.swift",
     "Models/TrainModel.swift",
+    "Models/TrainModel+Identification.swift",
     "Models/SpottedTrain.swift",
     "Services/LocationManager.swift",
     "Services/DataSeeder.swift",
@@ -261,7 +262,7 @@ pbx.append("\t\t\t\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;")
 pbx.append("\t\t\t\tASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = NO;")
 pbx.append("\t\t\t\tCLANG_ENABLE_MODULES = YES;")
 pbx.append("\t\t\t\tCODE_SIGN_STYLE = Automatic;")
-pbx.append("\t\t\t\tCURRENT_PROJECT_VERSION = 1;")
+pbx.append("\t\t\t\tCURRENT_PROJECT_VERSION = 2;")
 pbx.append("\t\t\t\tDEVELOPMENT_TEAM = \"79T386JC4J\";")
 pbx.append("\t\t\t\tENABLE_PREVIEWS = YES;")
 pbx.append("\t\t\t\tGENERATE_INFOPLIST_FILE = NO;")
@@ -291,7 +292,7 @@ pbx.append("\t\t\t\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;")
 pbx.append("\t\t\t\tASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = NO;")
 pbx.append("\t\t\t\tCLANG_ENABLE_MODULES = YES;")
 pbx.append("\t\t\t\tCODE_SIGN_STYLE = Automatic;")
-pbx.append("\t\t\t\tCURRENT_PROJECT_VERSION = 1;")
+pbx.append("\t\t\t\tCURRENT_PROJECT_VERSION = 2;")
 pbx.append("\t\t\t\tDEVELOPMENT_TEAM = \"79T386JC4J\";")
 pbx.append("\t\t\t\tENABLE_PREVIEWS = YES;")
 pbx.append("\t\t\t\tGENERATE_INFOPLIST_FILE = NO;")
