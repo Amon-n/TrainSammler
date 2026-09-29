@@ -20,6 +20,7 @@ public struct RarityCount: Identifiable {
     public let count: Int
 }
 
+@MainActor
 public final class StatsCalculator {
     public static func computeStats(allTrains: [TrainModel], allSpottings: [SpottedTrain]) -> (
         totalSpottings: Int,

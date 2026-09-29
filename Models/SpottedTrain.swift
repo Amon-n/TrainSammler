@@ -3,8 +3,8 @@ import SwiftData
 import CoreLocation
 
 @Model
-public final class SpottedTrain {
-    @Attribute(.unique) public var id: UUID
+public final class SpottedTrain: Identifiable {
+    public var id: UUID
     public var spottedAt: Date
     public var tzNumber: String?             // Triebzugnummer, z.B. "Tz 8012" oder "403 001"
     public var latitude: Double?

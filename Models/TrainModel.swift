@@ -2,8 +2,8 @@ import Foundation
 import SwiftData
 
 @Model
-public final class TrainModel {
-    @Attribute(.unique) public var id: UUID
+public final class TrainModel: Identifiable {
+    public var id: UUID
     public var seriesCode: String            // z.B. "BR 408"
     public var commercialName: String         // z.B. "ICE 3neo"
     public var designation: String?          // z.B. "Rheinland" (Taufname / Sub-Variante)

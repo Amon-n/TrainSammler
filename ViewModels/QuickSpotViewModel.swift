@@ -4,6 +4,7 @@ import SwiftData
 import PhotosUI
 
 @Observable
+@MainActor
 public final class QuickSpotViewModel {
     // Formular-Zustände
     public var selectedTrainModel: TrainModel?
@@ -20,8 +21,8 @@ public final class QuickSpotViewModel {
     // Location Dependency
     public var locationManager: LocationManager
     
-    public init(locationManager: LocationManager = LocationManager()) {
-        self.locationManager = locationManager
+    public init(locationManager: LocationManager? = nil) {
+        self.locationManager = locationManager ?? LocationManager()
     }
     
     public func onAppear() {

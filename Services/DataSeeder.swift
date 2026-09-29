@@ -6,8 +6,7 @@ public struct DataSeeder {
     public static func seedCatalogIfNeeded(context: ModelContext) {
         let descriptor = FetchDescriptor<TrainModel>()
         do {
-            let count = try context.fetchCount(descriptor)
-            guard count == 0 else { return }
+            let existingTrains = try context.fetch(descriptor)
             
             let defaultTrains: [TrainModel] = [
                 // Legendary: Sonder-ICEs
@@ -18,7 +17,7 @@ public struct DataSeeder {
                     rarity: .legendary,
                     category: .special,
                     overviewDescription: "Der berühmte ICE 3 mit Regenbogen-Zierstreifen für Toleranz und Vielfalt.",
-                    assetName: "train.side.rear.car",
+                    assetName: "ice_regenbogen",
                     maxSpeedKmH: 330
                 ),
                 TrainModel(
@@ -28,7 +27,7 @@ public struct DataSeeder {
                     rarity: .legendary,
                     category: .special,
                     overviewDescription: "ICE 3M Mehrsystemzug mit blauem Europa-Streifen und Europa-Sternen.",
-                    assetName: "train.side.front.car",
+                    assetName: "ice_europa",
                     maxSpeedKmH: 330
                 ),
                 TrainModel(
@@ -38,7 +37,7 @@ public struct DataSeeder {
                     rarity: .legendary,
                     category: .special,
                     overviewDescription: "Spezieller Hochgeschwindigkeits-Versuchszug von DB Systemtechnik.",
-                    assetName: "bolt.badge.clock",
+                    assetName: "ice_s",
                     maxSpeedKmH: 393
                 ),
                 
@@ -50,7 +49,7 @@ public struct DataSeeder {
                     rarity: .rare,
                     category: .highSpeed,
                     overviewDescription: "Die modernste Weiterentwicklung des ICE 3 mit mobilfunkdurchlässigen Scheiben und 320 km/h.",
-                    assetName: "tram.fill",
+                    assetName: "ice_3neo",
                     maxSpeedKmH: 320
                 ),
                 TrainModel(
@@ -60,7 +59,7 @@ public struct DataSeeder {
                     rarity: .rare,
                     category: .highSpeed,
                     overviewDescription: "Elektrischer Neigezug für kurvenreiche Strecken (z.B. Gäubahn, Saaletal).",
-                    assetName: "arrow.triangle.swap",
+                    assetName: "ice_t",
                     maxSpeedKmH: 230
                 ),
                 
@@ -72,7 +71,7 @@ public struct DataSeeder {
                     rarity: .uncommon,
                     category: .highSpeed,
                     overviewDescription: "Viersystem-ICE der 3. Generation von Siemens für Inlands- und Frankreich-Verkehr.",
-                    assetName: "tram.fill",
+                    assetName: "ice_3_velaro",
                     maxSpeedKmH: 320
                 ),
                 TrainModel(
@@ -82,7 +81,7 @@ public struct DataSeeder {
                     rarity: .uncommon,
                     category: .highSpeed,
                     overviewDescription: "Die Ikone seit 1991. Aufwändig modernisiert mit verkürzten 9-Wagen-Garnituren.",
-                    assetName: "tram.fill",
+                    assetName: "ice_1",
                     maxSpeedKmH: 280
                 ),
                 TrainModel(
@@ -92,7 +91,7 @@ public struct DataSeeder {
                     rarity: .uncommon,
                     category: .highSpeed,
                     overviewDescription: "Zweite Generation mit Flügelungskonzept für flexiblere Zugteilungen.",
-                    assetName: "tram.fill",
+                    assetName: "ice_2",
                     maxSpeedKmH: 280
                 ),
                 
@@ -104,7 +103,7 @@ public struct DataSeeder {
                     rarity: .common,
                     category: .highSpeed,
                     overviewDescription: "Das moderne Arbeitspferd im DB-Fernverkehr als 7-, 12- oder 13-Teiler (XXL-ICE).",
-                    assetName: "tram.fill",
+                    assetName: "ice_4",
                     maxSpeedKmH: 265
                 ),
                 TrainModel(
@@ -114,15 +113,31 @@ public struct DataSeeder {
                     rarity: .common,
                     category: .regional,
                     overviewDescription: "Elektrischer Doppelstocktriebzug von Bombardier für dichten Regional-Express-Verkehr.",
-                    assetName: "tram",
+                    assetName: "twindexx_vario",
                     maxSpeedKmH: 160
                 )
             ]
             
-            for train in defaultTrains {
-                context.insert(train)
+            if existingTrains.isEmpty {
+                for train in defaultTrains {
+                    context.insert(train)
+                }
+                try context.save()
+            } else {
+                // Bestehende Züge aktualisieren (falls noch alte Asset-Namen wie "tram.fill" in der DB liegen)
+                var updated = false
+                let defaultMap = Dictionary(uniqueKeysWithValues: defaultTrains.map { ($0.seriesCode, $0.assetName) })
+                for train in existingTrains {
+                    if let newAsset = defaultMap[train.seriesCode], train.assetName != newAsset {
+                        train.assetName = newAsset
+                        updated = true
+                    }
+                }
+                if updated {
+                    try context.save()
+                    print("✅ Bestehende Zug-Einträge auf neue Bilder aktualisiert!")
+                }
             }
-            try context.save()
         } catch {
             print("Fehler beim Seeden des Katalogs: \(error.localizedDescription)")
         }

@@ -1,9 +1,11 @@
 import SwiftUI
 import SwiftData
 
+@MainActor
 public struct StatsView: View {
     @Query private var allTrains: [TrainModel]
     @Query(sort: \SpottedTrain.spottedAt, order: .reverse) private var allSpottings: [SpottedTrain]
+    @State private var showingSettings = false
     
     public init() {}
     
@@ -20,21 +22,36 @@ public struct StatsView: View {
         StatsCalculator.computeStats(allTrains: allTrains, allSpottings: allSpottings)
     }
     
+    private var userRank: (title: String, icon: String) {
+        switch stats.totalScore {
+        case 0..<500:
+            return ("Bahnsteig-Neuling", "figure.walk")
+        case 500..<1500:
+            return ("Gleis-Scout", "binoculars.fill")
+        case 1500..<3000:
+            return ("Zug-Enthusiast", "tram.fill")
+        case 3000..<6000:
+            return ("Hauptbahnhof-Meister", "star.circle.fill")
+        default:
+            return ("ICE-Legende", "crown.fill")
+        }
+    }
+    
     public var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
                     
-                    // 1. Hero Score Banner
+                    // 1. Hero Score Banner mit Rang
                     scoreHeroCard
                     
-                    // 2. Sammlungsfortschritt Gesamt
-                    overallProgressCard
-                    
-                    // 3. Seltenster Fund (Showcase)
+                    // 2. Trophäen-Showcase: Seltenster Fund
                     if let rarest = stats.rarestSpot, let train = rarest.trainModel {
-                        rarestCatchCard(spotted: rarest, train: train)
+                        rarestCatchShowcase(spotted: rarest, train: train)
                     }
+                    
+                    // 3. Sammlungsfortschritt Gesamt
+                    overallProgressCard
                     
                     // 4. Fortschritt nach Kategorien
                     categoryProgressSection
@@ -47,42 +64,139 @@ public struct StatsView: View {
             }
             .navigationTitle("Spotter-Statistiken")
             .background(Color(uiColor: .systemGroupedBackground))
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        showingSettings = true
+                    } label: {
+                        Image(systemName: "gearshape.fill")
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
+            .sheet(isPresented: $showingSettings) {
+                SettingsView()
+            }
         }
     }
     
     // MARK: - Components
     
     private var scoreHeroCard: some View {
-        VStack(spacing: 8) {
-            Text("GESAMT-PUNKTE")
-                .font(.caption.weight(.bold))
-                .foregroundStyle(.secondary)
-                .tracking(1.5)
+        VStack(spacing: 12) {
+            HStack {
+                Label(userRank.title, systemImage: userRank.icon)
+                    .font(.caption.weight(.heavy))
+                    .foregroundStyle(.white)
+                    .padding(.horizontal, 10)
+                    .padding(.vertical, 5)
+                    .background(.white.opacity(0.2))
+                    .clipShape(Capsule())
+                
+                Spacer()
+                
+                Text("LEVEL \(max(1, stats.totalScore / 1000 + 1))")
+                    .font(.caption2.weight(.heavy))
+                    .foregroundStyle(.white.opacity(0.8))
+                    .tracking(1)
+            }
             
-            Text("\(stats.totalScore)")
-                .font(.system(size: 46, weight: .heavy, design: .rounded))
-                .foregroundStyle(
-                    LinearGradient(
-                        colors: [.orange, .red],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+            VStack(spacing: 2) {
+                Text("\(stats.totalScore)")
+                    .font(.system(size: 52, weight: .heavy, design: .rounded))
+                    .foregroundColor(.white)
+                
+                Text("BAHN-PUNKTE (XP)")
+                    .font(.caption2.weight(.bold))
+                    .foregroundColor(.white.opacity(0.85))
+                    .tracking(1.5)
+            }
+            .padding(.vertical, 4)
             
-            HStack(spacing: 20) {
+            Divider().background(.white.opacity(0.25))
+            
+            HStack {
                 Label("\(stats.totalSpottings) Sichtungen", systemImage: "eye.fill")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.white.opacity(0.95))
                 
-                Label("\(stats.uniqueTrainsSpotted) von \(stats.totalTrainsInCatalog) Zügen", systemImage: "checkmark.circle.fill")
+                Spacer()
+                
+                Label("\(stats.uniqueTrainsSpotted) / \(stats.totalTrainsInCatalog) Zügen", systemImage: "checkmark.seal.fill")
                     .font(.footnote.weight(.semibold))
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(.white.opacity(0.95))
             }
         }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 24)
+        .padding(20)
+        .background(
+            LinearGradient(
+                colors: [Color.orange, Color.red.opacity(0.9)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+        )
+        .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
+        .shadow(color: Color.orange.opacity(0.3), radius: 12, y: 6)
+    }
+    
+    private func rarestCatchShowcase(spotted: SpottedTrain, train: TrainModel) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            
+            // Header Bar
+            HStack {
+                HStack(spacing: 6) {
+                    Image(systemName: "trophy.fill")
+                        .foregroundStyle(.yellow)
+                    Text("SELTENSTER FUND")
+                        .font(.caption2.weight(.heavy))
+                        .foregroundStyle(.secondary)
+                        .tracking(1)
+                }
+                Spacer()
+                RarityBadgeView(rarity: train.rarity, style: .glowing)
+            }
+            .padding(.horizontal, 16)
+            .padding(.top, 14)
+            .padding(.bottom, 10)
+            
+            // Large Hero Image
+            TrainImageView(assetName: train.assetName)
+                .frame(height: 140)
+                .frame(maxWidth: .infinity)
+                .clipped()
+            
+            // Details Footer
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text("\(train.seriesCode) - \(train.commercialName)")
+                        .font(.headline.weight(.bold))
+                    Spacer()
+                    if let tz = spotted.tzNumber {
+                        Text("Tz \(tz)")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+                
+                if let location = spotted.stationOrLocationName {
+                    HStack(spacing: 4) {
+                        Image(systemName: "location.fill")
+                            .font(.caption2)
+                        Text(location)
+                            .font(.caption)
+                    }
+                    .foregroundStyle(.secondary)
+                }
+            }
+            .padding(14)
+        }
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 20, style: .continuous)
+                .strokeBorder(train.rarity.color.opacity(0.4), lineWidth: 1.5)
+        )
+        .shadow(color: train.rarity.color.opacity(0.18), radius: 12, y: 6)
     }
     
     private var overallProgressCard: some View {
@@ -110,70 +224,20 @@ public struct StatsView: View {
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
     
-    private func rarestCatchCard(spotted: SpottedTrain, train: TrainModel) -> some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: "trophy.fill")
-                    .foregroundStyle(.yellow)
-                    .font(.title3)
-                Text("Seltenster Fund")
-                    .font(.headline.weight(.bold))
-                Spacer()
-                RarityBadgeView(rarity: train.rarity, style: .glowing)
-            }
-            
-            HStack(spacing: 16) {
-                Image(systemName: train.assetName)
-                    .font(.system(size: 32))
-                    .foregroundStyle(train.rarity.color)
-                    .frame(width: 56, height: 56)
-                    .background(train.rarity.color.opacity(0.12))
-                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("\(train.seriesCode) - \(train.commercialName)")
-                        .font(.headline)
-                    
-                    if let tz = spotted.tzNumber {
-                        Text("Triebzug: \(tz)")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
-                    }
-                    
-                    if let location = spotted.stationOrLocationName {
-                        Text(location)
-                            .font(.caption)
-                            .foregroundStyle(.tertiary)
-                    }
-                }
-            }
-        }
-        .padding(18)
-        .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(Color(uiColor: .secondarySystemGroupedBackground))
-        )
-        .overlay(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .strokeBorder(train.rarity.color.opacity(0.4), lineWidth: 1.5)
-        )
-        .shadow(color: train.rarity.color.opacity(0.15), radius: 10, y: 4)
-    }
-    
     private var categoryProgressSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("Fortschritt nach Kategorien")
                 .font(.headline)
                 .padding(.horizontal, 4)
             
             ForEach(stats.categoryProgress) { cat in
-                VStack(alignment: .leading, spacing: 6) {
+                VStack(alignment: .leading, spacing: 8) {
                     HStack {
                         Label(cat.category.rawValue, systemImage: cat.category.icon)
                             .font(.subheadline.weight(.medium))
                         Spacer()
                         Text("\(cat.spottedCount) / \(cat.totalCount)")
-                            .font(.caption.weight(.semibold))
+                            .font(.caption.weight(.bold))
                             .foregroundStyle(.secondary)
                     }
                     
@@ -188,7 +252,7 @@ public struct StatsView: View {
     }
     
     private var rarityDistributionSection: some View {
-        VStack(alignment: .leading, spacing: 14) {
+        VStack(alignment: .leading, spacing: 12) {
             Text("Seltenheits-Verteilung")
                 .font(.headline)
                 .padding(.horizontal, 4)
@@ -202,11 +266,11 @@ public struct StatsView: View {
                         }
                         
                         Text("\(item.count)")
-                            .font(.title2.weight(.heavy))
+                            .font(.title.weight(.heavy))
                             .foregroundStyle(.primary)
                         
                         Text("x gesichtet")
-                            .font(.caption2)
+                            .font(.caption2.weight(.medium))
                             .foregroundStyle(.secondary)
                     }
                     .padding(14)

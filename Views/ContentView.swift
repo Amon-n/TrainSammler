@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 
+@MainActor
 public struct ContentView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selectedTab: TabItem = .quickSpot
@@ -41,9 +42,6 @@ public struct ContentView: View {
                 .tag(TabItem.stats)
         }
         .tint(.accentColor)
-        .onAppear {
-            DataSeeder.seedCatalogIfNeeded(context: modelContext)
-        }
     }
 }
 

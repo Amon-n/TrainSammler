@@ -2,34 +2,43 @@ import SwiftUI
 import SwiftData
 import PhotosUI
 
+@MainActor
 public struct QuickSpotView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \TrainModel.seriesCode) private var catalogTrains: [TrainModel]
     
     @State private var viewModel = QuickSpotViewModel()
     @State private var showingTrainPicker = false
-    @State private var triggerSuccessHaptic = false
+    @State private var earnedPoints: Int = 0
+    @FocusState private var isTzFocused: Bool
     
     public init() {}
+    
+    var quickSelectTrains: [TrainModel] {
+        // Die 4 häufigsten Alltagszüge für den 1-Tap-Zugriff
+        catalogTrains.filter { train in
+            ["BR 412", "BR 408", "BR 401", "BR 446 / BR 445"].contains(train.seriesCode)
+        }
+    }
     
     public var body: some View {
         NavigationStack {
             ScrollView {
-                VStack(spacing: 20) {
+                VStack(spacing: 18) {
                     
-                    // 1. GPS / Bahnhofs-Header
+                    // 1. Live GPS Standort-Stamp
                     locationCard
                     
-                    // 2. Baureihen-Auswahl (Hauptfokus)
-                    trainSelectionCard
+                    // 2. Baureihen-Auswahl mit Quick-Picks
+                    trainSelectionSection
                     
-                    // 3. Triebzugnummer (TZ) & Detail-Info
+                    // 3. Triebzugnummer & Notiz
                     detailsCard
                     
-                    // 4. Foto-Upload
+                    // 4. Beweisfoto (Optional)
                     photoCard
                     
-                    // 5. Großer Action-Button für schnelles Loggen
+                    // 5. Großer Action-Button
                     submitButton
                 }
                 .padding(.horizontal, 16)
@@ -38,6 +47,12 @@ public struct QuickSpotView: View {
             .navigationTitle("Schnell-Sichtung")
             .navigationBarTitleDisplayMode(.inline)
             .background(Color(uiColor: .systemGroupedBackground))
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Fertig") { isTzFocused = false }
+                }
+            }
             .onAppear {
                 viewModel.onAppear()
             }
@@ -71,19 +86,25 @@ public struct QuickSpotView: View {
     
     private var locationCard: some View {
         HStack(spacing: 12) {
-            Image(systemName: "location.fill")
-                .foregroundColor(.accentColor)
-                .font(.title3)
-                .symbolEffect(.pulse, isActive: viewModel.locationManager.isLocating)
+            ZStack {
+                Circle()
+                    .fill(Color.accentColor.opacity(0.12))
+                    .frame(width: 36, height: 36)
+                
+                Image(systemName: "location.fill")
+                    .foregroundColor(.accentColor)
+                    .font(.subheadline)
+                    .symbolEffect(.pulse, isActive: viewModel.locationManager.isLocating)
+            }
             
             VStack(alignment: .leading, spacing: 2) {
-                Text("Standort-Stamp")
-                    .font(.caption2.weight(.semibold))
+                Text("STANDORT-STAMP")
+                    .font(.caption2.weight(.heavy))
                     .foregroundStyle(.secondary)
-                    .textCase(.uppercase)
+                    .tracking(0.8)
                 
                 Text(viewModel.locationManager.currentPlaceName)
-                    .font(.subheadline.weight(.medium))
+                    .font(.subheadline.weight(.semibold))
                     .foregroundStyle(.primary)
                     .lineLimit(1)
             }
@@ -96,36 +117,34 @@ public struct QuickSpotView: View {
                 viewModel.locationManager.requestLocation()
             } label: {
                 Image(systemName: "arrow.clockwise")
-                    .font(.callout)
+                    .font(.caption.weight(.bold))
                     .foregroundColor(.secondary)
                     .padding(8)
-                    .background(Color(uiColor: .secondarySystemGroupedBackground))
+                    .background(Color(uiColor: .tertiarySystemGroupedBackground))
                     .clipShape(Circle())
             }
         }
-        .padding(14)
+        .padding(12)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
     }
     
-    private var trainSelectionCard: some View {
+    private var trainSelectionSection: some View {
         VStack(alignment: .leading, spacing: 10) {
             Text("Zug-Baureihe")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.secondary)
             
             if let selected = viewModel.selectedTrainModel {
+                // Ausgewählte Baureihe im Detail
                 Button {
                     let impact = UIImpactFeedbackGenerator(style: .light)
                     impact.impactOccurred()
                     showingTrainPicker = true
                 } label: {
                     HStack(spacing: 14) {
-                        Image(systemName: selected.assetName)
-                            .font(.system(size: 28))
-                            .foregroundStyle(selected.rarity.color)
-                            .frame(width: 48, height: 48)
-                            .background(selected.rarity.color.opacity(0.12))
+                        TrainImageView(assetName: selected.assetName)
+                            .frame(width: 100, height: 70)
                             .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
                         
                         VStack(alignment: .leading, spacing: 4) {
@@ -133,77 +152,127 @@ public struct QuickSpotView: View {
                                 Text(selected.seriesCode)
                                     .font(.headline.weight(.bold))
                                     .foregroundStyle(.primary)
-                                
                                 Spacer()
-                                
                                 RarityBadgeView(rarity: selected.rarity, style: selected.rarity == .legendary ? .glowing : .standard)
                             }
                             
                             Text(selected.commercialName)
                                 .font(.subheadline)
                                 .foregroundStyle(.secondary)
+                                .lineLimit(1)
+                            
+                            Text("Tippen zum Ändern")
+                                .font(.caption2.weight(.semibold))
+                                .foregroundStyle(Color.accentColor)
+                                .padding(.top, 2)
                         }
                     }
-                    .padding(14)
+                    .padding(12)
                     .background(Color(uiColor: .secondarySystemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
                     .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .strokeBorder(selected.rarity.color.opacity(0.5), lineWidth: 1.5)
+                        RoundedRectangle(cornerRadius: 18, style: .continuous)
+                            .strokeBorder(selected.rarity.color.opacity(0.4), lineWidth: 1.5)
                     )
                 }
             } else {
-                Button {
-                    let impact = UIImpactFeedbackGenerator(style: .medium)
-                    impact.impactOccurred()
-                    showingTrainPicker = true
-                } label: {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                            .font(.title2)
-                        Text("Baureihe auswählen...")
-                            .font(.body.weight(.semibold))
-                        Spacer()
-                        Image(systemName: "chevron.right")
-                            .font(.footnote.weight(.semibold))
-                            .foregroundStyle(.tertiary)
+                // Schnellauswahl Chips für Alltagszüge
+                VStack(spacing: 10) {
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(quickSelectTrains) { train in
+                                Button {
+                                    let impact = UIImpactFeedbackGenerator(style: .medium)
+                                    impact.impactOccurred()
+                                    viewModel.selectedTrainModel = train
+                                } label: {
+                                    HStack(spacing: 8) {
+                                        TrainImageView(assetName: train.assetName)
+                                            .frame(width: 38, height: 28)
+                                            .clipShape(RoundedRectangle(cornerRadius: 6))
+                                        
+                                        VStack(alignment: .leading, spacing: 1) {
+                                            Text(train.commercialName)
+                                                .font(.caption.weight(.bold))
+                                                .foregroundStyle(.primary)
+                                            Text(train.seriesCode)
+                                                .font(.caption2)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                    }
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 8)
+                                    .background(Color(uiColor: .secondarySystemGroupedBackground))
+                                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                }
+                            }
+                        }
                     }
-                    .padding(16)
-                    .frame(maxWidth: .infinity)
-                    .background(Color(uiColor: .secondarySystemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    
+                    // Haupt-Such-Button
+                    Button {
+                        let impact = UIImpactFeedbackGenerator(style: .medium)
+                        impact.impactOccurred()
+                        showingTrainPicker = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "magnifyingglass.circle.fill")
+                                .font(.title3)
+                                .foregroundStyle(Color.accentColor)
+                            Text("Alle Baureihen durchsuchen...")
+                                .font(.body.weight(.semibold))
+                                .foregroundStyle(.primary)
+                            Spacer()
+                            Image(systemName: "chevron.right")
+                                .font(.footnote.weight(.semibold))
+                                .foregroundStyle(.tertiary)
+                        }
+                        .padding(14)
+                        .background(Color(uiColor: .secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                    }
                 }
             }
         }
     }
     
     private var detailsCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Zug-Details")
+        VStack(alignment: .leading, spacing: 10) {
+            Text("Details")
                 .font(.subheadline.weight(.semibold))
                 .foregroundStyle(.secondary)
             
             VStack(spacing: 0) {
-                HStack {
-                    Image(systemName: "number")
-                        .foregroundColor(.secondary)
-                        .frame(width: 24)
+                HStack(spacing: 12) {
+                    Text("Tz-Nr.")
+                        .font(.subheadline.weight(.bold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 50, alignment: .leading)
                     
-                    TextField("Triebzug-Nr. (z.B. Tz 304 oder 408 001)", text: $viewModel.tzNumber)
+                    TextField("z.B. 304 oder 8012", text: $viewModel.tzNumber)
                         .font(.body)
-                        .keyboardType(.asciiCapable)
-                        .autocorrectionDisabled()
+                        .keyboardType(.numbersAndPunctuation)
+                        .focused($isTzFocused)
+                    
+                    if !viewModel.tzNumber.isEmpty {
+                        Button {
+                            viewModel.tzNumber = ""
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.secondary)
+                        }
+                    }
                 }
                 .padding(14)
                 
-                Divider().padding(.leading, 46)
+                Divider().padding(.leading, 14)
                 
-                HStack {
+                HStack(spacing: 12) {
                     Image(systemName: "text.bubble")
                         .foregroundColor(.secondary)
                         .frame(width: 24)
                     
-                    TextField("Optionale Notiz (Gleis, Verspätung, Ziel)", text: $viewModel.notes)
+                    TextField("Notiz (Gleis, Verspätung, Fahrtziel)", text: $viewModel.notes)
                         .font(.body)
                 }
                 .padding(14)
@@ -225,7 +294,7 @@ public struct QuickSpotView: View {
                         .resizable()
                         .scaledToFill()
                         .frame(maxWidth: .infinity)
-                        .frame(height: 180)
+                        .frame(height: 170)
                         .clipped()
                         .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                     
@@ -243,13 +312,13 @@ public struct QuickSpotView: View {
                 PhotosPicker(selection: $viewModel.selectedPhotoItem, matching: .images) {
                     HStack(spacing: 10) {
                         Image(systemName: "camera.fill")
-                            .font(.title3)
+                            .font(.subheadline.weight(.semibold))
                         Text("Foto aufnehmen / auswählen")
                             .font(.subheadline.weight(.medium))
                     }
                     .foregroundColor(.accentColor)
                     .frame(maxWidth: .infinity)
-                    .padding(16)
+                    .padding(14)
                     .background(Color(uiColor: .secondarySystemGroupedBackground))
                     .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                     .overlay(
@@ -266,16 +335,17 @@ public struct QuickSpotView: View {
             let generator = UIImpactFeedbackGenerator(style: .medium)
             generator.impactOccurred()
             
+            earnedPoints = viewModel.selectedTrainModel?.rarity.points ?? 100
+            
             if viewModel.saveSpotting(context: modelContext) {
-                // Timer zum Ausblenden des Toasts
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
                     withAnimation {
                         viewModel.showSuccessToast = false
                     }
                 }
             }
         } label: {
-            HStack {
+            HStack(spacing: 8) {
                 Image(systemName: "checkmark.circle.fill")
                     .font(.title3.bold())
                 Text("Sichtung erfassen")
@@ -287,40 +357,46 @@ public struct QuickSpotView: View {
             .background(
                 viewModel.selectedTrainModel != nil
                     ? Color.accentColor
-                    : Color.gray.opacity(0.4)
+                    : Color.gray.opacity(0.35)
             )
             .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
             .shadow(color: viewModel.selectedTrainModel != nil ? Color.accentColor.opacity(0.35) : .clear, radius: 10, y: 5)
         }
         .disabled(viewModel.selectedTrainModel == nil || viewModel.isSaving)
-        .padding(.top, 8)
+        .padding(.top, 6)
     }
     
     private var successToast: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "checkmark.seal.fill")
-                .font(.title2)
-                .foregroundStyle(.green)
+        HStack(spacing: 14) {
+            ZStack {
+                Circle()
+                    .fill(Color.green)
+                    .frame(width: 42, height: 42)
+                Image(systemName: "checkmark")
+                    .font(.title3.bold())
+                    .foregroundColor(.white)
+            }
             
             VStack(alignment: .leading, spacing: 2) {
                 Text("Zug erfolgreich erfasst!")
-                    .font(.subheadline.weight(.bold))
-                Text("Punkte wurden deinem Punktestand gutgeschrieben.")
-                    .font(.caption)
+                    .font(.headline.weight(.bold))
+                Text("+\(earnedPoints) XP deinem Bahn-Score gutgeschrieben.")
+                    .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
             Spacer()
         }
-        .padding()
+        .padding(16)
         .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-        .shadow(radius: 12)
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .shadow(color: .black.opacity(0.15), radius: 16, y: 8)
         .padding(.horizontal, 16)
         .padding(.top, 8)
     }
 }
 
 // MARK: - Schnell-Auswahl Modal für Baureihen
+@MainActor
 struct TrainPickerSheet: View {
     let trains: [TrainModel]
     @Binding var selectedTrain: TrainModel?
@@ -348,12 +424,9 @@ struct TrainPickerSheet: View {
                     selectedTrain = train
                     dismiss()
                 } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: train.assetName)
-                            .font(.title3)
-                            .foregroundStyle(train.rarity.color)
-                            .frame(width: 36, height: 36)
-                            .background(train.rarity.color.opacity(0.12))
+                    HStack(spacing: 14) {
+                        TrainImageView(assetName: train.assetName)
+                            .frame(width: 58, height: 42)
                             .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                         
                         VStack(alignment: .leading, spacing: 2) {

@@ -2,7 +2,9 @@ import SwiftUI
 import SwiftData
 import MapKit
 
+@MainActor
 public struct SpottedHistoryView: View {
+    @Environment(\.modelContext) private var modelContext
     @Query(sort: \SpottedTrain.spottedAt, order: .reverse) private var spottings: [SpottedTrain]
     @State private var viewMode: ViewMode = .list
     
@@ -12,6 +14,16 @@ public struct SpottedHistoryView: View {
     }
     
     public init() {}
+    
+    private func deleteSpotting(at offsets: IndexSet) {
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+        for index in offsets {
+            let spot = spottings[index]
+            modelContext.delete(spot)
+        }
+        try? modelContext.save()
+    }
     
     public var body: some View {
         NavigationStack {
@@ -38,6 +50,7 @@ public struct SpottedHistoryView: View {
                                 ForEach(spottings) { spot in
                                     SpottingRow(spot: spot)
                                 }
+                                .onDelete(perform: deleteSpotting)
                             }
                             .listStyle(.insetGrouped)
                         } else {
@@ -79,15 +92,9 @@ struct SpottingRow: View {
                     .frame(width: 54, height: 54)
                     .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
             } else {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 10, style: .continuous)
-                        .fill((spot.trainModel?.rarity.color ?? .gray).opacity(0.15))
-                        .frame(width: 54, height: 54)
-                    
-                    Image(systemName: spot.trainModel?.assetName ?? "tram.fill")
-                        .font(.title3)
-                        .foregroundStyle(spot.trainModel?.rarity.color ?? .primary)
-                }
+                TrainImageView(assetName: spot.trainModel?.assetName ?? "tram.fill")
+                    .frame(width: 58, height: 58)
+                    .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
             
             VStack(alignment: .leading, spacing: 3) {
