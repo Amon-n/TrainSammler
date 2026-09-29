@@ -41,10 +41,16 @@ extension TrainModel {
             images.append("ice_3_front")
         case _ where seriesCode.contains("Tz 4601"): // Europa
             images.append("ice_3_front")
+        case _ where seriesCode.contains("9457"): // Bundesrepublik
+            images.append("ice_4_brd")
+            images.append("ice_4")
+            images.append("ice_4_altengronau")
         case _ where seriesCode.contains("412"): // ICE 4
             images.append("ice_4")
+            images.append("ice_4_altengronau")
         case _ where seriesCode.contains("105"): // ICE L
             images.append("ice_l")
+            images.append("ice_l_side")
         case _ where seriesCode.contains("101"): // BR 101
             images.append("br_101")
         default:

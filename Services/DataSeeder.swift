@@ -37,7 +37,7 @@ public struct DataSeeder {
                     rarity: .legendary,
                     category: .special,
                     overviewDescription: "Feierlicher Jubiläums-ICE 4 mit schwarz-rot-goldener Flaggen-Linierung an beiden Endwagen.",
-                    assetName: "ice_4",
+                    assetName: "ice_4_brd",
                     maxSpeedKmH: 265
                 ),
                 TrainModel(
