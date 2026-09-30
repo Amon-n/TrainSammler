@@ -1,4 +1,4 @@
-# 🚆 trainSammler
+# 🚆 TrainSammler
 
 [![iOS 17+](https://img.shields.io/badge/iOS-17.0%2B-blue?logo=apple&style=flat-square)](https://developer.apple.com/ios/)
 [![Swift 5.9+](https://img.shields.io/badge/Swift-5.9%2B-orange?logo=swift&style=flat-square)](https://swift.org/)
@@ -7,7 +7,7 @@
 [![Version](https://img.shields.io/badge/Version-1.1%20(Build%201)-teal?style=flat-square)](Info.plist)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
-Das „Autokennzeichen-Sammeln“ für den Bahnverkehr in Deutschland! **trainSammler** ist eine native, moderne und gamifizierte iOS-App zum Spotten von DB-Zügen, ICE-Baureihen, Regionalverkehr-Triebzügen, Triebzugnummern (Tz) und seltenen Sonderzügen (wie dem Regenbogen- oder Europa-ICE).
+Das „Autokennzeichen-Sammeln“ für den Bahnverkehr in Deutschland! **TrainSammler** ist eine native, moderne und gamifizierte iOS-App zum Spotten von DB-Zügen, ICE-Baureihen, Regionalverkehr-Triebzügen, Triebzugnummern (Tz) und seltenen Sonderzügen (wie dem Regenbogen- oder Europa-ICE).
 
 ---
 
@@ -96,7 +96,7 @@ xcodebuild -scheme trainSammler -destination 'generic/platform=iOS' build
 
 ## 🛡️ Datenschutz & App Store Readiness
 
-`trainSammler` erfüllt alle aktuellen Richtlinien für den Apple App Store:
+`TrainSammler` erfüllt alle aktuellen Richtlinien für den Apple App Store:
 - **DSGVO / GDPR konform:** Keine Datenübertragung, keine Analysetools, keine externen Server.
 - **Apple Review Guideline 5.1.1:** Transparente Datenschutzerklärung direkt in der App ([SettingsView.swift](Views/SettingsView.swift)).
 - **Vollständige Nutzerkontrolle:** Individuelles Löschen per Swipe im Logbuch sowie Option zum vollständigen Zurücksetzen in den Einstellungen.

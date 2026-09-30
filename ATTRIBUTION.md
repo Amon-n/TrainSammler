@@ -1,6 +1,6 @@
 # Bildnachweise (Wikimedia Commons)
 
-Alle in **trainSammler** verwendeten Zug- und Galeriebilder stammen aus [Wikimedia Commons](https://commons.wikimedia.org) und unterliegen freien Creative-Commons-Lizenzen (CC BY / CC BY-SA / CC0) oder sind gemeinfrei (Public Domain).
+Alle in **TrainSammler** verwendeten Zug- und Galeriebilder stammen aus [Wikimedia Commons](https://commons.wikimedia.org) und unterliegen freien Creative-Commons-Lizenzen (CC BY / CC BY-SA / CC0) oder sind gemeinfrei (Public Domain).
 
 ---
 

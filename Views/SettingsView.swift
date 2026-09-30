@@ -35,7 +35,7 @@ public struct SettingsView: View {
                             .shadow(color: Color.red.opacity(0.3), radius: 8, y: 4)
                         
                         VStack(alignment: .leading, spacing: 4) {
-                            Text("trainSammler")
+                            Text("TrainSammler")
                                 .font(.title3.weight(.bold))
                             
                             Text(appVersionString)
