@@ -3,7 +3,6 @@ import SwiftData
 
 @MainActor
 public struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
     @State private var selectedTab: TabItem = .quickSpot
     
     enum TabItem: Hashable {

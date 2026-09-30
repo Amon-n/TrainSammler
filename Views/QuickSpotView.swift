@@ -17,7 +17,7 @@ public struct QuickSpotView: View {
     var quickSelectTrains: [TrainModel] {
         // Die 4 häufigsten Alltagszüge für den 1-Tap-Zugriff
         catalogTrains.filter { train in
-            ["BR 412", "BR 408", "BR 401", "BR 446 / BR 445"].contains(train.seriesCode)
+            ["BR 412", "BR 408", "BR 401", "BR 445 / 446"].contains(train.seriesCode)
         }
     }
     

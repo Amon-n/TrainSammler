@@ -19,7 +19,6 @@ public enum DetailPhotoItem: Identifiable, Hashable {
 @MainActor
 public struct TrainDetailView: View {
     let train: TrainModel
-    var onSpotThisTrain: (() -> Void)? = nil
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
@@ -36,9 +35,8 @@ public struct TrainDetailView: View {
     
     private let locationManager = LocationManager()
     
-    public init(train: TrainModel, onSpotThisTrain: (() -> Void)? = nil) {
+    public init(train: TrainModel) {
         self.train = train
-        self.onSpotThisTrain = onSpotThisTrain
     }
     
     /// Alle verfügbaren Fotos: Zuerst persönliche Nutzer-Fotos, dann alle offiziellen Katalog-Bilder

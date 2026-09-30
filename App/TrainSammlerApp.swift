@@ -6,11 +6,11 @@ struct TrainSammlerApp: App {
     let container: ModelContainer
 
     init() {
+        let schema = Schema([
+            TrainModel.self,
+            SpottedTrain.self,
+        ])
         do {
-            let schema = Schema([
-                TrainModel.self,
-                SpottedTrain.self,
-            ])
             let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
             let cont = try ModelContainer(for: schema, configurations: [modelConfiguration])
             self.container = cont
@@ -20,10 +20,6 @@ struct TrainSammlerApp: App {
         } catch {
             print("⚠️ Konnte on-disk ModelContainer nicht erstellen: \(error). Wechsle zu In-Memory...")
             do {
-                let schema = Schema([
-                    TrainModel.self,
-                    SpottedTrain.self,
-                ])
                 let inMemoryConfig = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
                 let cont = try ModelContainer(for: schema, configurations: [inMemoryConfig])
                 self.container = cont

@@ -20,18 +20,60 @@ public struct RarityCount: Identifiable {
     public let count: Int
 }
 
+public enum UserRank: String, CaseIterable {
+    case beginner = "Bahnsteig-Neuling"
+    case scout = "Gleis-Scout"
+    case enthusiast = "Zug-Enthusiast"
+    case master = "Hauptbahnhof-Meister"
+    case legend = "ICE-Legende"
+    
+    public var icon: String {
+        switch self {
+        case .beginner: return "figure.walk"
+        case .scout: return "binoculars.fill"
+        case .enthusiast: return "tram.fill"
+        case .master: return "star.circle.fill"
+        case .legend: return "crown.fill"
+        }
+    }
+    
+    public static func rank(for score: Int) -> UserRank {
+        switch score {
+        case ..<500: return .beginner
+        case 500..<1500: return .scout
+        case 1500..<3000: return .enthusiast
+        case 3000..<6000: return .master
+        default: return .legend
+        }
+    }
+}
+
+public struct TrainStats {
+    public let totalSpottings: Int
+    public let uniqueTrainsSpotted: Int
+    public let totalTrainsInCatalog: Int
+    public let totalScore: Int
+    public let completionPercentage: Double
+    public let categoryProgress: [CategoryProgress]
+    public let rarityCounts: [RarityCount]
+    public let rarestSpot: SpottedTrain?
+    
+    public var userRank: UserRank {
+        UserRank.rank(for: totalScore)
+    }
+    
+    public var level: Int {
+        max(1, totalScore / 1000 + 1)
+    }
+    
+    public var remainingTrains: Int {
+        max(0, totalTrainsInCatalog - uniqueTrainsSpotted)
+    }
+}
+
 @MainActor
 public final class StatsCalculator {
-    public static func computeStats(allTrains: [TrainModel], allSpottings: [SpottedTrain]) -> (
-        totalSpottings: Int,
-        uniqueTrainsSpotted: Int,
-        totalTrainsInCatalog: Int,
-        totalScore: Int,
-        completionPercentage: Double,
-        categoryProgress: [CategoryProgress],
-        rarityCounts: [RarityCount],
-        rarestSpot: SpottedTrain?
-    ) {
+    public static func computeStats(allTrains: [TrainModel], allSpottings: [SpottedTrain]) -> TrainStats {
         let totalSpottings = allSpottings.count
         let totalTrainsInCatalog = allTrains.count
         let uniqueTrainsSpotted = allTrains.filter { $0.isSpotted }.count
@@ -46,7 +88,6 @@ public final class StatsCalculator {
         var score = 0
         var creditedModels = Set<UUID>()
         
-        // Sortiere chronologisch für First-Catch-Boni
         let sortedSpottings = allSpottings.sorted { $0.spottedAt < $1.spottedAt }
         for spot in sortedSpottings {
             guard let model = spot.trainModel else {
@@ -81,15 +122,15 @@ public final class StatsCalculator {
             .sorted { ($0.trainModel?.rarity ?? .common) > ($1.trainModel?.rarity ?? .common) }
             .first
             
-        return (
-            totalSpottings,
-            uniqueTrainsSpotted,
-            totalTrainsInCatalog,
-            score,
-            completionPercentage,
-            categoryProgress,
-            rarityCounts,
-            rarestSpot
+        return TrainStats(
+            totalSpottings: totalSpottings,
+            uniqueTrainsSpotted: uniqueTrainsSpotted,
+            totalTrainsInCatalog: totalTrainsInCatalog,
+            totalScore: score,
+            completionPercentage: completionPercentage,
+            categoryProgress: categoryProgress,
+            rarityCounts: rarityCounts,
+            rarestSpot: rarestSpot
         )
     }
 }

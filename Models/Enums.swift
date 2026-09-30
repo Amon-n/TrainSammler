@@ -1,5 +1,4 @@
 import Foundation
-import SwiftData
 import SwiftUI
 
 // MARK: - Rarity Tier

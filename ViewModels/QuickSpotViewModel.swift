@@ -33,16 +33,13 @@ public final class QuickSpotViewModel {
         guard let item = selectedPhotoItem else { return }
         do {
             if let data = try await item.loadTransferable(type: Data.self) {
-                await MainActor.run {
-                    self.photoData = data
-                }
+                self.photoData = data
             }
         } catch {
             print("Fehler beim Laden des Bildes: \(error.localizedDescription)")
         }
     }
     
-    @MainActor
     public func saveSpotting(context: ModelContext) -> Bool {
         guard let train = selectedTrainModel else {
             errorMessage = "Bitte wähle eine Baureihe aus."

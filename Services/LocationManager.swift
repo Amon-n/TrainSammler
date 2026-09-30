@@ -1,6 +1,5 @@
 import Foundation
 import CoreLocation
-import SwiftUI
 
 @Observable
 @MainActor
@@ -56,29 +55,37 @@ public final class LocationManager: NSObject, CLLocationManagerDelegate {
             self.lastLocation = location
             self.isLocating = false
             
-            // Modernes async/await Reverse-Geocoding ohne veraltete Closures
             do {
                 let placemarks = try await self.geocoder.reverseGeocodeLocation(location)
                 if let placemark = placemarks.first {
-                    let name = placemark.name ?? ""
-                    let locality = placemark.locality ?? ""
-                    
-                    if !name.isEmpty && !locality.isEmpty && name != locality {
-                        self.currentPlaceName = "\(name), \(locality)"
-                    } else if !name.isEmpty {
-                        self.currentPlaceName = name
-                    } else if !locality.isEmpty {
-                        self.currentPlaceName = locality
-                    } else {
-                        self.currentPlaceName = String(format: "%.4f, %.4f", location.coordinate.latitude, location.coordinate.longitude)
-                    }
+                    self.currentPlaceName = Self.formatPlacemark(placemark, fallback: location)
                 }
             } catch {
                 if self.lastLocation != nil {
-                    self.currentPlaceName = String(format: "%.4f, %.4f", location.coordinate.latitude, location.coordinate.longitude)
+                    self.currentPlaceName = Self.formatCoordinate(location.coordinate)
                 }
             }
         }
+    }
+    
+    // MARK: - Formatting Helpers
+    private static func formatPlacemark(_ placemark: CLPlacemark, fallback: CLLocation) -> String {
+        let name = placemark.name ?? ""
+        let locality = placemark.locality ?? ""
+        
+        if !name.isEmpty && !locality.isEmpty && name != locality {
+            return "\(name), \(locality)"
+        } else if !name.isEmpty {
+            return name
+        } else if !locality.isEmpty {
+            return locality
+        } else {
+            return formatCoordinate(fallback.coordinate)
+        }
+    }
+    
+    private static func formatCoordinate(_ coordinate: CLLocationCoordinate2D) -> String {
+        String(format: "%.4f, %.4f", coordinate.latitude, coordinate.longitude)
     }
     
     nonisolated public func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {

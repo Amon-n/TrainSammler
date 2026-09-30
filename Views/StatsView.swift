@@ -9,32 +9,8 @@ public struct StatsView: View {
     
     public init() {}
     
-    private var stats: (
-        totalSpottings: Int,
-        uniqueTrainsSpotted: Int,
-        totalTrainsInCatalog: Int,
-        totalScore: Int,
-        completionPercentage: Double,
-        categoryProgress: [CategoryProgress],
-        rarityCounts: [RarityCount],
-        rarestSpot: SpottedTrain?
-    ) {
+    private var stats: TrainStats {
         StatsCalculator.computeStats(allTrains: allTrains, allSpottings: allSpottings)
-    }
-    
-    private var userRank: (title: String, icon: String) {
-        switch stats.totalScore {
-        case 0..<500:
-            return ("Bahnsteig-Neuling", "figure.walk")
-        case 500..<1500:
-            return ("Gleis-Scout", "binoculars.fill")
-        case 1500..<3000:
-            return ("Zug-Enthusiast", "tram.fill")
-        case 3000..<6000:
-            return ("Hauptbahnhof-Meister", "star.circle.fill")
-        default:
-            return ("ICE-Legende", "crown.fill")
-        }
     }
     
     public var body: some View {
@@ -85,7 +61,7 @@ public struct StatsView: View {
     private var scoreHeroCard: some View {
         VStack(spacing: 12) {
             HStack {
-                Label(userRank.title, systemImage: userRank.icon)
+                Label(stats.userRank.rawValue, systemImage: stats.userRank.icon)
                     .font(.caption.weight(.heavy))
                     .foregroundStyle(.white)
                     .padding(.horizontal, 10)
@@ -95,7 +71,7 @@ public struct StatsView: View {
                 
                 Spacer()
                 
-                Text("LEVEL \(max(1, stats.totalScore / 1000 + 1))")
+                Text("LEVEL \(stats.level)")
                     .font(.caption2.weight(.heavy))
                     .foregroundStyle(.white.opacity(0.8))
                     .tracking(1)
@@ -215,7 +191,7 @@ public struct StatsView: View {
                 .scaleEffect(x: 1, y: 2.2, anchor: .center)
                 .clipShape(Capsule())
             
-            Text("Entdecke noch \(stats.totalTrainsInCatalog - stats.uniqueTrainsSpotted) Baureihen zur Vervollständigung.")
+            Text("Entdecke noch \(stats.remainingTrains) Baureihen zur Vervollständigung.")
                 .font(.caption)
                 .foregroundStyle(.secondary)
         }
