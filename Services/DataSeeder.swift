@@ -67,7 +67,7 @@ public struct DataSeeder {
                     rarity: .legendary,
                     category: .special,
                     overviewDescription: "Ehemaliger dieselgetriebener ICE TD, der heute als Versuchsträger für Sensorik, 5G und automatisiertes Fahren dient.",
-                    assetName: "ice_2",
+                    assetName: "ice_605_trainlab",
                     maxSpeedKmH: 200
                 ),
                 
@@ -99,7 +99,7 @@ public struct DataSeeder {
                     rarity: .uncommon,
                     category: .highSpeed,
                     overviewDescription: "Die Design-Ikone der Schnellfahrstrecke Köln–Rhein/Main mit Lounge-Blick direkt hinter dem Lokführer.",
-                    assetName: "ice_3_velaro",
+                    assetName: "ice_3_sfs",
                     maxSpeedKmH: 330
                 ),
                 TrainModel(
@@ -229,7 +229,7 @@ public struct DataSeeder {
                     rarity: .rare,
                     category: .highSpeed,
                     overviewDescription: "Hochmoderne Nachtzug-Garnituren von Siemens mit Mini-Cabins für ungestörten Schlaf quer durch Europa.",
-                    assetName: "ice_3_velaro",
+                    assetName: "nightjet_viaggio",
                     maxSpeedKmH: 230
                 ),
                 
@@ -291,7 +291,7 @@ public struct DataSeeder {
                     rarity: .common,
                     category: .regional,
                     overviewDescription: "Weitverbreiteter elektrischer Gelenktriebzug für S-Bahn-Netze (z. B. Breisgau, Hannover) und Regionalbahnen.",
-                    assetName: "ice_2",
+                    assetName: "coradia_continental",
                     maxSpeedKmH: 160
                 ),
                 TrainModel(

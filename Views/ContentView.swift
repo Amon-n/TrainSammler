@@ -8,6 +8,7 @@ public struct ContentView: View {
     enum TabItem: Hashable {
         case quickSpot
         case catalog
+        case bingo
         case history
         case stats
     }
@@ -27,6 +28,12 @@ public struct ContentView: View {
                     Label("Train-Dex", systemImage: "tram.fill")
                 }
                 .tag(TabItem.catalog)
+            
+            DBBingoView()
+                .tabItem {
+                    Label("DB-Bingo", systemImage: "checkerboard.rectangle")
+                }
+                .tag(TabItem.bingo)
             
             SpottedHistoryView()
                 .tabItem {

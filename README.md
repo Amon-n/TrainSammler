@@ -97,8 +97,8 @@ xcodebuild -scheme trainSammler -destination 'generic/platform=iOS' build
 ## 🛡️ Datenschutz & App Store Readiness
 
 `TrainSammler` erfüllt alle aktuellen Richtlinien für den Apple App Store:
-- **DSGVO / GDPR konform:** Keine Datenübertragung, keine Analysetools, keine externen Server.
-- **Apple Review Guideline 5.1.1:** Transparente Datenschutzerklärung direkt in der App ([SettingsView.swift](Views/SettingsView.swift)).
+- **DSGVO / GDPR konform:** Keine Datenübertragung, keine Analysetools, keine externen Server. Vollständige Datenschutzerklärung siehe [PRIVACY.md](PRIVACY.md).
+- **Apple Review Guideline 5.1.1:** Transparente Datenschutzerklärung direkt in der App ([SettingsView.swift](Views/SettingsView.swift)) sowie öffentlich unter [PRIVACY.md](PRIVACY.md).
 - **Vollständige Nutzerkontrolle:** Individuelles Löschen per Swipe im Logbuch sowie Option zum vollständigen Zurücksetzen in den Einstellungen.
 - **Native Berechtigungen:** Alle Nutzungstexte für Kamera, Fotos und Standort sind in [Info.plist](Info.plist) hinterlegt.
 - **Dynamische Versionierung:** Versions- und Build-Nummern werden dynamisch aus `CFBundleShortVersionString` und `CFBundleVersion` bezogen.

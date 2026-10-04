@@ -211,29 +211,50 @@ struct AttributionSheetView: View {
             category: "Sonderzüge & Erprobung",
             train: "Regenbogen-ICE (BR 403 · Tz 304)",
             perspective: "Hauptansicht (Strecke)",
-            author: "Johannes Maximilian (Wikimedia Commons)",
+            author: "Johannes Maximilian",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Sonderzüge & Erprobung",
+            train: "Regenbogen-ICE (BR 403 · Tz 304)",
+            perspective: "Regenbogen-Zierstreifen & Front",
+            author: "Jedesto",
             license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "Sonderzüge & Erprobung",
             train: "Europa-ICE (BR 406 · Tz 4601)",
             perspective: "Hauptansicht (Europa-Zierstreifen)",
-            author: "LWChris (Wikimedia Commons)",
+            author: "LWChris",
             license: "CC BY 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Sonderzüge & Erprobung",
+            train: "Europa-ICE (BR 406 · Tz 4601)",
+            perspective: "Europa-Sterne & Flagge",
+            author: "universalamateur / LWChris",
+            license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "Sonderzüge & Erprobung",
             train: "ICE Bundesrepublik Deutschland (BR 412 · Tz 9457)",
             perspective: "Jubiläumsdesign (Schwarz-Rot-Gold)",
-            author: "Geogast (Wikimedia Commons)",
+            author: "Geogast",
             license: "CC BY 4.0"
         ),
         TrainImageAttribution(
             category: "Sonderzüge & Erprobung",
             train: "Female ICE (BR 412 · Tz 9015)",
-            perspective: "Hauptansicht (Berlin Hbf)",
-            author: "Peter Nath / R.M. (Wikimedia Commons)",
-            license: "CC BY 4.0"
+            perspective: "Female ICE Triebkopf",
+            author: "Foobian",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Sonderzüge & Erprobung",
+            train: "Female ICE (BR 412 · Tz 9015)",
+            perspective: "Bordrestaurant Tz 9015",
+            author: "Foobian",
+            license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "Sonderzüge & Erprobung",
@@ -244,268 +265,426 @@ struct AttributionSheetView: View {
         ),
         TrainImageAttribution(
             category: "Sonderzüge & Erprobung",
-            train: "advanced TrainLab (BR 605)",
-            perspective: "Fahrendes Digitallabor",
-            author: "Matti Blume (Wikimedia Commons)",
+            train: "ICE S (BR 410)",
+            perspective: "Messfahrt bei 300+ km/h",
+            author: "Sebastian Terfloth User:Sese_Ingolstadt",
             license: "CC BY-SA 4.0"
         ),
-        
+        TrainImageAttribution(
+            category: "Sonderzüge & Erprobung",
+            train: "advanced TrainLab (BR 605)",
+            perspective: "Fahrendes Digitallabor",
+            author: "Anton B. Krüger",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Sonderzüge & Erprobung",
+            train: "advanced TrainLab (BR 605)",
+            perspective: "Messfahrt & Sensorik",
+            author: "Bybbisch94, Christian Gebhardt",
+            license: "CC BY-SA 4.0"
+        ),
         // MARK: 2. ICE-Flotte (Fernverkehr)
         TrainImageAttribution(
             category: "ICE-Flotte (Fernverkehr)",
             train: "ICE 1 (BR 401)",
             perspective: "Hauptansicht (Berlin Hbf)",
-            author: "Matti Blume (Wikimedia Commons)",
+            author: "Matti Blume",
             license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "ICE-Flotte (Fernverkehr)",
             train: "ICE 1 (BR 401)",
-            perspective: "Frontpartie & Triebkopf",
-            author: "Gerhard Jacobs (Wikimedia Commons)",
-            license: "CC BY-SA 3.0"
+            perspective: "Klassischer Triebkopf",
+            author: "Yannick Bammert",
+            license: "CC BY 2.0"
+        ),
+        TrainImageAttribution(
+            category: "ICE-Flotte (Fernverkehr)",
+            train: "ICE 1 (BR 401)",
+            perspective: "Buckelspeisewagen",
+            author: "Ra Boe / Wikipedia",
+            license: "CC BY-SA 3.0 de"
+        ),
+        TrainImageAttribution(
+            category: "ICE-Flotte (Fernverkehr)",
+            train: "ICE 1 (BR 401)",
+            perspective: "Fahrgastabteil Redesign",
+            author: "MaxEmanuel",
+            license: "CC0 / Public Domain"
         ),
         TrainImageAttribution(
             category: "ICE-Flotte (Fernverkehr)",
             train: "ICE 2 (BR 402)",
             perspective: "Hauptansicht (Berlin Hbf)",
-            author: "RAIL P (RAIL.PHOTOGRAPHY) / Matti Blume",
+            author: "RAIL P / Matti Blume",
             license: "CC0 / CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "ICE-Flotte (Fernverkehr)",
             train: "ICE 2 (BR 402)",
-            perspective: "Steuerwagen / Frontansicht",
-            author: "L. Willms (Wikimedia Commons)",
+            perspective: "Steuerwagen 808 Front",
+            author: "Falk2",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "ICE-Flotte (Fernverkehr)",
+            train: "ICE 2 (BR 402)",
+            perspective: "Fahrgastraum Steuerwagen",
+            author: "L. Willms",
             license: "CC BY 3.0"
         ),
         TrainImageAttribution(
             category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 3 (BR 403 · 1./2. Bauserie)",
-            perspective: "Frontansicht am Kölner Dom",
-            author: "New York-air (Wikimedia Commons)",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 3M (BR 406 Mehrsystem)",
-            perspective: "Frontansicht & Mehrsystemausrüstung",
-            author: "New York-air (Wikimedia Commons)",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 3 (BR 407 · Velaro D)",
-            perspective: "Triebkopf & aerodynamische Front",
-            author: "Stephan Preißler (Wikimedia Commons)",
+            train: "ICE 3 (BR 403)",
+            perspective: "Schnellfahrstrecke 300 km/h",
+            author: "Mylius / Joachim Seyferth",
             license: "CC BY-SA 3.0"
         ),
         TrainImageAttribution(
             category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 3neo (BR 408 · Velaro MS)",
+            train: "ICE 3 (BR 403)",
+            perspective: "Lounge mit Lokführerblick",
+            author: "Sebastian Terfloth User:Sese_Ingolstadt",
+            license: "CC BY-SA 3.0"
+        ),
+        TrainImageAttribution(
+            category: "ICE-Flotte (Fernverkehr)",
+            train: "ICE 3M (BR 406)",
+            perspective: "Mehrsystem-Dachausrüstung",
+            author: "InterCityExpress / Felix O",
+            license: "CC BY-SA 2.0"
+        ),
+        TrainImageAttribution(
+            category: "ICE-Flotte (Fernverkehr)",
+            train: "ICE 3D / Velaro D (BR 407)",
+            perspective: "Aerodynamische Front",
+            author: "Stephan Preißler",
+            license: "CC BY-SA 3.0"
+        ),
+        TrainImageAttribution(
+            category: "ICE-Flotte (Fernverkehr)",
+            train: "ICE 3D / Velaro D (BR 407)",
+            perspective: "Velaro D Fahrgastraum",
+            author: "Florian Bausch",
+            license: "CC BY-SA 3.0"
+        ),
+        TrainImageAttribution(
+            category: "ICE-Flotte (Fernverkehr)",
+            train: "ICE 3neo (BR 408)",
             perspective: "Hauptansicht (Köln Messe/Deutz)",
-            author: "TheFrog001 (Wikimedia Commons)",
+            author: "TheFrog001",
             license: "CC0 / Public Domain"
         ),
         TrainImageAttribution(
             category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 3neo (BR 408 · Velaro MS)",
-            perspective: "Fahrgastraum & Innendesign",
-            author: "Wikimedia Commons Contributors",
-            license: "CC BY-SA 4.0"
+            train: "ICE 3neo (BR 408)",
+            perspective: "Neues DB-Innendesign",
+            author: "MaxEmanuel",
+            license: "CC0 / Public Domain"
         ),
         TrainImageAttribution(
             category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE-T (BR 411 · 7-teilig)",
+            train: "ICE T (BR 411 / 415)",
             perspective: "Streckenfahrt (Maria Anzbach)",
-            author: "Linie29 (Wikimedia Commons)",
+            author: "Linie29",
             license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE-T (BR 411 / 415)",
-            perspective: "Frontpartie (Wien Westbahnhof)",
-            author: "80686 (Wikimedia Commons)",
-            license: "CC BY 3.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 4 (BR 412 · 7- bis 13-teilig)",
-            perspective: "Bahnsteig Berlin Hbf",
+            train: "ICE 4 (BR 412)",
+            perspective: "Hauptansicht (Berlin Hbf)",
             author: "Peter Nath / Reinhold Möller",
             license: "CC BY 4.0"
         ),
         TrainImageAttribution(
             category: "ICE-Flotte (Fernverkehr)",
             train: "ICE 4 (BR 412)",
+            perspective: "Kantige Frontpartie",
+            author: "Martin Lechler",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "ICE-Flotte (Fernverkehr)",
+            train: "ICE 4 (BR 412)",
             perspective: "Streckenfahrt bei Altengronau",
-            author: "Joachim Seyferth (Wikimedia Commons)",
+            author: "Joachim Seyferth",
             license: "CC BY 4.0"
         ),
         TrainImageAttribution(
             category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE L (BR 105 · Talgo 230)",
-            perspective: "Lokomotive 105 019 auf Gleisen",
-            author: "Sven-IngCH (Wikimedia Commons)",
+            train: "ICE 4 (BR 412)",
+            perspective: "ICE 4 Fahrgastbereich",
+            author: "Robot8A / Joachim Seyferth",
             license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE L (BR 105 · Talgo 230)",
-            perspective: "Wagenzug & stufenloser Einstieg",
-            author: "Wikimedia Commons Contributors",
+            train: "ICE L (BR 105)",
+            perspective: "Lokomotive 105 019",
+            author: "Sven-IngCH",
             license: "CC BY-SA 4.0"
         ),
-        
+        TrainImageAttribution(
+            category: "ICE-Flotte (Fernverkehr)",
+            train: "ICE L (BR 105)",
+            perspective: "ICE L Steuerwagen",
+            author: "E235JREMU",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "ICE-Flotte (Fernverkehr)",
+            train: "ICE L (BR 105)",
+            perspective: "Talgo-Niederflurwagen",
+            author: "Sven-IngCH",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "ICE-Flotte (Fernverkehr)",
+            train: "ICE L (BR 105)",
+            perspective: "Stufenloser Niederflur-Einstieg",
+            author: "Pablo Lopez Estape",
+            license: "CC BY-SA 4.0"
+        ),
         // MARK: 3. Intercity & Lokomotiven
         TrainImageAttribution(
             category: "Intercity & Lokomotiven",
-            train: "Intercity 1 (BR 101)",
+            train: "BR 101",
             perspective: "Hauptansicht Streckenlok",
-            author: "Lars Steffens (Wikimedia Commons)",
+            author: "Lars Steffens",
             license: "CC BY-SA 2.0"
         ),
         TrainImageAttribution(
             category: "Intercity & Lokomotiven",
-            train: "Intercity 1 (BR 101)",
-            perspective: "Führerstand & Detailansicht",
-            author: "Harald Knauer / Staatsarchiv",
-            license: "CC BY 4.0"
+            train: "BR 101",
+            perspective: "BR 101 Führerstand",
+            author: "Sebastian Terfloth User:Sese_Ingolstadt",
+            license: "CC BY 2.5"
         ),
         TrainImageAttribution(
             category: "Intercity & Lokomotiven",
-            train: "Intercity 2 (BR 4110 · KISS)",
-            perspective: "Doppelstock-Triebzug auf Strecke",
-            author: "Mirkone (Wikimedia Commons)",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "Intercity 2 (BR 4110 · KISS)",
-            perspective: "Innenraum Oberdeck",
-            author: "Entbert (Wikimedia Commons)",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "Intercity 2 (BR 146.5 / 147.5 · Twindexx)",
+            train: "IC 2 Twindexx (BR 146 / 147)",
             perspective: "Doppelstock-Wendezug",
-            author: "UMO1 / Foobian (Wikimedia)",
+            author: "UMO1 / Foobian",
             license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "Intercity & Lokomotiven",
-            train: "Intercity 2 (BR 146.5 / 147.5 · Twindexx)",
-            perspective: "Innenraum 1. & 2. Klasse",
-            author: "Geogast (Wikimedia Commons)",
-            license: "CC BY 4.0"
+            train: "IC 2 Twindexx (BR 146 / 147)",
+            perspective: "Weißer IC2 Steuerwagen",
+            author: "Falk2",
+            license: "CC BY-SA 4.0"
         ),
-        
+        TrainImageAttribution(
+            category: "Intercity & Lokomotiven",
+            train: "IC 2 KISS (BR 4110)",
+            perspective: "Stadler KISS auf Strecke",
+            author: "Mirkone",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Intercity & Lokomotiven",
+            train: "IC 2 KISS (BR 4110)",
+            perspective: "Stadler KISS Front",
+            author: "Zug Videos Bilder",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Intercity & Lokomotiven",
+            train: "IC 2 KISS (BR 4110)",
+            perspective: "BR 4110 Doppelstockzug",
+            author: "Rosso Robot",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Intercity & Lokomotiven",
+            train: "Nightjet Viaggio NextGen",
+            perspective: "ÖBB Nightjet (Viaggio)",
+            author: "TheFrog001",
+            license: "CC0 / Public Domain"
+        ),
+        TrainImageAttribution(
+            category: "Intercity & Lokomotiven",
+            train: "Nightjet Viaggio NextGen",
+            perspective: "Nightjet Steuerwagen",
+            author: "TheFrog001",
+            license: "CC0 / Public Domain"
+        ),
+        TrainImageAttribution(
+            category: "Intercity & Lokomotiven",
+            train: "Nightjet Viaggio NextGen",
+            perspective: "Mini-Cabin Schlafkapseln",
+            author: "TheFrog001",
+            license: "CC0 / Public Domain"
+        ),
         // MARK: 4. Regionalverkehr & S-Bahn
         TrainImageAttribution(
             category: "Regionalverkehr & S-Bahn",
-            train: "Desiro HC (BR 462 · RRX)",
-            perspective: "Hauptansicht Wuppertal Hbf",
-            author: "Gsadfaw1223 (Wikimedia Commons)",
+            train: "Desiro HC (BR 462)",
+            perspective: "Hauptansicht (Wuppertal Hbf)",
+            author: "Gsadfaw1223",
             license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "Regionalverkehr & S-Bahn",
-            train: "Desiro HC (BR 462 · RRX)",
-            perspective: "Innenraum & Mehrzweckbereich",
-            author: "Wikimedia Commons Contributors",
+            train: "Desiro HC (BR 462)",
+            perspective: "Hybrid-Wagenzug (Dosto & Flach)",
+            author: "Falk2",
             license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "Regionalverkehr & S-Bahn",
-            train: "Talent 2 (BR 442 · Hamsterbacke)",
-            perspective: "Hauptansicht Hennigsdorf",
-            author: "Sebastian Rittau (Wikimedia Commons)",
+            train: "Desiro HC (BR 462)",
+            perspective: "RRX Fahrgastraum",
+            author: "Sacrety",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Regionalverkehr & S-Bahn",
+            train: "Talent 2 (BR 442)",
+            perspective: "Hauptansicht (Hennigsdorf)",
+            author: "Sebastian Rittau",
             license: "CC0 / Public Domain"
         ),
         TrainImageAttribution(
             category: "Regionalverkehr & S-Bahn",
-            train: "Talent 2 (BR 442 · Hamsterbacke)",
-            perspective: "Führerstand City-Tunnel Leipzig",
-            author: "Hennix1989 (Wikimedia Commons)",
-            license: "CC BY-SA 3.0"
+            train: "Talent 2 (BR 442)",
+            perspective: "Charakteristische Hamsterbacke",
+            author: "Matti Blume",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Regionalverkehr & S-Bahn",
+            train: "Talent 2 (BR 442)",
+            perspective: "Fahrgastraum & Niederflur",
+            author: "Falk2",
+            license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "Regionalverkehr & S-Bahn",
             train: "FLIRT 3 (BR 1428 / 1429)",
             perspective: "Hauptansicht Streckenfahrt",
-            author: "Johannes Maximilian (Wikimedia Commons)",
+            author: "Johannes Maximilian",
             license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "Regionalverkehr & S-Bahn",
             train: "FLIRT 3 (BR 1428 / 1429)",
-            perspective: "Innenraum 1. Klasse Fahrgastbereich",
-            author: "Hoff1980 (Wikimedia Commons)",
+            perspective: "FLIRT 3 Frontpartie",
+            author: "Hoff1980",
             license: "CC BY-SA 3.0"
+        ),
+        TrainImageAttribution(
+            category: "Regionalverkehr & S-Bahn",
+            train: "FLIRT 3 (BR 1428 / 1429)",
+            perspective: "Großraum-Fahrgastabteil",
+            author: "JoachimKohler-HB",
+            license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "Regionalverkehr & S-Bahn",
             train: "Mireo (BR 463)",
             perspective: "Hauptansicht Neufahrzeug",
-            author: "Joachim Lutz (Wikimedia Commons)",
+            author: "Joachim Lutz",
             license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "Regionalverkehr & S-Bahn",
             train: "Mireo (BR 463)",
-            perspective: "Innenraum Fahrgastbereich",
-            author: "Metrophil (Wikimedia Commons)",
-            license: "CC0 / Public Domain"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Twindexx Vario (BR 445 / 446 · Regio)",
-            perspective: "Hauptansicht Doppelstock-Triebzug",
-            author: "UMO1 (Wikimedia Commons)",
+            perspective: "Mireo Aerodynamik-Front",
+            author: "Kevin.B",
             license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "Regionalverkehr & S-Bahn",
-            train: "S-Bahn ET 423 (BR 423 / 430 / 420)",
+            train: "Mireo (BR 463)",
+            perspective: "Mireo Fahrgastraum",
+            author: "MireoDriver",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Regionalverkehr & S-Bahn",
+            train: "Twindexx Vario Regio (BR 445 / 446)",
+            perspective: "Twindexx Vario Triebwagen",
+            author: "Malte Hübner",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Regionalverkehr & S-Bahn",
+            train: "Coradia Continental (BR 1440)",
+            perspective: "Coradia Continental (BR 1440)",
+            author: "Metrophil44",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Regionalverkehr & S-Bahn",
+            train: "Coradia Continental (BR 1440)",
+            perspective: "Grinsekatze Frontpartie",
+            author: "Der Messer",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Regionalverkehr & S-Bahn",
+            train: "Coradia LINT (BR 622 / 648)",
+            perspective: "Streckenfahrt LINT 27",
+            author: "Spudgun67",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Regionalverkehr & S-Bahn",
+            train: "Coradia LINT (BR 622 / 648)",
+            perspective: "LINT Triebwagen-Front",
+            author: "EM311",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Regionalverkehr & S-Bahn",
+            train: "Coradia LINT (BR 622 / 648)",
+            perspective: "LINT 41 Innenraum",
+            author: "Pentium1000~dewiki",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Regionalverkehr & S-Bahn",
+            train: "ET 423 / 430",
             perspective: "Streckenansicht S-Bahn",
-            author: "Paul Smith (Wikimedia Commons)",
+            author: "Paul Smith",
             license: "CC BY 2.0"
         ),
         TrainImageAttribution(
             category: "Regionalverkehr & S-Bahn",
-            train: "S-Bahn ET 423 (BR 423)",
-            perspective: "Fahrgastraum & Stehbereich",
-            author: "Wikimedia Commons Contributors",
+            train: "ET 423 / 430",
+            perspective: "S-Bahn Frontpartie",
+            author: "Wikimedia-User Jivee Blau",
             license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "Regionalverkehr & S-Bahn",
-            train: "ET 425 (BR 425 · Quietschie)",
+            train: "ET 423 / 430",
+            perspective: "S-Bahn Großraumwagen",
+            author: "User:Mattes",
+            license: "Public Domain"
+        ),
+        TrainImageAttribution(
+            category: "Regionalverkehr & S-Bahn",
+            train: "ET 425",
             perspective: "Hauptansicht Weinheim",
-            author: "Zwiadowca21 (Wikimedia Commons)",
+            author: "Photographs by Radosław Drożdżewski (User:Zwiadowca21)",
             license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "Regionalverkehr & S-Bahn",
-            train: "ET 425 (BR 425 · Quietschie)",
-            perspective: "Führerstand & Innenansicht",
-            author: "Wikimedia Commons Contributors",
+            train: "ET 425",
+            perspective: "ET 425 Front & Falttüren",
+            author: "Photographs by Radosław Drożdżewski (User:Zwiadowca21)",
             license: "CC BY-SA 4.0"
         ),
         TrainImageAttribution(
             category: "Regionalverkehr & S-Bahn",
-            train: "Coradia LINT (BR 648 / 622)",
-            perspective: "Hauptansicht Streckenfahrt LINT 27",
-            author: "Spudgun67 (Wikimedia Commons)",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Coradia LINT (BR 648 / 622)",
-            perspective: "Innenraum modernisierter LINT 41",
-            author: "Pentium1000 (Wikimedia Commons)",
-            license: "CC BY-SA 4.0"
+            train: "ET 425",
+            perspective: "ET 425 Innenraum",
+            author: "Wikimedia-User Jivee Blau",
+            license: "CC BY-SA 3.0"
         )
     ]
     

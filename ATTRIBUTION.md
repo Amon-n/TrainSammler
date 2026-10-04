@@ -1,69 +1,97 @@
-# Bildnachweise (Wikimedia Commons)
+# Bildnachweise & Urheberrechte (Wikimedia Commons)
 
-Alle in **TrainSammler** verwendeten Zug- und Galeriebilder stammen aus [Wikimedia Commons](https://commons.wikimedia.org) und unterliegen freien Creative-Commons-Lizenzen (CC BY / CC BY-SA / CC0) oder sind gemeinfrei (Public Domain).
+Alle in **TrainSammler** verwendeten Zugs- und Galeriebilder stammen aus [Wikimedia Commons](https://commons.wikimedia.org) und unterliegen freien Creative-Commons-Lizenzen (CC BY / CC BY-SA / CC0) oder sind gemeinfrei (Public Domain).
 
----
-
-### 1. Sonderzüge & Erprobung
-| Modell / Baureihe | Perspektive / Motiv | Urheber / Fotograf | Lizenz |
-| :--- | :--- | :--- | :--- |
-| **Regenbogen-ICE (Tz 304)** | Hauptansicht (Strecke) | Johannes Maximilian | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **Europa-ICE (Tz 4601)** | Hauptansicht (Europa-Zierstreifen) | LWChris | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
-| **ICE Bundesrepublik (Tz 9457)** | Jubiläumsdesign (Schwarz-Rot-Gold) | Geogast | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
-| **Female ICE (Tz 9015)** | Hauptansicht (Berlin Hbf) | Peter Nath / Reinhold Möller | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
-| **ICE S (BR 410)** | Hochgeschwindigkeits-Messzug | Bvcmz248.5 / DB Systemtechnik | [CC0 (Public Domain)](https://creativecommons.org/publicdomain/zero/1.0/) |
-| **advanced TrainLab (BR 605)** | Fahrendes Digitallabor | Matti Blume | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+Die Bilder wurden gezielt ausgewählt, um die charakteristischen Erkennungsmerkmale (Kopfform, Triebköpfe, Doppelstock-Konstruktion, Innenräume und Speisewagen) jeder Baureihe für Spotter und Eisenbahn-Interessierte anschaulich zu vermitteln.
 
 ---
 
-### 2. ICE-Flotte (Fernverkehr)
-| Modell / Baureihe | Perspektive / Motiv | Urheber / Fotograf | Lizenz |
+### Sonderzüge & Erprobung
+| Bild / Perspektive | Charakteristik / Motiv | Urheber / Fotograf | Lizenz |
 | :--- | :--- | :--- | :--- |
-| **ICE 1 (BR 401)** | Hauptansicht (Berlin Hbf) | Matti Blume | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **ICE 1 (BR 401)** | Frontpartie & Triebkopf | Gerhard Jacobs | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) |
-| **ICE 2 (BR 402)** | Hauptansicht (Berlin Hbf) | RAIL P (RAIL.PHOTOGRAPHY) / Matti Blume | [CC0](https://creativecommons.org/publicdomain/zero/1.0/) / [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **ICE 2 (BR 402)** | Steuerwagen / Frontansicht | L. Willms | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) |
-| **ICE 3 (BR 403)** | Frontansicht am Kölner Dom | New York-air | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **ICE 3M (BR 406)** | Frontansicht & Mehrsystemausrüstung | New York-air | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **ICE 3 (BR 407 Velaro D)** | Triebkopf & aerodynamische Front | Stephan Preißler | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) |
-| **ICE 3neo (BR 408)** | Hauptansicht (Köln Messe/Deutz) | TheFrog001 | [CC0 (Public Domain)](https://creativecommons.org/publicdomain/zero/1.0/) |
-| **ICE 3neo (BR 408)** | Fahrgastraum & Innendesign | Wikimedia Commons Contributors | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **ICE-T (BR 411 / 415)** | Streckenfahrt (Maria Anzbach) | Linie29 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **ICE-T (BR 411 / 415)** | Frontpartie (Wien Westbahnhof) | 80686 | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) |
-| **ICE 4 (BR 412)** | Bahnsteig Berlin Hbf | Peter Nath / Reinhold Möller | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
-| **ICE 4 (BR 412)** | Streckenfahrt bei Altengronau | Joachim Seyferth | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
-| **ICE L (BR 105 Talgo 230)** | Lokomotive 105 019 auf Gleisen | Sven-IngCH | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **ICE L (BR 105 Talgo 230)** | Wagenzug & stufenloser Einstieg | Wikimedia Commons Contributors | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Hauptansicht (Strecke)** | Der berühmte ICE 3 mit sechsfarbigem Regenbogen-Zierstreifen für Toleranz und Vielfalt. | [Johannes Maximilian](https://commons.wikimedia.org/wiki/File:DB_403_026_2024-08-02_JM_5D413719.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Regenbogen-Zierstreifen & Front** | Der charakteristische sechsfarbige Streifen und die Haifischnase des Triebzuges 304 München. | [Jedesto](https://commons.wikimedia.org/wiki/File:Regenbogen-ICE_in_Stuttgart.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Hauptansicht (Europa-Zierstreifen)** | ICE 3M Triebzug mit blauem Europa-Streifen und europäischen Sternen als Botschafter für ein vereintes Europa. | [LWChris](https://commons.wikimedia.org/wiki/File:DB_406_501_2024-08-02_JM_5D413712.jpg) | [CC BY 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Europa-Sterne & Flagge** | Die europäischen Sterne und der blaue Kontraststreifen am Triebkopf von Tz 4601. | [universalamateur / LWChris](https://commons.wikimedia.org/wiki/File:ICE_%22Europa-Europe%22_End_2.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Jubiläumsdesign (Schwarz-Rot-Gold)** | Feierlicher Jubiläums-ICE 4 mit schwarz-rot-goldener Flaggen-Linierung an beiden Endwagen. | [Geogast](https://commons.wikimedia.org/wiki/File:ICE_Bundesrepublik_Deutschland.jpg) | [CC BY 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Female ICE Triebkopf** | Triebkopf Tz 9015 Mainz mit der auffälligen Female-ICE-Symbolbeklebung. | [Foobian](https://commons.wikimedia.org/wiki/File:Female_ICE_driving_end.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Bordrestaurant Tz 9015** | Speisewagen mit besonderem Aktionsdesign zur Frauenförderung im Schienenverkehr. | [Foobian](https://commons.wikimedia.org/wiki/File:Female_ICE_Bordrestaurant.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Hochgeschwindigkeits-Messzug** | Erprobungszug der DB Systemtechnik für Geschwindigkeiten bis 393 km/h. | [Bvcmz248.5 / DB Systemtechnik](https://commons.wikimedia.org/wiki/File:ICE_S_410.jpg) | [CC0 / Public Domain](https://creativecommons.org/publicdomain/zero/1.0/) |
+| **Messfahrt bei 300+ km/h** | Erprobungszug der DB Systemtechnik bei einer Hochgeschwindigkeits-Testfahrt auf der Schnellfahrstrecke. | [Sebastian Terfloth User:Sese_Ingolstadt](https://commons.wikimedia.org/wiki/File:ICE_S_Geisbergtunnel.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Fahrendes Digitallabor** | Ehemaliger dieselgetriebener ICE-TD mit Kameras, Lidar und Sensoren am Triebkopf. | [Anton B. Krüger](https://commons.wikimedia.org/wiki/File:Das_advanced_TrainLab_mit_Sensorik_am_Endwagen.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Messfahrt & Sensorik** | Ehemaliger ICE-TD Triebzug bei der Sensor-Erprobung mit 5G-Antennen auf freier Strecke. | [Bybbisch94, Christian Gebhardt](https://commons.wikimedia.org/wiki/File:20230916.Advanced_TrainLab.-011.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
 
 ---
 
-### 3. Intercity & Lokomotiven
-| Modell / Baureihe | Perspektive / Motiv | Urheber / Fotograf | Lizenz |
+### ICE-Flotte (Fernverkehr)
+| Bild / Perspektive | Charakteristik / Motiv | Urheber / Fotograf | Lizenz |
 | :--- | :--- | :--- | :--- |
-| **Intercity 1 (BR 101)** | Hauptansicht Streckenlok | Lars Steffens | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0/) |
-| **Intercity 1 (BR 101)** | Führerstand & Detailansicht | Harald Knauer / Staatsarchiv | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
-| **Intercity 2 (BR 4110 KISS)** | Doppelstock-Triebzug auf Strecke | Mirkone | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **Intercity 2 (BR 4110 KISS)** | Innenraum Oberdeck | Entbert | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **Intercity 2 (Twindexx)** | Doppelstock-Wendezug | UMO1 / Foobian | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **Intercity 2 (Twindexx)** | Innenraum 1. & 2. Klasse | Geogast | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+| **Hauptansicht (Berlin Hbf)** | Der Ur-ICE von 1991 im Jubiläumsdesign bei der Ausfahrt aus Berlin Hbf. | [Matti Blume](https://commons.wikimedia.org/wiki/File:ICE_1_Berlin_Hbf.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Klassischer Triebkopf** | Charakteristische, geschwungene Nase des Triebkopfes 401 mit DB-Keks ohne Fronttüren. | [Yannick Bammert](https://commons.wikimedia.org/wiki/File:Triebkopf_ICE_1_(4872423367).jpg) | [CC BY 2.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Buckelspeisewagen** | Das unverkennbare Bordrestaurant mit erhöhtem Dach – das absolute Wahrzeichen des ICE 1. | [Ra Boe / Wikipedia](https://commons.wikimedia.org/wiki/File:Deutsche_Bahn_ICE_2020_-DBAG_Class_401_Speisewagen-_by_RaBoe00102.jpg) | [CC BY-SA 3.0 de](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Fahrgastabteil Redesign** | Modernisierter Fahrgastraum im Lebensdauerverlängerungs-Programm (LDV). | [MaxEmanuel](https://commons.wikimedia.org/wiki/File:ICE_1-Abteil_zweiter_Klasse_nach_zweitem_Redesign.jpg) | [CC0 / Public Domain](https://creativecommons.org/publicdomain/zero/1.0/) |
+| **Hauptansicht (Berlin Hbf)** | Halbzug mit Triebkopf und Steuerwagen für das flexible Flügelungskonzept. | [RAIL P / Matti Blume](https://commons.wikimedia.org/wiki/File:ICE_2_Berlin_Hbf.jpg) | [CC0 / CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Steuerwagen 808 Front** | Der Steuerwagen mit integriertem Führerstand und Fahrgastabteil am Zugende. | [Falk2](https://commons.wikimedia.org/wiki/File:J33_160_Bf_Hannover_Hbf,_808_003.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Fahrgastraum Steuerwagen** | Reiseabteil im Steuerwagen mit charakteristischer Deckenbeleuchtung und bequemen Sitzen. | [L. Willms](https://commons.wikimedia.org/wiki/File:Passenger_compartment_of_an_ICE-2_driving_van_trailer.jpg) | [CC BY 3.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Schnellfahrstrecke 300 km/h** | Der Hochgeschwindigkeits-Klassiker mit 300 km/h auf der KRM-Neubaustrecke bei Weilbach. | [Mylius / Joachim Seyferth](https://commons.wikimedia.org/wiki/File:ICE_3_auf_der_Schnellfahrstrecke_K%C3%B6ln_-_Rhein-Main_bei_Weilbach.jpg) | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Lounge mit Lokführerblick** | Einzigartiger Lounge-Blick durch die Panoramascheibe direkt auf die Strecke. | [Sebastian Terfloth User:Sese_Ingolstadt](https://commons.wikimedia.org/wiki/File:Lounge_ICE_3.jpg) | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Mehrsystem-Dachausrüstung** | Vier verschiedene Dachstromabnehmer für Bahnstrom in Deutschland, Frankreich, Belgien und den Niederlanden. | [InterCityExpress / Felix O](https://commons.wikimedia.org/wiki/File:406_001_-_DB_Fernverkehr_--_Eschweiler_-_2._April_2014_(14304734175).jpg) | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Aerodynamische Front** | Fließende Velaro-Kopfform für minimalen Luftwiderstand und internationale Zulassung. | [Stephan Preißler](https://commons.wikimedia.org/wiki/File:DBAG_Class_407.jpg) | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Velaro D Fahrgastraum** | Moderne 2. Klasse des Siemens Velaro D mit ergonomischen Sitzen und Deckenmonitoren. | [Florian Bausch](https://commons.wikimedia.org/wiki/File:DBAG_Class_407_interior_2nd_2014-01.jpg) | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Hauptansicht (Köln Messe/Deutz)** | Modernste Weiterentwicklung der Siemens-Velaro-Plattform mit 320 km/h. | [TheFrog001](https://commons.wikimedia.org/wiki/File:ICE_3neo_DB_408.jpg) | [CC0 / Public Domain](https://creativecommons.org/publicdomain/zero/1.0/) |
+| **Neues DB-Innendesign** | Neues Designkonzept der Deutschen Bahn mit Holztönen, warmen Stoffen und Tablet-Haltern. | [MaxEmanuel](https://commons.wikimedia.org/wiki/File:DBAG_Class_408_Interior.jpg) | [CC0 / Public Domain](https://creativecommons.org/publicdomain/zero/1.0/) |
+| **Streckenfahrt (Maria Anzbach)** | Mit Neigetechnik ausgestatteter ICE für bogenreiche Strecken. | [Linie29](https://commons.wikimedia.org/wiki/File:DB_Class_411_ICE-T.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Hauptansicht (Berlin Hbf)** | Das moderne Arbeitspferd im DB-Fernverkehr mit hoher Energieeffizienz. | [Peter Nath / Reinhold Möller](https://commons.wikimedia.org/wiki/File:ICE_4_Berlin_Hbf.jpg) | [CC BY 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Kantige Frontpartie** | Die markante, kantig-aerodynamische Kopfform der Baureihe 412 mit LED-Lichtband. | [Martin Lechler](https://commons.wikimedia.org/wiki/File:ICE4_Front.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Streckenfahrt bei Altengronau** | Moderne Zugbildung im Hochgeschwindigkeits-Netz der DB in Hessen. | [Joachim Seyferth](https://commons.wikimedia.org/wiki/File:ICE_4_Altengronau.jpg) | [CC BY 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **ICE 4 Fahrgastbereich** | Großzügiger Fahrgastraum mit flexibler Sitzplatzanordnung und modernem Raumklima. | [Robot8A / Joachim Seyferth](https://commons.wikimedia.org/wiki/File:ICE_4_(29690076593).jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Lokomotive 105 019** | Lokomotive der neuesten Generation barrierefreier Fernverkehrszüge von Talgo. | [Sven-IngCH](https://commons.wikimedia.org/wiki/File:ICE_L_105.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **ICE L Steuerwagen** | Modernster Steuerwagen von Talgo für den Wendezugbetrieb auf Urlaubsstrecken. | [E235JREMU](https://commons.wikimedia.org/wiki/File:ICE_L_SteuerwagenLV_12.23.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Talgo-Niederflurwagen** | Stufenloser Einstieg direkt auf Höhe der Standardbahnsteige. | [Sven-IngCH](https://commons.wikimedia.org/wiki/File:ICE_L_Talgo.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Stufenloser Niederflur-Einstieg** | Barrierefreier Fahrgastraum mit ebenem Boden ohne Stufen zwischen den Wagen. | [Pablo Lopez Estape](https://commons.wikimedia.org/wiki/File:Talgo_230_DB_ICE-L_at_InnoTrans_2022_05.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
 
 ---
 
-### 4. Regionalverkehr & S-Bahn
-| Modell / Baureihe | Perspektive / Motiv | Urheber / Fotograf | Lizenz |
+### Intercity & Lokomotiven
+| Bild / Perspektive | Charakteristik / Motiv | Urheber / Fotograf | Lizenz |
 | :--- | :--- | :--- | :--- |
-| **Desiro HC (BR 462 RRX)** | Hauptansicht Wuppertal Hbf | Gsadfaw1223 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **Desiro HC (BR 462 RRX)** | Innenraum & Mehrzweckbereich | Wikimedia Commons Contributors | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **Talent 2 (BR 442)** | Hauptansicht Hennigsdorf | Sebastian Rittau | [CC0 (Public Domain)](https://creativecommons.org/publicdomain/zero/1.0/) |
-| **Talent 2 (BR 442)** | Führerstand City-Tunnel Leipzig | Hennix1989 | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) |
-| **FLIRT 3 (BR 1428 / 1429)** | Hauptansicht Streckenfahrt | Johannes Maximilian | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **FLIRT 3 (BR 1428 / 1429)** | Innenraum 1. Klasse Fahrgastbereich | Hoff1980 | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/) |
-| **Mireo (BR 463)** | Hauptansicht Neufahrzeug | Joachim Lutz | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **Mireo (BR 463)** | Innenraum Fahrgastbereich | Metrophil | [CC0 (Public Domain)](https://creativecommons.org/publicdomain/zero/1.0/) |
-| **Twindexx Vario (Regio)** | Hauptansicht Doppelstock-Triebzug | UMO1 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **S-Bahn ET 423** | Streckenansicht S-Bahn | Paul Smith | [CC BY 2.0](https://creativecommons.org/licenses/by/2.0/) |
-| **S-Bahn ET 423** | Fahrgastraum & Stehbereich | Wikimedia Commons Contributors | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **ET 425 (Quietschie)** | Hauptansicht Weinheim | Zwiadowca21 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **ET 425 (Quietschie)** | Führerstand & Innenansicht | Wikimedia Commons Contributors | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **Coradia LINT (BR 648)** | Hauptansicht Streckenfahrt LINT 27 | Spudgun67 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
-| **Coradia LINT (BR 648)** | Innenraum modernisierter LINT 41 | Pentium1000 | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Hauptansicht Streckenlok** | Die legendäre Schnellzuglokomotive der 90er Jahre vor traditionellen Intercity-Wagen. | [Lars Steffens](https://commons.wikimedia.org/wiki/File:DB_Class_101.jpg) | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **BR 101 Führerstand** | Echter Führertisch der Baureihe 101 mit Fahrschalter, Ebula-Display und MFA-Instrumenten. | [Sebastian Terfloth User:Sese_Ingolstadt](https://commons.wikimedia.org/wiki/File:DB_AG_101_F%C3%BChrerstand.jpg) | [CC BY 2.5](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Doppelstock-Wendezug** | Doppelstock-Garnitur mit Panoramablick aus dem oberen Stockwerk. | [UMO1 / Foobian](https://commons.wikimedia.org/wiki/File:Twindexx_Vario.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Weißer IC2 Steuerwagen** | Weiß lackierter Doppelstock-Steuerwagen im ICE-Farbkleid mit spitzer Nase. | [Falk2](https://commons.wikimedia.org/wiki/File:J24_331_Sch%C3%B6nefelder_Gruppe,_DBpbzfa_668.2.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Stadler KISS auf Strecke** | Spurtschneller Doppelstock-Triebzug aus der Schweiz im Intercity-Dienst. | [Mirkone](https://commons.wikimedia.org/wiki/File:Stadler_KISS_DB_4110.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Stadler KISS Front** | Kraftvoller Doppelstock-Triebkopf des Schweizer Herstellers Stadler im DB-Fernverkehr. | [Zug Videos Bilder](https://commons.wikimedia.org/wiki/File:4110_110(2)_Kiss.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **BR 4110 Doppelstockzug** | Spurtschneller 6-teiliger Doppelstock-Triebzug am Bahnsteig. | [Rosso Robot](https://commons.wikimedia.org/wiki/File:2021-06-18_Stadler_KISS_BR_4110_at_Wien_Hauptbahnhof.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **ÖBB Nightjet (Viaggio)** | Neuer Nachtzug der Zukunft im charakteristischen nachtblauen Siemens-Design. | [TheFrog001](https://commons.wikimedia.org/wiki/File:Siemens_Viaggio_Next_Level_%C3%96BB_nightjet_2023-12_-_05.jpg) | [CC0 / Public Domain](https://creativecommons.org/publicdomain/zero/1.0/) |
+| **Nightjet Steuerwagen** | Aerodynamischer Steuerwagen für den schnellen Wendezugbetrieb bei 230 km/h. | [TheFrog001](https://commons.wikimedia.org/wiki/File:Steuerwagen_Siemens_Viaggio_Next_Level_%C3%96BB_nightjet_2023-12_-_03.jpg) | [CC0 / Public Domain](https://creativecommons.org/publicdomain/zero/1.0/) |
+| **Mini-Cabin Schlafkapseln** | Die revolutionären Mini-Cabins für ungestörten Schlaf von Alleinreisenden im Nachtzug. | [TheFrog001](https://commons.wikimedia.org/wiki/File:Mini_cabin_coach_of_Siemens_Viaggio_Next_Level_%C3%96BB_nightjet_2023-12_-_06.jpg) | [CC0 / Public Domain](https://creativecommons.org/publicdomain/zero/1.0/) |
+
+---
+
+### Regionalverkehr & S-Bahn
+| Bild / Perspektive | Charakteristik / Motiv | Urheber / Fotograf | Lizenz |
+| :--- | :--- | :--- | :--- |
+| **Hauptansicht (Wuppertal Hbf)** | Rhein-Ruhr-Express Triebzug im modernen RRX-Farbdesign. | [Gsadfaw1223](https://commons.wikimedia.org/wiki/File:Siemens_Desiro_HC_RRX.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Hybrid-Wagenzug (Dosto & Flach)** | Übergang vom einstöckigen Endwagen zum doppelstöckigen Mittelwagen – die Besonderheit des Desiro HC. | [Falk2](https://commons.wikimedia.org/wiki/File:J33_779_Desiro_HC_(462_083).jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **RRX Fahrgastraum** | Moderner Rhein-Ruhr-Express Innenraum mit Steckdosen, Monitoren und Leselampen. | [Sacrety](https://commons.wikimedia.org/wiki/File:RRX_2.Klasse.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Hauptansicht (Hennigsdorf)** | Charakteristischer Regionaltriebzug von Bombardier im RE- und S-Bahn-Einsatz. | [Sebastian Rittau](https://commons.wikimedia.org/wiki/File:Bombardier_Talent_2.jpg) | [CC0 / Public Domain](https://creativecommons.org/publicdomain/zero/1.0/) |
+| **Charakteristische Hamsterbacke** | Die prägnante, tiefgezogene Kopfform, die dem Bombardier Talent 2 seinen Kult-Kosenamen gab. | [Matti Blume](https://commons.wikimedia.org/wiki/File:Talent,_Stralsund_(LRM_20240104_140825).jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Fahrgastraum & Niederflur** | Niederfluriger Einstiegsbereich mit Jakobs-Drehgestellübergang und bequemen Sitzen. | [Falk2](https://commons.wikimedia.org/wiki/File:I11_333_Bombardier_Talent_2,_Innenraum.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Hauptansicht Streckenfahrt** | Spurtschneller Niederflurtriebzug mit hervorragender Beschleunigung. | [Johannes Maximilian](https://commons.wikimedia.org/wiki/File:Stadler_FLIRT_3.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **FLIRT 3 Frontpartie** | Markante, kantige Stadler-FLIRT-Kopfform im schnittigen SÜWEX-Design mit LED-Leuchten. | [Hoff1980](https://commons.wikimedia.org/wiki/File:S%C3%BCwex_Flirt_Mannheim_Hbf.JPG) | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Großraum-Fahrgastabteil** | Heller, stufenloser Innenraum mit Jakobs-Gelenken und Panoramaverglasung. | [JoachimKohler-HB](https://commons.wikimedia.org/wiki/File:Fahrgastraum_eines_Stadler_FLIRT_3_XL_der_NWB_(2024).jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Hauptansicht Neufahrzeug** | Extrem energieeffizienter, leichter Nahverkehrszug. | [Joachim Lutz](https://commons.wikimedia.org/wiki/File:Siemens_Mireo.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Mireo Aerodynamik-Front** | Energieeffiziente, windschnittige Kopfform der Siemens-Mireo-Familie im bwegt-Design. | [Kevin.B](https://commons.wikimedia.org/wiki/File:Mireo_Bwegt_-_Offenburg.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Mireo Fahrgastraum** | Großzügiges Leichtbau-Fahrgastabteil mit moderner LED-Ambientebeleuchtung. | [MireoDriver](https://commons.wikimedia.org/wiki/File:FahrgastraumMireoNetz4.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Twindexx Vario Triebwagen** | Angetriebener Doppelstock-Endwagen (BR 445) mit vollwertigem Antrieb unter den Drehgestellen. | [Malte Hübner](https://commons.wikimedia.org/wiki/File:Twindexx_445_013_Nortorf.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Coradia Continental (BR 1440)** | Elektrischer Triebzug mit dem markanten, freundlichen Frontlächeln („Grinsekatze“). | [Metrophil44](https://commons.wikimedia.org/wiki/File:DB-Baureihe_1440-Alstom_Coradia_Continental_in_Hagen_Hbf.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Grinsekatze Frontpartie** | Geschwungene Scheinwerfermaske und aerodynamische Kopfform der Baureihe 1440. | [Der Messer](https://commons.wikimedia.org/wiki/File:Alstom_Coradia_Continental_(1440)_am_Bw_Aachen.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Streckenfahrt LINT 27** | Der unbestrittene König nicht elektrifizierter Nebenbahnen im ländlichen Raum. | [Spudgun67](https://commons.wikimedia.org/wiki/File:Alstom_Coradia_LINT.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **LINT Triebwagen-Front** | Charakteristische Nahverkehrs-Diesel-Front mit hochgesetzter Scheibe und Scharfenbergkupplung. | [EM311](https://commons.wikimedia.org/wiki/File:DB_Regio_623_505_Alstom_Coradia_LINT_Weinheim.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **LINT 41 Innenraum** | Moderner Regional-Fahrgastraum für Nebenstrecken mit großflächigen Fenstern. | [Pentium1000~dewiki](https://commons.wikimedia.org/wiki/File:Innenraum_eines_modernisierten_LNVG_Lint_41.JPG) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **Streckenansicht S-Bahn** | Das unermüdliche Rückgrat der großen S-Bahn-Netze in Ballungsräumen. | [Paul Smith](https://commons.wikimedia.org/wiki/File:DBAG_Class_423.jpg) | [CC BY 2.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **S-Bahn Frontpartie** | Kompakte, abgerundete Kopfform mit Zielanzeige für schnellen Fahrgastwechsel im S-Bahn-Netz. | [Wikimedia-User Jivee Blau](https://commons.wikimedia.org/wiki/File:Mainz-Kastel-_Bahnhof-_auf_Br%C3%BCcke_der_Bundesstra%C3%9Fe_40-_Richtung_Frankfurt_am_Main-_DBAG-Baureihe_423_873-9_4.6.2010.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **S-Bahn Großraumwagen** | Durchgängiger Großraumtriebzug ohne Trenntüren mit Haltestangen für hohen Pendlerandrang. | [User:Mattes](https://commons.wikimedia.org/wiki/File:S-Bahn_M%C3%BCnchen,_Klasse_423,_Waggon_2._Klasse,_innen_%E2%80%94_2005.jpg) | [Public Domain](https://creativecommons.org/publicdomain/zero/1.0/) |
+| **Hauptansicht Weinheim** | Kult-Regionalbahn mit unverwechselbarem Frequenzumrichter-Quietschen beim Anfahren. | [Photographs by Radosław Drożdżewski (User:Zwiadowca21)](https://commons.wikimedia.org/wiki/File:DB_Baureihe_425.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **ET 425 Front & Falttüren** | Flache, steile Frontpartie und zahlreiche Außenschwenktüren für schnelle Halte. | [Photographs by Radosław Drożdżewski (User:Zwiadowca21)](https://commons.wikimedia.org/wiki/File:Bahnhof_Weinheim_-_DB-Baureihe_425_-_425-818_-_2019-02-13_14-46-41.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0/) |
+| **ET 425 Innenraum** | Klassischer Regionalbahn-Innenraum mit Klappsitzen im Mehrzweckbereich. | [Wikimedia-User Jivee Blau](https://commons.wikimedia.org/wiki/File:DBAG-Baureihe_425-_Interieur.JPG) | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/4.0/) |

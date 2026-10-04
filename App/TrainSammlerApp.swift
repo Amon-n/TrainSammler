@@ -9,6 +9,8 @@ struct TrainSammlerApp: App {
         let schema = Schema([
             TrainModel.self,
             SpottedTrain.self,
+            BingoGame.self,
+            BingoCell.self
         ])
         do {
             let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)

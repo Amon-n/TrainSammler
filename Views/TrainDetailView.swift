@@ -4,14 +4,14 @@ import PhotosUI
 
 public enum DetailPhotoItem: Identifiable, Hashable {
     case user(id: UUID, data: Data, station: String?, date: Date)
-    case catalog(name: String, label: String)
+    case catalog(photo: TrainPhotoDetail)
     
     public var id: String {
         switch self {
         case .user(let uid, _, _, _):
             return "user_\(uid.uuidString)"
-        case .catalog(let name, _):
-            return "cat_\(name)"
+        case .catalog(let photo):
+            return "cat_\(photo.assetName)"
         }
     }
 }
@@ -26,6 +26,7 @@ public struct TrainDetailView: View {
     @State private var selectedPhotoIndex: Int = 0
     @State private var isShowingSpotSheet = false
     @State private var spotSuccessToast = false
+    @State private var selectedAttributionPhoto: TrainPhotoDetail? = nil
     
     // Direkt-Spotting Form
     @State private var tzInput: String = ""
@@ -50,24 +51,9 @@ public struct TrainDetailView: View {
             }
         }
         
-        // 2. Offizielle Katalog-Bilder (immer sichtbar, auch vor Freischaltung!)
-        let catalogImages = train.galleryImageNames
-        for (idx, name) in catalogImages.enumerated() {
-            let label: String
-            if idx == 0 {
-                label = "Hauptansicht"
-            } else if name.contains("front") {
-                label = "Frontpartie"
-            } else if name.contains("side") {
-                label = "Seitenprofil"
-            } else if name.contains("altengronau") || name.contains("scenic") {
-                label = "Streckenfahrt"
-            } else if name.contains("_2") {
-                label = "Detail / Innen"
-            } else {
-                label = "Perspektive \(idx + 1)"
-            }
-            items.append(.catalog(name: name, label: label))
+        // 2. Offizielle kuratierte Katalog-Bilder mit charakteristischen Merkmalen
+        for photo in train.galleryPhotos {
+            items.append(.catalog(photo: photo))
         }
         
         return items
@@ -90,7 +76,10 @@ public struct TrainDetailView: View {
                     // 4. Spotter-Guide ("Woran erkenne ich ihn?")
                     spotterGuideSection
                     
-                    // 5. Beschreibung & Details
+                    // 5. Zug-Charakteristiken & Galerie-Details
+                    trainCharacteristicsGallerySection
+                    
+                    // 6. Beschreibung & Details
                     overviewSection
                     
                     // 6. Deine Sichtungen (inkl. Fotovorschau)
@@ -112,6 +101,9 @@ public struct TrainDetailView: View {
             }
             .sheet(isPresented: $isShowingSpotSheet) {
                 directSpotSheet
+            }
+            .sheet(item: $selectedAttributionPhoto) { photo in
+                PhotoAttributionDetailSheet(photo: photo)
             }
             .overlay(alignment: .top) {
                 if spotSuccessToast {
@@ -147,64 +139,104 @@ public struct TrainDetailView: View {
                                 Color.secondary.opacity(0.12)
                                     .frame(height: 235)
                             }
-                        case .catalog(let assetName, _):
-                            TrainImageView(assetName: assetName, isSilhouette: false)
+                        case .catalog(let catPhoto):
+                            TrainImageView(assetName: catPhoto.assetName, isSilhouette: false)
                                 .frame(maxWidth: .infinity)
                                 .frame(height: 235)
                                 .clipped()
                         }
                         
-                        // Dezenter Gradient am Boden für Badge-Kontrast
+                        // Dezenter Gradient am Boden für Lesbarkeit
                         LinearGradient(
-                            colors: [.clear, .black.opacity(0.65)],
+                            colors: [.clear, .black.opacity(0.75)],
                             startPoint: .center,
                             endPoint: .bottom
                         )
                         .allowsHitTesting(false)
                         
-                        // Badge: "Dein Foto" vs "Katalog"
-                        HStack {
-                            switch photo {
-                            case .user(_, _, let station, _):
-                                HStack(spacing: 5) {
-                                    Image(systemName: "camera.fill")
-                                        .font(.system(size: 11))
-                                    Text("Dein Foto" + (station != nil ? " · \(station!)" : ""))
-                                        .font(.caption2.weight(.bold))
+                        // Badge oben & Bildmerkmale/Bildrechte unten
+                        VStack(spacing: 0) {
+                            // Top Bar
+                            HStack {
+                                switch photo {
+                                case .user(_, _, let station, _):
+                                    HStack(spacing: 5) {
+                                        Image(systemName: "camera.fill")
+                                            .font(.system(size: 11))
+                                        Text("Dein Foto" + (station != nil ? " · \(station!)" : ""))
+                                            .font(.caption2.weight(.bold))
+                                    }
+                                    .foregroundColor(.black)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 5)
+                                    .background(Color.yellow)
+                                    .clipShape(Capsule())
+                                    .shadow(radius: 4)
+                                case .catalog(let catPhoto):
+                                    HStack(spacing: 5) {
+                                        Image(systemName: "photo.on.rectangle.angled")
+                                            .font(.system(size: 11))
+                                        Text("Katalog · \(catPhoto.label)")
+                                            .font(.caption2.weight(.bold))
+                                    }
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 5)
+                                    .background(.ultraThinMaterial)
+                                    .clipShape(Capsule())
                                 }
-                                .foregroundColor(.black)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
-                                .background(Color.yellow)
-                                .clipShape(Capsule())
-                                .shadow(radius: 4)
-                            case .catalog(_, let label):
-                                HStack(spacing: 5) {
-                                    Image(systemName: "photo.on.rectangle.angled")
-                                        .font(.system(size: 11))
-                                    Text("Katalog · \(label)")
-                                        .font(.caption2.weight(.bold))
-                                }
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
-                                .background(.ultraThinMaterial)
-                                .clipShape(Capsule())
+                                
+                                Spacer()
+                                
+                                Text("\(index + 1) / \(photos.count)")
+                                    .font(.caption2.weight(.bold))
+                                    .foregroundColor(.white)
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 4)
+                                    .background(Color.black.opacity(0.6))
+                                    .clipShape(Capsule())
                             }
+                            .padding(12)
                             
                             Spacer()
                             
-                            // Bild-Zähler (z.B. 1 / 3)
-                            Text("\(index + 1) / \(photos.count)")
-                                .font(.caption2.weight(.bold))
-                                .foregroundColor(.white)
-                                .padding(.horizontal, 8)
-                                .padding(.vertical, 4)
-                                .background(Color.black.opacity(0.6))
-                                .clipShape(Capsule())
+                            // Bottom Bar: Charakteristik & Urheber
+                            if case .catalog(let catPhoto) = photo {
+                                HStack(alignment: .bottom, spacing: 8) {
+                                    VStack(alignment: .leading, spacing: 2) {
+                                        Text(catPhoto.characteristicDescription)
+                                            .font(.system(size: 11, weight: .medium))
+                                            .foregroundColor(.white)
+                                            .lineLimit(2)
+                                            .shadow(color: .black.opacity(0.9), radius: 3)
+                                        
+                                        HStack(spacing: 4) {
+                                            Image(systemName: "c.circle")
+                                                .font(.system(size: 9))
+                                            Text("\(catPhoto.photographer) · \(catPhoto.license)")
+                                                .font(.system(size: 10, weight: .semibold))
+                                        }
+                                        .foregroundColor(.white.opacity(0.9))
+                                        .shadow(color: .black.opacity(0.9), radius: 2)
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    Button {
+                                        selectedAttributionPhoto = catPhoto
+                                    } label: {
+                                        Image(systemName: "info.circle.fill")
+                                            .font(.system(size: 18))
+                                            .foregroundColor(.white.opacity(0.95))
+                                            .padding(5)
+                                            .background(.ultraThinMaterial)
+                                            .clipShape(Circle())
+                                    }
+                                }
+                                .padding(.horizontal, 12)
+                                .padding(.bottom, 8)
+                            }
                         }
-                        .padding(12)
-                        .allowsHitTesting(false) // Wichtig: Blockiert keine Wischgesten!
                     }
                     .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
                     .tag(index)
@@ -245,8 +277,8 @@ public struct TrainDetailView: View {
                                                 .background(Color.yellow)
                                                 .clipShape(Circle())
                                                 .padding(2)
-                                        case .catalog(let name, _):
-                                            TrainImageView(assetName: name, isSilhouette: false)
+                                        case .catalog(let photo):
+                                            TrainImageView(assetName: photo.assetName, isSilhouette: false)
                                                 .frame(width: 58, height: 40)
                                                 .clipped()
                                         }
@@ -295,6 +327,76 @@ public struct TrainDetailView: View {
         .padding(.horizontal, 16)
     }
     
+
+    // MARK: - Zug-Charakteristiken & Galerie
+    private var trainCharacteristicsGallerySection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label("Zug-Charakteristiken & Galerie", systemImage: "sparkles.rectangle.stack.fill")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                Spacer()
+                Text("\(train.galleryPhotos.count) Perspektiven")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+            
+            VStack(spacing: 10) {
+                ForEach(Array(train.galleryPhotos.enumerated()), id: \.element.id) { index, photo in
+                    Button {
+                        let userPhotosCount = train.spottings.filter { $0.photoData != nil }.count
+                        let targetIndex = userPhotosCount + index
+                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                            selectedPhotoIndex = targetIndex
+                        }
+                    } label: {
+                        HStack(alignment: .top, spacing: 12) {
+                            TrainImageView(assetName: photo.assetName, isSilhouette: false)
+                                .frame(width: 82, height: 60)
+                                .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                        .stroke(Color.secondary.opacity(0.15), lineWidth: 1)
+                                )
+                            
+                            VStack(alignment: .leading, spacing: 3) {
+                                HStack {
+                                    Text(photo.label)
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundColor(.primary)
+                                    Spacer()
+                                    Image(systemName: "arrow.up.left.and.down.right.magnifyingglass")
+                                        .font(.caption2)
+                                        .foregroundStyle(.tertiary)
+                                }
+                                
+                                Text(photo.characteristicDescription)
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                                    .lineLimit(2)
+                                    .multilineTextAlignment(.leading)
+                                
+                                HStack(spacing: 4) {
+                                    Image(systemName: "c.circle")
+                                        .font(.system(size: 9))
+                                    Text("\(photo.photographer) · \(photo.license)")
+                                        .font(.caption2)
+                                }
+                                .foregroundColor(.secondary.opacity(0.85))
+                                .padding(.top, 1)
+                            }
+                        }
+                        .padding(10)
+                        .background(Color(uiColor: .secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .padding(.horizontal, 16)
+    }
+
     // MARK: - 3. Schnell-Fakten
     
     private var quickFactsSection: some View {
@@ -683,5 +785,90 @@ private struct FactPill: View {
         .padding(.horizontal, 8)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+}
+
+
+// MARK: - Foto-Attribution Detail Sheet
+struct PhotoAttributionDetailSheet: View {
+    let photo: TrainPhotoDetail
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 18) {
+                    TrainImageView(assetName: photo.assetName, isSilhouette: false)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 220)
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .clipped()
+                    
+                    VStack(alignment: .leading, spacing: 6) {
+                        Text(photo.label)
+                            .font(.title3.bold())
+                        Text(photo.characteristicDescription)
+                            .font(.body)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 12) {
+                        Text("Bildnachweis & Lizenz")
+                            .font(.headline)
+                        
+                        VStack(spacing: 10) {
+                            HStack {
+                                Text("Urheber / Fotograf:")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text(photo.photographer)
+                                    .font(.subheadline.weight(.semibold))
+                                    .multilineTextAlignment(.trailing)
+                            }
+                            Divider()
+                            HStack {
+                                Text("Lizenz:")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text(photo.license)
+                                    .font(.subheadline.weight(.semibold))
+                                    .padding(.horizontal, 8)
+                                    .padding(.vertical, 3)
+                                    .background(Color.accentColor.opacity(0.12))
+                                    .clipShape(Capsule())
+                            }
+                            if let urlStr = photo.commonsUrl, let url = URL(string: urlStr) {
+                                Divider()
+                                Link(destination: url) {
+                                    HStack {
+                                        Label("Auf Wikimedia Commons ansehen", systemImage: "arrow.up.right.square")
+                                            .font(.subheadline.weight(.medium))
+                                        Spacer()
+                                        Image(systemName: "chevron.right")
+                                            .font(.caption2)
+                                    }
+                                }
+                                .padding(.top, 4)
+                            }
+                        }
+                        .padding(14)
+                        .background(Color(uiColor: .secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+                }
+                .padding(16)
+            }
+            .background(Color(uiColor: .systemGroupedBackground))
+            .navigationTitle("Bildnachweis")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Schließen") { dismiss() }
+                        .fontWeight(.semibold)
+                }
+            }
+        }
     }
 }

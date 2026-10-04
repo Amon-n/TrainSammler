@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04D2DEC4E8DC4659ABF0062F /* Models/BingoGame.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B1AA31BC98A4E9AB96A77C7 /* Models/BingoGame.swift */; };
 		05E25F0050A136CC67ACA3C5 /* Views/SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D536C60D6BAC7F5F2B7E397 /* Views/SettingsView.swift */; };
 		063C8191C91DF1E3F556AD2D /* Services/LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4264FCAA5E26947B11D1AF0B /* Services/LocationManager.swift */; };
 		0A570F1A9E67669B6543870A /* Views/TrainCatalogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3666882A2F7FDF1A4FA7622E /* Views/TrainCatalogView.swift */; };
@@ -21,7 +22,10 @@
 		8DB7FF6E41BA2AD27AAEBC21 /* Views/ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4052642177D8B17BD7744F20 /* Views/ContentView.swift */; };
 		B1AFA9B496BFFEEA59DE7ABA /* Views/QuickSpotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 910A13148C60C2CE61D90450 /* Views/QuickSpotView.swift */; };
 		BE567E5ED95CBDB366A61D73 /* Views/Components/RarityBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6E3BAE78A03829DA172F0DA /* Views/Components/RarityBadgeView.swift */; };
+		BEFD499D56EA410AA4D07A15 /* Models/BingoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F3F9D0305954F5EB2CDE64B /* Models/BingoItem.swift */; };
+		C0537E2F35F5417B99C1E2AF /* ViewModels/BingoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF73040AE9BA4DF7A123C281 /* ViewModels/BingoViewModel.swift */; };
 		C69034931B899D8123F0EDC4 /* Views/SpottedHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA4EB8E05C69D288D19303C /* Views/SpottedHistoryView.swift */; };
+		C6F5D645777449AF8976E2CC /* Views/DBBingoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 816EA81B34EB431189C0B100 /* Views/DBBingoView.swift */; };
 		C9C320C08ECD4341EDCF45FB /* App/TrainSammlerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4F0B0A6FF4810C72D35DDE59 /* App/TrainSammlerApp.swift */; };
 		DE0F3AA7CB8907B9F3E08F7E /* Services/DataSeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 871596B1E5AE114CE92F07FD /* Services/DataSeeder.swift */; };
 		DFE9035D6E98B28130BCC4D0 /* Models/TrainModel+Identification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 99A60CE0C5F2CA5CB8BB958C /* Models/TrainModel+Identification.swift */; };
@@ -37,9 +41,12 @@
 		4264FCAA5E26947B11D1AF0B /* Services/LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/LocationManager.swift; sourceTree = "<group>"; };
 		469620EC303F82A8B58A911F /* ViewModels/QuickSpotViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModels/QuickSpotViewModel.swift; sourceTree = "<group>"; };
 		4F0B0A6FF4810C72D35DDE59 /* App/TrainSammlerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App/TrainSammlerApp.swift; sourceTree = "<group>"; };
+		5F3F9D0305954F5EB2CDE64B /* Models/BingoItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/BingoItem.swift; sourceTree = "<group>"; };
 		65F615B7CB4F879AEAA36468 /* ViewModels/StatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModels/StatsViewModel.swift; sourceTree = "<group>"; };
 		73AD16181FDDB7427288C6BD /* trainSammler.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = trainSammler.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		792E401BF113E49DA90EA72E /* Views/Components/TrainImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Components/TrainImageView.swift; sourceTree = "<group>"; };
+		7B1AA31BC98A4E9AB96A77C7 /* Models/BingoGame.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/BingoGame.swift; sourceTree = "<group>"; };
+		816EA81B34EB431189C0B100 /* Views/DBBingoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/DBBingoView.swift; sourceTree = "<group>"; };
 		871596B1E5AE114CE92F07FD /* Services/DataSeeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Services/DataSeeder.swift; sourceTree = "<group>"; };
 		910A13148C60C2CE61D90450 /* Views/QuickSpotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/QuickSpotView.swift; sourceTree = "<group>"; };
 		99A60CE0C5F2CA5CB8BB958C /* Models/TrainModel+Identification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/TrainModel+Identification.swift"; sourceTree = "<group>"; };
@@ -49,6 +56,7 @@
 		A66A66EF4F4572C1C33383D0 /* Models/Enums.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/Enums.swift; sourceTree = "<group>"; };
 		A8BAB4023AB9034AF305A8E6 /* Models/SpottedTrain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Models/SpottedTrain.swift; sourceTree = "<group>"; };
 		AEA4EB8E05C69D288D19303C /* Views/SpottedHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/SpottedHistoryView.swift; sourceTree = "<group>"; };
+		CF73040AE9BA4DF7A123C281 /* ViewModels/BingoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModels/BingoViewModel.swift; sourceTree = "<group>"; };
 		E6E3BAE78A03829DA172F0DA /* Views/Components/RarityBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Views/Components/RarityBadgeView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -67,6 +75,10 @@
 			isa = PBXGroup;
 			children = (
 				4F0B0A6FF4810C72D35DDE59 /* App/TrainSammlerApp.swift */,
+				5F3F9D0305954F5EB2CDE64B /* Models/BingoItem.swift */,
+				7B1AA31BC98A4E9AB96A77C7 /* Models/BingoGame.swift */,
+				CF73040AE9BA4DF7A123C281 /* ViewModels/BingoViewModel.swift */,
+				816EA81B34EB431189C0B100 /* Views/DBBingoView.swift */,
 				A66A66EF4F4572C1C33383D0 /* Models/Enums.swift */,
 				9CBA88DA69EAA2422EE34638 /* Models/TrainModel.swift */,
 				99A60CE0C5F2CA5CB8BB958C /* Models/TrainModel+Identification.swift */,
@@ -162,6 +174,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BEFD499D56EA410AA4D07A15 /* Models/BingoItem.swift in Sources */,
+				04D2DEC4E8DC4659ABF0062F /* Models/BingoGame.swift in Sources */,
+				C0537E2F35F5417B99C1E2AF /* ViewModels/BingoViewModel.swift in Sources */,
+				C6F5D645777449AF8976E2CC /* Views/DBBingoView.swift in Sources */,
 				C9C320C08ECD4341EDCF45FB /* App/TrainSammlerApp.swift in Sources */,
 				EC47BC19A0150838985B8031 /* Models/Enums.swift in Sources */,
 				6B91BABC6F533AAE2ABC69E9 /* Models/TrainModel.swift in Sources */,
@@ -228,7 +244,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = de.amon.trainSammler;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = NO;
@@ -273,7 +289,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2;
+				MARKETING_VERSION = 1.4;
 				PRODUCT_BUNDLE_IDENTIFIER = de.amon.trainSammler;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = NO;
