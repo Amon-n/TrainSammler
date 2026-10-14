@@ -34,6 +34,12 @@ public struct TrainDetailView: View {
     @State private var selectedPhotoItem: PhotosPickerItem?
     @State private var capturedPhotoData: Data?
     
+    enum SpotField: Hashable {
+        case tz
+        case notes
+    }
+    @FocusState private var spotFocusedField: SpotField?
+    
     private let locationManager = LocationManager()
     
     public init(train: TrainModel) {
@@ -633,7 +639,14 @@ public struct TrainDetailView: View {
                     }
                     
                     TextField("Triebzug-Nummer (z.B. Tz 408 015)", text: $tzInput)
+                        .focused($spotFocusedField, equals: .tz)
+                        .submitLabel(.next)
+                        .onSubmit { spotFocusedField = .notes }
+                    
                     TextField("Notizen (optional)", text: $notesInput)
+                        .focused($spotFocusedField, equals: .notes)
+                        .submitLabel(.done)
+                        .onSubmit { spotFocusedField = nil }
                 }
                 
                 Section("Eigenes Foto (Optional)") {
@@ -677,9 +690,17 @@ public struct TrainDetailView: View {
                     }
                 }
             }
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle("Zug erfassen")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Fertig") {
+                        spotFocusedField = nil
+                    }
+                    .fontWeight(.semibold)
+                }
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Abbrechen") { isShowingSpotSheet = false }
                 }

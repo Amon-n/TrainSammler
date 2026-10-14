@@ -42,6 +42,7 @@ public final class BingoGame: Identifiable {
     public var gridSize: Int // 3, 4 oder 5
     public var travelTitle: String? // z.B. "Fahrt nach Hamburg"
     public var isBingoAchieved: Bool
+    public var isArchived: Bool = false
     
     @Relationship(deleteRule: .cascade)
     public var cells: [BingoCell] = []
@@ -53,6 +54,7 @@ public final class BingoGame: Identifiable {
         gridSize: Int = 3,
         travelTitle: String? = nil,
         isBingoAchieved: Bool = false,
+        isArchived: Bool = false,
         cells: [BingoCell] = []
     ) {
         self.id = id
@@ -61,6 +63,7 @@ public final class BingoGame: Identifiable {
         self.gridSize = gridSize
         self.travelTitle = travelTitle
         self.isBingoAchieved = isBingoAchieved
+        self.isArchived = isArchived
         self.cells = cells
     }
     

@@ -51,6 +51,7 @@ public struct TrainCatalogView: View {
                 }
                 .padding(.vertical, 12)
             }
+            .scrollDismissesKeyboard(.interactively)
             .searchable(text: $searchText, prompt: "Suche nach Baureihe oder Name")
             .navigationTitle("Train-Dex")
             .background(Color(uiColor: .systemGroupedBackground))

@@ -5,7 +5,9 @@ public struct DBBingoView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel = BingoViewModel()
     @State private var showingEditTitleSheet = false
+    @State private var showingHistorySheet = false
     @State private var tempTitle = ""
+    @FocusState private var isTitleFocused: Bool
     
     public init() {}
     
@@ -37,6 +39,7 @@ public struct DBBingoView: View {
                     .padding(.horizontal, 14)
                     .padding(.vertical, 12)
                 }
+                .scrollDismissesKeyboard(.interactively)
                 
                 // 5. Bingo-Gewinnfeiern Overlay
                 if viewModel.showWinAnimation {
@@ -46,13 +49,38 @@ public struct DBBingoView: View {
             .navigationTitle("DB-Bingo 🎲")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        showingHistorySheet = true
+                    } label: {
+                        Label("Logbuch", systemImage: "clock.arrow.circlepath")
+                            .font(.system(size: 16, weight: .medium))
+                    }
+                }
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
+                        if let game = viewModel.activeGame {
+                            ShareLink(
+                                item: shareText(for: game),
+                                subject: Text("Mein DB-Bingo Zwischenstand"),
+                                message: Text(shareText(for: game))
+                            ) {
+                                Label("Spielstand teilen", systemImage: "square.and.arrow.up")
+                            }
+                        }
+                        
                         Button {
                             tempTitle = viewModel.activeGame?.travelTitle ?? ""
                             showingEditTitleSheet = true
                         } label: {
                             Label("Reise umbenennen", systemImage: "pencil")
+                        }
+                        
+                        Button {
+                            showingHistorySheet = true
+                        } label: {
+                            Label("Bingo-Logbuch anzeigen", systemImage: "book.pages")
                         }
                         
                         Divider()
@@ -85,10 +113,33 @@ public struct DBBingoView: View {
             .sheet(isPresented: $showingEditTitleSheet) {
                 editTitleSheet
             }
+            .sheet(isPresented: $showingHistorySheet) {
+                BingoHistorySheet()
+            }
             .onAppear {
                 viewModel.loadOrCreateGame(context: modelContext)
             }
         }
+    }
+    
+    // MARK: - Share Text Helper
+    private func shareText(for game: BingoGame) -> String {
+        let checked = game.cells.filter { $0.isChecked && !$0.isJoker }
+        let title = game.travelTitle ?? "Meine Zugfahrt"
+        let status = game.isBingoAchieved ? "🎉 BINGO ERREICHT!" : "\(checked.count)/\(game.cells.count) Vorfällen eingetreten"
+        
+        var text = "🚆 DB-Bingo Zwischenstand (\(title)):\n\(status)\n\n"
+        if !checked.isEmpty {
+            text += "Bisher erlebt:\n"
+            for c in checked.prefix(5) {
+                text += "• \(c.text)\n"
+            }
+            if checked.count > 5 {
+                text += "... und \(checked.count - 5) weitere!\n"
+            }
+        }
+        text += "\nGespielt mit TrainSammler 🚂"
+        return text
     }
     
     // MARK: - 1. Reise Header
@@ -284,26 +335,43 @@ public struct DBBingoView: View {
             Form {
                 Section(header: Text("Reisedetails")) {
                     TextField("z.B. ICE 574 nach Hamburg", text: $tempTitle)
+                        .focused($isTitleFocused)
+                        .submitLabel(.done)
+                        .onSubmit {
+                            saveTitle()
+                        }
                 }
             }
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle("Reise benennen")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Fertig") {
+                        isTitleFocused = false
+                    }
+                    .fontWeight(.semibold)
+                }
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Abbrechen") { showingEditTitleSheet = false }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Speichern") {
-                        viewModel.activeGame?.travelTitle = tempTitle
-                        viewModel.tripName = tempTitle
-                        try? modelContext.save()
-                        showingEditTitleSheet = false
+                        saveTitle()
                     }
                     .fontWeight(.semibold)
                 }
             }
         }
-        .presentationDetents([.fraction(0.3)])
+        .presentationDetents([.fraction(0.35)])
+    }
+    
+    private func saveTitle() {
+        viewModel.activeGame?.travelTitle = tempTitle
+        viewModel.tripName = tempTitle
+        try? modelContext.save()
+        showingEditTitleSheet = false
     }
 }
 

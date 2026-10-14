@@ -10,7 +10,11 @@ public struct QuickSpotView: View {
     @State private var viewModel = QuickSpotViewModel()
     @State private var showingTrainPicker = false
     @State private var earnedPoints: Int = 0
-    @FocusState private var isTzFocused: Bool
+    enum QuickSpotField: Hashable {
+        case tz
+        case notes
+    }
+    @FocusState private var focusedField: QuickSpotField?
     
     public init() {}
     
@@ -44,13 +48,23 @@ public struct QuickSpotView: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 12)
             }
+            .scrollDismissesKeyboard(.interactively)
             .navigationTitle("Schnell-Sichtung")
             .navigationBarTitleDisplayMode(.inline)
-            .background(Color(uiColor: .systemGroupedBackground))
+            .background(
+                Color(uiColor: .systemGroupedBackground)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        focusedField = nil
+                    }
+            )
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
-                    Button("Fertig") { isTzFocused = false }
+                    Button("Fertig") { 
+                        focusedField = nil 
+                    }
+                    .fontWeight(.semibold)
                 }
             }
             .onAppear {
@@ -252,7 +266,11 @@ public struct QuickSpotView: View {
                     TextField("z.B. 304 oder 8012", text: $viewModel.tzNumber)
                         .font(.body)
                         .keyboardType(.numbersAndPunctuation)
-                        .focused($isTzFocused)
+                        .focused($focusedField, equals: .tz)
+                        .submitLabel(.next)
+                        .onSubmit {
+                            focusedField = .notes
+                        }
                     
                     if !viewModel.tzNumber.isEmpty {
                         Button {
@@ -274,6 +292,20 @@ public struct QuickSpotView: View {
                     
                     TextField("Notiz (Gleis, Verspätung, Fahrtziel)", text: $viewModel.notes)
                         .font(.body)
+                        .focused($focusedField, equals: .notes)
+                        .submitLabel(.done)
+                        .onSubmit {
+                            focusedField = nil
+                        }
+                    
+                    if !viewModel.notes.isEmpty {
+                        Button {
+                            viewModel.notes = ""
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundColor(.secondary)
+                        }
+                    }
                 }
                 .padding(14)
             }
@@ -445,6 +477,7 @@ struct TrainPickerSheet: View {
                     .padding(.vertical, 4)
                 }
             }
+            .scrollDismissesKeyboard(.interactively)
             .searchable(text: $searchText, prompt: "Baureihe (z.B. 408, ICE 3)")
             .navigationTitle("Baureihe wählen")
             .navigationBarTitleDisplayMode(.inline)

@@ -15,9 +15,12 @@ public final class BingoViewModel {
     public init() {}
     
     public func loadOrCreateGame(context: ModelContext) {
-        let descriptor = FetchDescriptor<BingoGame>(
+        var descriptor = FetchDescriptor<BingoGame>(
+            predicate: #Predicate { !$0.isArchived },
             sortBy: [SortDescriptor(\.startedAt, order: .reverse)]
         )
+        descriptor.fetchLimit = 1
+        
         if let games = try? context.fetch(descriptor), let existing = games.first {
             self.activeGame = existing
             self.selectedGridSize = existing.gridSize
@@ -28,9 +31,17 @@ public final class BingoViewModel {
     }
     
     public func startNewGame(context: ModelContext, size: Int, title: String? = nil) {
-        // Altes Spiel löschen wenn vorhanden
+        // Altes Spiel archivieren statt löschen, falls es Kacheln angekreuzt hatte
         if let old = activeGame {
-            context.delete(old)
+            let hasCheckedCells = old.cells.contains { $0.isChecked && !$0.isJoker }
+            if hasCheckedCells || old.isBingoAchieved {
+                old.isArchived = true
+                if old.completedAt == nil {
+                    old.completedAt = Date()
+                }
+            } else {
+                context.delete(old)
+            }
         }
         
         let totalCells = size * size
@@ -87,9 +98,9 @@ public final class BingoViewModel {
     }
     
     private func pickIncidents(count: Int) -> [BingoIncident] {
-        var commons = BingoCatalog.incidents.filter { $0.rarity == .common }.shuffled()
-        var uncommons = BingoCatalog.incidents.filter { $0.rarity == .uncommon }.shuffled()
-        var rares = BingoCatalog.incidents.filter { $0.rarity == .rare }.shuffled()
+        let commons = BingoCatalog.incidents.filter { $0.rarity == .common }.shuffled()
+        let uncommons = BingoCatalog.incidents.filter { $0.rarity == .uncommon }.shuffled()
+        let rares = BingoCatalog.incidents.filter { $0.rarity == .rare }.shuffled()
         
         var selected: [BingoIncident] = []
         
