@@ -15,16 +15,24 @@ public final class BingoViewModel {
     public init() {}
     
     public func loadOrCreateGame(context: ModelContext) {
-        var descriptor = FetchDescriptor<BingoGame>(
+        let descriptor = FetchDescriptor<BingoGame>(
             predicate: #Predicate { !$0.isArchived },
             sortBy: [SortDescriptor(\.startedAt, order: .reverse)]
         )
-        descriptor.fetchLimit = 1
         
-        if let games = try? context.fetch(descriptor), let existing = games.first {
-            self.activeGame = existing
-            self.selectedGridSize = existing.gridSize
-            self.tripName = existing.travelTitle ?? ""
+        if let games = try? context.fetch(descriptor), !games.isEmpty {
+            let active = games[0]
+            self.activeGame = active
+            self.selectedGridSize = active.gridSize
+            self.tripName = active.travelTitle ?? ""
+            
+            // Falls mehr als ein unarchiviertes Spiel existiert, die älteren archivieren
+            if games.count > 1 {
+                for extra in games.dropFirst() {
+                    extra.isArchived = true
+                }
+                try? context.save()
+            }
         } else {
             startNewGame(context: context, size: selectedGridSize, title: tripName)
         }
@@ -194,17 +202,27 @@ public final class BingoViewModel {
             }
         }
         
-        if won && !game.isBingoAchieved {
-            let winGen = UINotificationFeedbackGenerator()
-            winGen.notificationOccurred(.success)
-            
-            game.isBingoAchieved = true
-            game.completedAt = Date()
-            try? context.save()
-            
-            self.winningLineType = lineType
-            withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
-                self.showWinAnimation = true
+        if won {
+            if !game.isBingoAchieved {
+                let winGen = UINotificationFeedbackGenerator()
+                winGen.notificationOccurred(.success)
+                
+                game.isBingoAchieved = true
+                game.completedAt = Date()
+                try? context.save()
+                
+                self.winningLineType = lineType
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
+                    self.showWinAnimation = true
+                }
+            }
+        } else {
+            if game.isBingoAchieved {
+                game.isBingoAchieved = false
+                game.completedAt = nil
+                try? context.save()
+                self.showWinAnimation = false
+                self.winningLineType = nil
             }
         }
     }

@@ -4,6 +4,7 @@ import SwiftData
 @MainActor
 public struct ContentView: View {
     @State private var selectedTab: TabItem = .quickSpot
+    @State private var logbookSection: SpottedHistoryView.LogbookSection = .spottings
     
     enum TabItem: Hashable {
         case quickSpot
@@ -29,13 +30,16 @@ public struct ContentView: View {
                 }
                 .tag(TabItem.catalog)
             
-            DBBingoView()
-                .tabItem {
-                    Label("DB-Bingo", systemImage: "checkerboard.rectangle")
-                }
-                .tag(TabItem.bingo)
+            DBBingoView(onOpenLogbook: {
+                logbookSection = .bingo
+                selectedTab = .history
+            })
+            .tabItem {
+                Label("DB-Bingo", systemImage: "checkerboard.rectangle")
+            }
+            .tag(TabItem.bingo)
             
-            SpottedHistoryView()
+            SpottedHistoryView(selectedSection: $logbookSection)
                 .tabItem {
                     Label("Logbuch", systemImage: "clock.arrow.circlepath")
                 }

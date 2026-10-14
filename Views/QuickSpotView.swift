@@ -9,6 +9,8 @@ public struct QuickSpotView: View {
     
     @State private var viewModel = QuickSpotViewModel()
     @State private var showingTrainPicker = false
+    @State private var showingStationAlert = false
+    @State private var tempStationInput = ""
     @State private var earnedPoints: Int = 0
     enum QuickSpotField: Hashable {
         case tz
@@ -86,6 +88,21 @@ public struct QuickSpotView: View {
             } message: {
                 Text(viewModel.errorMessage ?? "")
             }
+            .alert("Bahnhof anpassen", isPresented: $showingStationAlert) {
+                TextField("z.B. Berlin Hbf (tief) oder Gleis 4", text: $tempStationInput)
+                Button("Übernehmen") {
+                    viewModel.customStationName = tempStationInput.trimmingCharacters(in: .whitespacesAndNewlines)
+                }
+                if !viewModel.customStationName.isEmpty {
+                    Button("GPS wiederherstellen", role: .destructive) {
+                        viewModel.customStationName = ""
+                        viewModel.locationManager.requestLocation()
+                    }
+                }
+                Button("Abbrechen", role: .cancel) {}
+            } message: {
+                Text("Trage den Bahnhof oder Bahnsteig manuell ein, falls GPS im Tiefbahnhof oder Tunnel ungenau ist.")
+            }
             .overlay(alignment: .top) {
                 if viewModel.showSuccessToast {
                     successToast
@@ -106,36 +123,74 @@ public struct QuickSpotView: View {
                     .frame(width: 36, height: 36)
                 
                 Image(systemName: "location.fill")
-                    .foregroundColor(.accentColor)
+                    .foregroundColor(viewModel.customStationName.isEmpty ? .accentColor : .orange)
                     .font(.subheadline)
                     .symbolEffect(.pulse, isActive: viewModel.locationManager.isLocating)
             }
             
-            VStack(alignment: .leading, spacing: 2) {
-                Text("STANDORT-STAMP")
-                    .font(.caption2.weight(.heavy))
-                    .foregroundStyle(.secondary)
-                    .tracking(0.8)
-                
-                Text(viewModel.locationManager.currentPlaceName)
-                    .font(.subheadline.weight(.semibold))
-                    .foregroundStyle(.primary)
-                    .lineLimit(1)
+            Button {
+                tempStationInput = viewModel.customStationName.isEmpty
+                    ? (viewModel.locationManager.currentPlaceName.contains("wird ermittelt") ? "" : viewModel.locationManager.currentPlaceName)
+                    : viewModel.customStationName
+                showingStationAlert = true
+            } label: {
+                VStack(alignment: .leading, spacing: 2) {
+                    HStack(spacing: 5) {
+                        Text("STANDORT-STAMP")
+                            .font(.caption2.weight(.heavy))
+                            .foregroundStyle(.secondary)
+                            .tracking(0.8)
+                        
+                        if !viewModel.customStationName.isEmpty {
+                            Text("MANUELL")
+                                .font(.system(size: 8, weight: .black))
+                                .foregroundStyle(.white)
+                                .padding(.horizontal, 4)
+                                .padding(.vertical, 1)
+                                .background(Color.orange)
+                                .clipShape(Capsule())
+                        }
+                    }
+                    
+                    HStack(spacing: 6) {
+                        Text(viewModel.effectiveStationName)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+                        
+                        Image(systemName: "pencil")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                    }
+                }
             }
+            .buttonStyle(.plain)
             
             Spacer()
             
-            Button {
-                let generator = UIImpactFeedbackGenerator(style: .light)
-                generator.impactOccurred()
-                viewModel.locationManager.requestLocation()
-            } label: {
-                Image(systemName: "arrow.clockwise")
-                    .font(.caption.weight(.bold))
-                    .foregroundColor(.secondary)
-                    .padding(8)
-                    .background(Color(uiColor: .tertiarySystemGroupedBackground))
-                    .clipShape(Circle())
+            if !viewModel.customStationName.isEmpty {
+                Button {
+                    viewModel.customStationName = ""
+                    viewModel.locationManager.requestLocation()
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.caption.weight(.bold))
+                        .foregroundColor(.secondary)
+                        .padding(8)
+                }
+            } else {
+                Button {
+                    let generator = UIImpactFeedbackGenerator(style: .light)
+                    generator.impactOccurred()
+                    viewModel.locationManager.requestLocation()
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.caption.weight(.bold))
+                        .foregroundColor(.secondary)
+                        .padding(8)
+                        .background(Color(uiColor: .tertiarySystemGroupedBackground))
+                        .clipShape(Circle())
+                }
             }
         }
         .padding(12)
@@ -367,10 +422,9 @@ public struct QuickSpotView: View {
             let generator = UIImpactFeedbackGenerator(style: .medium)
             generator.impactOccurred()
             
-            earnedPoints = viewModel.selectedTrainModel?.rarity.points ?? 100
-            
             if viewModel.saveSpotting(context: modelContext) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 3.0) {
+                let duration: Double = viewModel.isFirstCatch ? 4.5 : 3.0
+                DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
                     withAnimation {
                         viewModel.showSuccessToast = false
                     }
@@ -402,26 +456,53 @@ public struct QuickSpotView: View {
         HStack(spacing: 14) {
             ZStack {
                 Circle()
-                    .fill(Color.green)
-                    .frame(width: 42, height: 42)
-                Image(systemName: "checkmark")
+                    .fill(
+                        viewModel.isFirstCatch
+                            ? LinearGradient(colors: [Color.yellow, Color.orange], startPoint: .topLeading, endPoint: .bottomTrailing)
+                            : LinearGradient(colors: [Color.green, Color.mint], startPoint: .topLeading, endPoint: .bottomTrailing)
+                    )
+                    .frame(width: 44, height: 44)
+                
+                Image(systemName: viewModel.isFirstCatch ? "trophy.fill" : "checkmark")
                     .font(.title3.bold())
                     .foregroundColor(.white)
             }
             
             VStack(alignment: .leading, spacing: 2) {
-                Text("Zug erfolgreich erfasst!")
-                    .font(.headline.weight(.bold))
-                Text("+\(earnedPoints) XP deinem Bahn-Score gutgeschrieben.")
+                HStack(spacing: 6) {
+                    Text(viewModel.isFirstCatch ? "🎉 NEUER ZUG ENTDECKT!" : "Zug erfasst!")
+                        .font(.headline.weight(.heavy))
+                        .foregroundStyle(viewModel.isFirstCatch ? Color.orange : Color.primary)
+                    
+                    if viewModel.isFirstCatch {
+                        Text("ERSTFUND")
+                            .font(.system(size: 8, weight: .black))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 1.5)
+                            .background(Color.orange)
+                            .clipShape(Capsule())
+                    }
+                }
+                
+                Text(viewModel.isFirstCatch
+                    ? "Erstmals im Train-Dex! +\(viewModel.earnedPoints) XP (inkl. Erstfund-Bonus)"
+                    : "+\(viewModel.earnedPoints) XP deinem Bahn-Score gutgeschrieben.")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
             Spacer()
         }
         .padding(16)
-        .background(.ultraThinMaterial)
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
-        .shadow(color: .black.opacity(0.15), radius: 16, y: 8)
+        .background(
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
+                .fill(.ultraThinMaterial)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 18, style: .continuous)
+                        .strokeBorder(viewModel.isFirstCatch ? Color.orange.opacity(0.4) : Color.clear, lineWidth: 1.5)
+                )
+        )
+        .shadow(color: viewModel.isFirstCatch ? Color.orange.opacity(0.25) : Color.black.opacity(0.12), radius: 16, y: 8)
         .padding(.horizontal, 16)
         .padding(.top, 8)
     }

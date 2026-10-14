@@ -5,8 +5,28 @@ import SwiftData
 public struct TrainCatalogView: View {
     @Query(sort: \TrainModel.seriesCode) private var trains: [TrainModel]
     @State private var selectedCategory: TrainCategory?
+    @State private var onlyUnspotted: Bool = false
+    @State private var sortOption: SortOption = .series
     @State private var searchText: String = ""
     @State private var inspectedTrain: TrainModel?
+    
+    public enum SortOption: String, CaseIterable, Identifiable {
+        case series = "Baureihe (Standard)"
+        case rarity = "Seltenheit (Seltenste zuerst)"
+        case name = "Name (A–Z)"
+        case unspottedFirst = "Unentdeckt zuerst"
+        
+        public var id: String { rawValue }
+        
+        public var icon: String {
+            switch self {
+            case .series: return "number"
+            case .rarity: return "sparkles"
+            case .name: return "textformat"
+            case .unspottedFirst: return "eye.slash"
+            }
+        }
+    }
     
     public init() {}
     
@@ -15,13 +35,33 @@ public struct TrainCatalogView: View {
     }
     
     var filteredTrains: [TrainModel] {
-        trains.filter { train in
+        let base = trains.filter { train in
             let matchesCategory = selectedCategory == nil || train.category == selectedCategory
+            let matchesUnspotted = !onlyUnspotted || !train.isSpotted
             let matchesSearch = searchText.isEmpty ||
                 train.seriesCode.localizedCaseInsensitiveContains(searchText) ||
                 train.commercialName.localizedCaseInsensitiveContains(searchText) ||
                 (train.designation?.localizedCaseInsensitiveContains(searchText) ?? false)
-            return matchesCategory && matchesSearch
+            return matchesCategory && matchesUnspotted && matchesSearch
+        }
+        
+        return base.sorted { a, b in
+            switch sortOption {
+            case .series:
+                return a.seriesCode.localizedStandardCompare(b.seriesCode) == .orderedAscending
+            case .rarity:
+                if a.rarity.points != b.rarity.points {
+                    return a.rarity.points > b.rarity.points
+                }
+                return a.seriesCode.localizedStandardCompare(b.seriesCode) == .orderedAscending
+            case .name:
+                return a.commercialName.localizedStandardCompare(b.commercialName) == .orderedAscending
+            case .unspottedFirst:
+                if a.isSpotted != b.isSpotted {
+                    return !a.isSpotted && b.isSpotted
+                }
+                return a.seriesCode.localizedStandardCompare(b.seriesCode) == .orderedAscending
+            }
         }
     }
     
@@ -33,21 +73,25 @@ public struct TrainCatalogView: View {
                     // 1. Progress Banner (Sammel-Fortschritt)
                     progressHeader
                     
-                    // 2. Filter Chips
+                    // 2. Filter Chips (Kategorien & Fehlt-Filter)
                     categoryFilterBar
                     
-                    // 3. Train Trading Card Grid
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
-                        ForEach(filteredTrains) { train in
-                            TrainCatalogCard(train: train)
-                                .onTapGesture {
-                                    let impact = UIImpactFeedbackGenerator(style: .light)
-                                    impact.impactOccurred()
-                                    inspectedTrain = train
-                                }
+                    // 3. Train Trading Card Grid oder Empty State
+                    if filteredTrains.isEmpty {
+                        emptyStateView
+                    } else {
+                        LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 16) {
+                            ForEach(filteredTrains) { train in
+                                TrainCatalogCard(train: train)
+                                    .onTapGesture {
+                                        let impact = UIImpactFeedbackGenerator(style: .light)
+                                        impact.impactOccurred()
+                                        inspectedTrain = train
+                                    }
+                            }
                         }
+                        .padding(.horizontal, 16)
                     }
-                    .padding(.horizontal, 16)
                 }
                 .padding(.vertical, 12)
             }
@@ -55,6 +99,21 @@ public struct TrainCatalogView: View {
             .searchable(text: $searchText, prompt: "Suche nach Baureihe oder Name")
             .navigationTitle("Train-Dex")
             .background(Color(uiColor: .systemGroupedBackground))
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Menu {
+                        Picker("Sortierung", selection: $sortOption) {
+                            ForEach(SortOption.allCases) { option in
+                                Label(option.rawValue, systemImage: option.icon).tag(option)
+                            }
+                        }
+                    } label: {
+                        Image(systemName: "arrow.up.arrow.down.circle")
+                            .font(.system(size: 17))
+                            .foregroundStyle(sortOption == .series ? Color.secondary : Color.accentColor)
+                    }
+                }
+            }
             .sheet(item: $inspectedTrain) { train in
                 TrainDetailView(train: train)
             }
@@ -88,7 +147,8 @@ public struct TrainCatalogView: View {
                     .rotationEffect(.degrees(-90))
                 
                 Text(trains.isEmpty ? "0%" : "\(Int((Double(spottedCount) / Double(trains.count)) * 100))%")
-                    .font(.system(size: 11, weight: .heavy, design: .rounded))
+                    .font(.caption2.weight(.heavy))
+                    .foregroundStyle(.primary)
             }
             .frame(width: 44, height: 44)
         }
@@ -101,8 +161,29 @@ public struct TrainCatalogView: View {
     private var categoryFilterBar: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: 8) {
-                FilterChip(title: "Alle", isSelected: selectedCategory == nil) {
+                // "Noch unentdeckt" Schnell-Filter
+                Button {
+                    let impact = UIImpactFeedbackGenerator(style: .light)
+                    impact.impactOccurred()
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.7)) {
+                        onlyUnspotted.toggle()
+                    }
+                } label: {
+                    HStack(spacing: 5) {
+                        Image(systemName: onlyUnspotted ? "eye.slash.fill" : "eye.slash")
+                        Text("Fehlt mir")
+                    }
+                    .font(.subheadline.weight(.medium))
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 8)
+                    .background(onlyUnspotted ? Color.orange : Color(uiColor: .secondarySystemGroupedBackground))
+                    .foregroundColor(onlyUnspotted ? .white : .primary)
+                    .clipShape(Capsule())
+                }
+                
+                FilterChip(title: "Alle", isSelected: selectedCategory == nil && !onlyUnspotted) {
                     selectedCategory = nil
+                    onlyUnspotted = false
                 }
                 
                 ForEach(TrainCategory.allCases, id: \.self) { cat in
@@ -112,6 +193,29 @@ public struct TrainCatalogView: View {
                 }
             }
             .padding(.horizontal, 16)
+        }
+    }
+    
+    private var emptyStateView: some View {
+        Group {
+            if !searchText.isEmpty {
+                ContentUnavailableView.search(text: searchText)
+                    .padding(.top, 40)
+            } else if onlyUnspotted {
+                ContentUnavailableView(
+                    "Alle Züge entdeckt! 🎉",
+                    systemImage: "trophy.fill",
+                    description: Text("Du hast in dieser Auswahl bereits jeden einzelnen Zug gespottet. Großartige Leistung!")
+                )
+                .padding(.top, 40)
+            } else {
+                ContentUnavailableView(
+                    "Keine Züge gefunden",
+                    systemImage: "tram",
+                    description: Text("In dieser Kategorie sind aktuell keine Baureihen hinterlegt.")
+                )
+                .padding(.top, 40)
+            }
         }
     }
 }
@@ -149,84 +253,57 @@ struct TrainCatalogCard: View {
                     .frame(maxWidth: .infinity)
                     .clipped()
                 
-                // Rarity Badge oben rechts
-                RarityBadgeView(rarity: train.rarity, style: .minimal)
-                    .padding(8)
-                
-                // Schloss-Overlay wenn unentdeckt
-                if !train.isSpotted {
-                    ZStack {
-                        Capsule()
-                            .fill(.ultraThinMaterial)
-                        HStack(spacing: 3) {
-                            Image(systemName: "lock.fill")
-                                .font(.system(size: 9))
-                            Text("GESPERRT")
-                                .font(.system(size: 9, weight: .heavy))
-                        }
-                        .foregroundColor(.primary)
-                        .padding(.horizontal, 6)
-                        .padding(.vertical, 3)
-                    }
-                    .frame(height: 20)
-                    .padding(8)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+                // Entdeckt Badge ODER Rarity
+                if train.isSpotted {
+                    Image(systemName: "checkmark.seal.fill")
+                        .font(.subheadline)
+                        .foregroundStyle(Color.green)
+                        .background(Circle().fill(.white).padding(2))
+                        .padding(8)
                 }
             }
-            .background(Color.secondary.opacity(0.1))
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
             
-            // 2. Info-Bereich
+            // 2. Karten-Body
             VStack(alignment: .leading, spacing: 4) {
-                Text(train.seriesCode)
-                    .font(.headline.weight(.bold))
-                    .foregroundStyle(train.isSpotted ? .primary : .secondary)
-                    .lineLimit(1)
+                HStack {
+                    Text(train.seriesCode)
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.primary)
+                        .lineLimit(1)
+                    Spacer()
+                    RarityBadgeView(rarity: train.rarity, style: .minimal)
+                }
                 
                 Text(train.commercialName)
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
                 
-                Spacer(minLength: 6)
-                
-                // Footer: Sichtungen oder Seltenheits-Score
                 HStack {
-                    if train.isSpotted {
-                        HStack(spacing: 3) {
-                            Image(systemName: "checkmark.seal.fill")
-                                .foregroundColor(.green)
-                            Text("\(train.spotCount)x erfasst")
-                                .font(.caption2.weight(.bold))
-                                .foregroundColor(.green)
-                        }
-                    } else {
-                        Text("\(train.rarity.points) XP")
-                            .font(.caption2.weight(.semibold))
-                            .foregroundStyle(.tertiary)
-                    }
-                    
-                    Spacer()
-                    
-                    Image(systemName: "chevron.right")
-                        .font(.caption2)
+                    Text(train.category.rawValue)
+                        .font(.caption2.weight(.medium))
                         .foregroundStyle(.tertiary)
+                    Spacer()
+                    if train.isSpotted {
+                        Text("\(train.spottings.count)× gespottet")
+                            .font(.caption2.weight(.semibold))
+                            .foregroundStyle(Color.accentColor)
+                    } else {
+                        Text("Unentdeckt")
+                            .font(.caption2.weight(.medium))
+                            .foregroundStyle(.secondary)
+                    }
                 }
+                .padding(.top, 4)
             }
-            .padding(.horizontal, 10)
-            .padding(.top, 10)
-            .padding(.bottom, 12)
+            .padding(10)
         }
-        .frame(height: 205)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
-        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
         .overlay(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .strokeBorder(
-                    train.isSpotted ? train.rarity.color.opacity(0.35) : Color.primary.opacity(0.06),
-                    lineWidth: train.isSpotted ? 1.5 : 1
-                )
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(train.isSpotted ? train.rarity.color.opacity(0.3) : Color.clear, lineWidth: 1.5)
         )
-        .shadow(color: train.isSpotted ? train.rarity.color.opacity(0.12) : Color.black.opacity(0.03), radius: 8, y: 4)
+        .shadow(color: Color.black.opacity(0.04), radius: 6, y: 3)
     }
 }

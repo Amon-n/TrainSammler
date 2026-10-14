@@ -27,6 +27,7 @@ public struct TrainDetailView: View {
     @State private var isShowingSpotSheet = false
     @State private var spotSuccessToast = false
     @State private var selectedAttributionPhoto: TrainPhotoDetail? = nil
+    @State private var previewSpot: SpottedTrain? = nil
     
     // Direkt-Spotting Form
     @State private var tzInput: String = ""
@@ -111,6 +112,9 @@ public struct TrainDetailView: View {
             .sheet(item: $selectedAttributionPhoto) { photo in
                 PhotoAttributionDetailSheet(photo: photo)
             }
+            .sheet(item: $previewSpot) { spot in
+                PhotoPreviewSheet(spot: spot)
+            }
             .overlay(alignment: .top) {
                 if spotSuccessToast {
                     successToast
@@ -165,19 +169,28 @@ public struct TrainDetailView: View {
                             // Top Bar
                             HStack {
                                 switch photo {
-                                case .user(_, _, let station, _):
-                                    HStack(spacing: 5) {
-                                        Image(systemName: "camera.fill")
-                                            .font(.system(size: 11))
-                                        Text("Dein Foto" + (station != nil ? " · \(station!)" : ""))
-                                            .font(.caption2.weight(.bold))
+                                case .user(let uid, _, let station, _):
+                                    Button {
+                                        if let spot = train.spottings.first(where: { $0.id == uid }) {
+                                            previewSpot = spot
+                                        }
+                                    } label: {
+                                        HStack(spacing: 5) {
+                                            Image(systemName: "camera.fill")
+                                                .font(.system(size: 11))
+                                            Text("Dein Foto" + (station != nil ? " · \(station!)" : ""))
+                                                .font(.caption2.weight(.bold))
+                                            Image(systemName: "arrow.up.left.and.down.right.magnifyingglass")
+                                                .font(.system(size: 9))
+                                        }
+                                        .foregroundColor(.black)
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 5)
+                                        .background(Color.yellow)
+                                        .clipShape(Capsule())
+                                        .shadow(radius: 4)
                                     }
-                                    .foregroundColor(.black)
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 5)
-                                    .background(Color.yellow)
-                                    .clipShape(Capsule())
-                                    .shadow(radius: 4)
+                                    .buttonStyle(.plain)
                                 case .catalog(let catPhoto):
                                     HStack(spacing: 5) {
                                         Image(systemName: "photo.on.rectangle.angled")
@@ -542,40 +555,58 @@ public struct TrainDetailView: View {
             } else {
                 VStack(spacing: 8) {
                     ForEach(train.spottings.sorted { $0.spottedAt > $1.spottedAt }) { spot in
-                        HStack(spacing: 12) {
-                            if let data = spot.photoData, let uiImg = UIImage(data: data) {
-                                Image(uiImage: uiImg)
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 44, height: 44)
-                                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                            } else {
-                                Image(systemName: "tram.fill")
-                                    .foregroundColor(train.rarity.color)
-                                    .padding(10)
-                                    .background(train.rarity.color.opacity(0.12))
-                                    .clipShape(Circle())
+                        Button {
+                            if spot.photoData != nil {
+                                previewSpot = spot
                             }
-                            
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(spot.stationOrLocationName ?? "Standort erfasst")
-                                    .font(.subheadline.weight(.semibold))
-                                if let tz = spot.tzNumber {
-                                    Text("Triebzug: \(tz)")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                        } label: {
+                            HStack(spacing: 12) {
+                                if let data = spot.photoData, let uiImg = UIImage(data: data) {
+                                    ZStack(alignment: .bottomTrailing) {
+                                        Image(uiImage: uiImg)
+                                            .resizable()
+                                            .aspectRatio(contentMode: .fill)
+                                            .frame(width: 44, height: 44)
+                                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                                        
+                                        Image(systemName: "arrow.up.left.and.down.right.magnifyingglass")
+                                            .font(.system(size: 7, weight: .bold))
+                                            .foregroundColor(.white)
+                                            .padding(2)
+                                            .background(Color.black.opacity(0.65))
+                                            .clipShape(Circle())
+                                            .padding(1)
+                                    }
+                                } else {
+                                    Image(systemName: "tram.fill")
+                                        .foregroundColor(train.rarity.color)
+                                        .padding(10)
+                                        .background(train.rarity.color.opacity(0.12))
+                                        .clipShape(Circle())
                                 }
+                                
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(spot.stationOrLocationName ?? "Standort erfasst")
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundStyle(.primary)
+                                    if let tz = spot.tzNumber {
+                                        Text("Triebzug: \(tz)")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                
+                                Spacer()
+                                
+                                Text(spot.spottedAt.formatted(date: .abbreviated, time: .omitted))
+                                    .font(.caption2)
+                                    .foregroundStyle(.tertiary)
                             }
-                            
-                            Spacer()
-                            
-                            Text(spot.spottedAt.formatted(date: .abbreviated, time: .omitted))
-                                .font(.caption2)
-                                .foregroundStyle(.tertiary)
+                            .padding(12)
+                            .background(Color(uiColor: .secondarySystemGroupedBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                         }
-                        .padding(12)
-                        .background(Color(uiColor: .secondarySystemGroupedBackground))
-                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        .buttonStyle(.plain)
                     }
                 }
                 .padding(.horizontal, 16)

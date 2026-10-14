@@ -25,19 +25,19 @@ struct BingoHistorySheet: View {
                     List {
                         Section {
                             HStack(spacing: 16) {
-                                StatPill(
+                                BingoStatPill(
                                     title: "Gespielt",
                                     value: "\(pastGames.count)",
                                     icon: "flag.checkered",
                                     color: .blue
                                 )
-                                StatPill(
+                                BingoStatPill(
                                     title: "Bingos",
                                     value: "\(pastGames.filter(\.isBingoAchieved).count)",
                                     icon: "trophy.fill",
                                     color: .yellow
                                 )
-                                StatPill(
+                                BingoStatPill(
                                     title: "Vorfälle",
                                     value: "\(pastGames.reduce(0) { $0 + $1.cells.filter(\.isChecked).count })",
                                     icon: "exclamationmark.triangle.fill",
@@ -90,7 +90,7 @@ struct BingoHistorySheet: View {
 }
 
 // MARK: - Mini Stat Pill
-private struct StatPill: View {
+struct BingoStatPill: View {
     let title: String
     let value: String
     let icon: String
@@ -117,7 +117,7 @@ private struct StatPill: View {
 }
 
 // MARK: - Row in List
-private struct BingoHistoryRow: View {
+struct BingoHistoryRow: View {
     let game: BingoGame
     
     private var checkedCount: Int {
@@ -290,7 +290,7 @@ struct BingoArchiveDetailSheet: View {
     }
 }
 
-private struct ArchivedCellView: View {
+struct ArchivedCellView: View {
     let cell: BingoCell
     let gridSize: Int
     

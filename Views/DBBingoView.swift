@@ -9,7 +9,11 @@ public struct DBBingoView: View {
     @State private var tempTitle = ""
     @FocusState private var isTitleFocused: Bool
     
-    public init() {}
+    private var onOpenLogbook: (() -> Void)?
+    
+    public init(onOpenLogbook: (() -> Void)? = nil) {
+        self.onOpenLogbook = onOpenLogbook
+    }
     
     public var body: some View {
         NavigationStack {
@@ -51,7 +55,11 @@ public struct DBBingoView: View {
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
-                        showingHistorySheet = true
+                        if let onOpenLogbook {
+                            onOpenLogbook()
+                        } else {
+                            showingHistorySheet = true
+                        }
                     } label: {
                         Label("Logbuch", systemImage: "clock.arrow.circlepath")
                             .font(.system(size: 16, weight: .medium))
@@ -78,9 +86,13 @@ public struct DBBingoView: View {
                         }
                         
                         Button {
-                            showingHistorySheet = true
+                            if let onOpenLogbook {
+                                onOpenLogbook()
+                            } else {
+                                showingHistorySheet = true
+                            }
                         } label: {
-                            Label("Bingo-Logbuch anzeigen", systemImage: "book.pages")
+                            Label("Zum allgemeinen Logbuch", systemImage: "clock.arrow.circlepath")
                         }
                         
                         Divider()
@@ -208,6 +220,7 @@ public struct DBBingoView: View {
         }
         .pickerStyle(.segmented)
         .onChange(of: viewModel.selectedGridSize) { _, newSize in
+            guard let active = viewModel.activeGame, active.gridSize != newSize else { return }
             withAnimation {
                 viewModel.startNewGame(
                     context: modelContext,
@@ -278,55 +291,81 @@ public struct DBBingoView: View {
             VStack(spacing: 16) {
                 ZStack {
                     Circle()
-                        .fill(Color.green.opacity(0.18))
-                        .frame(width: 80, height: 80)
+                        .fill(
+                            RadialGradient(
+                                colors: [Color.yellow.opacity(0.35), Color.orange.opacity(0.1)],
+                                center: .center,
+                                startRadius: 10,
+                                endRadius: 60
+                            )
+                        )
+                        .frame(width: 96, height: 96)
                     
-                    Image(systemName: "party.popper.fill")
-                        .font(.system(size: 40))
-                        .foregroundStyle(.green)
+                    Circle()
+                        .fill(LinearGradient(colors: [.yellow, .orange], startPoint: .topLeading, endPoint: .bottomTrailing))
+                        .frame(width: 72, height: 72)
+                        .shadow(color: .orange.opacity(0.4), radius: 10, y: 4)
+                    
+                    Image(systemName: "trophy.fill")
+                        .font(.system(size: 36, weight: .bold))
+                        .foregroundStyle(.white)
                 }
                 
-                VStack(spacing: 6) {
-                    Text("BINGO!")
-                        .font(.system(size: 32, weight: .black, design: .rounded))
-                        .foregroundStyle(.primary)
+                VStack(spacing: 8) {
+                    HStack(spacing: 6) {
+                        Text("🎉")
+                        Text("BINGO!")
+                            .font(.system(size: 32, weight: .black, design: .rounded))
+                            .foregroundStyle(LinearGradient(colors: [.orange, .red], startPoint: .leading, endPoint: .trailing))
+                        Text("🎉")
+                    }
                     
                     Text(viewModel.winningLineType ?? "Eine komplette Reihe geschafft!")
-                        .font(.headline)
-                        .foregroundStyle(Color.accentColor)
+                        .font(.headline.weight(.bold))
+                        .foregroundStyle(.primary)
                     
-                    Text("Du hast die echte Deutsche Bahn Experience gemeistert.")
+                    Text("Du hast die authentische Deutsche Bahn Experience auf deiner Fahrt gemeistert.")
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                         .multilineTextAlignment(.center)
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, 12)
                 }
                 
                 Button {
-                    withAnimation {
+                    withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
                         viewModel.showWinAnimation = false
                     }
                 } label: {
-                    Text("Weiterfahren")
-                        .font(.headline)
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 12)
-                        .background(Color.accentColor)
-                        .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    HStack(spacing: 8) {
+                        Image(systemName: "checkmark.circle.fill")
+                        Text("Weiterfahren")
+                            .font(.headline.weight(.bold))
+                    }
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(
+                        LinearGradient(colors: [Color.accentColor, Color.accentColor.opacity(0.85)], startPoint: .top, endPoint: .bottom)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .shadow(color: Color.accentColor.opacity(0.3), radius: 8, y: 4)
                 }
-                .padding(.horizontal, 16)
+                .padding(.horizontal, 12)
                 .padding(.top, 4)
             }
             .padding(24)
             .background(
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                RoundedRectangle(cornerRadius: 26, style: .continuous)
                     .fill(Color(uiColor: .systemBackground))
-                    .shadow(color: .black.opacity(0.2), radius: 20, x: 0, y: 10)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 26, style: .continuous)
+                            .strokeBorder(Color.orange.opacity(0.3), lineWidth: 1.5)
+                    )
+                    .shadow(color: .black.opacity(0.25), radius: 25, x: 0, y: 12)
             )
-            .padding(32)
+            .padding(28)
         }
-        .transition(.opacity.combined(with: .scale(scale: 0.9)))
+        .transition(.opacity.combined(with: .scale(scale: 0.88)))
     }
     
     // MARK: - Edit Title Sheet
@@ -461,6 +500,8 @@ struct BingoCellView: View {
                 radius: cell.isChecked ? 4 : 2,
                 y: 1
             )
+            .scaleEffect(cell.isChecked ? 1.02 : 1.0)
+            .animation(.spring(response: 0.25, dampingFraction: 0.65), value: cell.isChecked)
         }
         .buttonStyle(.plain)
     }
