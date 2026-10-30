@@ -5,34 +5,42 @@ import SwiftData
 public struct StatsView: View {
     @Query private var allTrains: [TrainModel]
     @Query(sort: \SpottedTrain.spottedAt, order: .reverse) private var allSpottings: [SpottedTrain]
+    @Query(sort: \BingoGame.startedAt, order: .reverse) private var allBingoGames: [BingoGame]
     @State private var showingSettings = false
-    
+
     public init() {}
-    
+
     private var stats: TrainStats {
-        StatsCalculator.computeStats(allTrains: allTrains, allSpottings: allSpottings)
+        StatsCalculator.computeStats(
+            allTrains: allTrains,
+            allSpottings: allSpottings,
+            bingoGames: allBingoGames
+        )
     }
-    
+
     public var body: some View {
         NavigationStack {
             ScrollView {
                 VStack(spacing: 20) {
-                    
-                    // 1. Hero Score Banner mit Rang
+
+                    // 1. Hero Score Banner mit Rang & Fortschritt
                     scoreHeroCard
-                    
+
                     // 2. Trophäen-Showcase: Seltenster Fund
                     if let rarest = stats.rarestSpot, let train = rarest.trainModel {
                         rarestCatchShowcase(spotted: rarest, train: train)
                     }
-                    
+
                     // 3. Sammlungsfortschritt Gesamt
                     overallProgressCard
-                    
-                    // 4. Fortschritt nach Kategorien
+
+                    // 4. DB-Bingo Bilanz
+                    bingoOverviewCard
+
+                    // 5. Fortschritt nach Kategorien
                     categoryProgressSection
-                    
-                    // 5. Seltenheits-Verteilung
+
+                    // 6. Seltenheits-Verteilung
                     rarityDistributionSection
                 }
                 .padding(.horizontal, 16)
@@ -55,9 +63,9 @@ public struct StatsView: View {
             }
         }
     }
-    
+
     // MARK: - Components
-    
+
     private var scoreHeroCard: some View {
         VStack(spacing: 12) {
             HStack {
@@ -68,36 +76,53 @@ public struct StatsView: View {
                     .padding(.vertical, 5)
                     .background(.white.opacity(0.2))
                     .clipShape(Capsule())
-                
+
                 Spacer()
-                
+
                 Text("LEVEL \(stats.level)")
                     .font(.caption2.weight(.heavy))
-                    .foregroundStyle(.white.opacity(0.8))
+                    .foregroundStyle(.white.opacity(0.85))
                     .tracking(1)
             }
-            
+
             VStack(spacing: 2) {
                 Text("\(stats.totalScore)")
                     .font(.system(size: 52, weight: .heavy, design: .rounded))
                     .foregroundColor(.white)
-                
+
                 Text("BAHN-PUNKTE (XP)")
                     .font(.caption2.weight(.bold))
                     .foregroundColor(.white.opacity(0.85))
                     .tracking(1.5)
             }
-            .padding(.vertical, 4)
-            
+            .padding(.vertical, 2)
+
+            if let nextRank = stats.userRank.nextRank, let missing = stats.pointsToNextRank {
+                VStack(spacing: 5) {
+                    ProgressView(value: stats.rankProgress, total: 1.0)
+                        .tint(.white)
+                        .background(Color.white.opacity(0.2))
+                        .clipShape(Capsule())
+
+                    HStack {
+                        Text("Nächster Rang: \(nextRank.rawValue)")
+                        Spacer()
+                        Text("noch \(missing) XP")
+                    }
+                    .font(.caption2.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.85))
+                }
+            }
+
             Divider().background(.white.opacity(0.25))
-            
+
             HStack {
                 Label("\(stats.totalSpottings) Sichtungen", systemImage: "eye.fill")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.95))
-                
+
                 Spacer()
-                
+
                 Label("\(stats.uniqueTrainsSpotted) / \(stats.totalTrainsInCatalog) Zügen", systemImage: "checkmark.seal.fill")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.95))
@@ -114,10 +139,10 @@ public struct StatsView: View {
         .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
         .shadow(color: Color.orange.opacity(0.3), radius: 12, y: 6)
     }
-    
+
     private func rarestCatchShowcase(spotted: SpottedTrain, train: TrainModel) -> some View {
         VStack(alignment: .leading, spacing: 0) {
-            
+
             // Header Bar
             HStack {
                 HStack(spacing: 6) {
@@ -134,13 +159,13 @@ public struct StatsView: View {
             .padding(.horizontal, 16)
             .padding(.top, 14)
             .padding(.bottom, 10)
-            
+
             // Large Hero Image
             TrainImageView(assetName: train.assetName)
                 .frame(height: 140)
                 .frame(maxWidth: .infinity)
                 .clipped()
-            
+
             // Details Footer
             VStack(alignment: .leading, spacing: 4) {
                 HStack {
@@ -153,7 +178,7 @@ public struct StatsView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-                
+
                 if let location = spotted.stationOrLocationName {
                     HStack(spacing: 4) {
                         Image(systemName: "location.fill")
@@ -174,7 +199,7 @@ public struct StatsView: View {
         )
         .shadow(color: train.rarity.color.opacity(0.18), radius: 12, y: 6)
     }
-    
+
     private var overallProgressCard: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
@@ -185,27 +210,68 @@ public struct StatsView: View {
                     .font(.headline.weight(.heavy))
                     .foregroundStyle(.primary)
             }
-            
+
             ProgressView(value: stats.completionPercentage, total: 100.0)
                 .tint(.accentColor)
                 .scaleEffect(x: 1, y: 2.2, anchor: .center)
                 .clipShape(Capsule())
-            
-            Text("Entdecke noch \(stats.remainingTrains) Baureihen zur Vervollständigung.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+
+            Text(
+                stats.remainingTrains == 0
+                    ? "Glückwunsch! Du hast alle Baureihen im Katalog entdeckt! 🎉"
+                    : "Entdecke noch \(stats.remainingTrains) Baureihen zur Vervollständigung."
+            )
+            .font(.caption)
+            .foregroundStyle(.secondary)
         }
         .padding(18)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
     }
-    
+
+    private var bingoOverviewCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Label("DB-Bingo Bilanz", systemImage: "checkerboard.rectangle")
+                    .font(.headline)
+                Spacer()
+                Text("+\(stats.bingoScore) XP")
+                    .font(.subheadline.weight(.bold))
+                    .foregroundStyle(Color.orange)
+            }
+
+            HStack(spacing: 10) {
+                BingoStatPill(
+                    title: "Fahrten",
+                    value: "\(stats.completedBingoTrips)",
+                    icon: "flag.checkered",
+                    color: .blue
+                )
+                BingoStatPill(
+                    title: "Bingos",
+                    value: "\(stats.achievedBingos)",
+                    icon: "trophy.fill",
+                    color: .yellow
+                )
+                BingoStatPill(
+                    title: "Vorfälle",
+                    value: "\(stats.totalBingoIncidents)",
+                    icon: "checkmark.seal.fill",
+                    color: .green
+                )
+            }
+        }
+        .padding(16)
+        .background(Color(uiColor: .secondarySystemGroupedBackground))
+        .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
     private var categoryProgressSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Fortschritt nach Kategorien")
                 .font(.headline)
                 .padding(.horizontal, 4)
-            
+
             ForEach(stats.categoryProgress) { cat in
                 VStack(alignment: .leading, spacing: 8) {
                     HStack {
@@ -216,7 +282,7 @@ public struct StatsView: View {
                             .font(.caption.weight(.bold))
                             .foregroundStyle(.secondary)
                     }
-                    
+
                     ProgressView(value: cat.percentage, total: 100.0)
                         .tint(cat.percentage == 100 ? .green : .accentColor)
                 }
@@ -226,13 +292,13 @@ public struct StatsView: View {
             }
         }
     }
-    
+
     private var rarityDistributionSection: some View {
         VStack(alignment: .leading, spacing: 12) {
             Text("Seltenheits-Verteilung")
                 .font(.headline)
                 .padding(.horizontal, 4)
-            
+
             LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
                 ForEach(stats.rarityCounts) { item in
                     VStack(alignment: .leading, spacing: 8) {
@@ -240,11 +306,11 @@ public struct StatsView: View {
                             RarityBadgeView(rarity: item.rarity, style: .minimal)
                             Spacer()
                         }
-                        
+
                         Text("\(item.count)")
                             .font(.title.weight(.heavy))
                             .foregroundStyle(.primary)
-                        
+
                         Text("x gesichtet")
                             .font(.caption2.weight(.medium))
                             .foregroundStyle(.secondary)

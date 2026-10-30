@@ -20,8 +20,7 @@ public final class QuickSpotViewModel {
     public var isFirstCatch: Bool = false
     public var earnedPoints: Int = 100
     public var errorMessage: String?
-    public var showStationEditSheet: Bool = false
-    
+
     // Location Dependency
     public var locationManager: LocationManager
     
@@ -61,14 +60,14 @@ public final class QuickSpotViewModel {
         isSaving = true
         let coordinate = locationManager.lastLocation?.coordinate
         
-        // Erstfund-Erkennung
+        // Erstfund-Erkennung (2x XP Bonus analog zum StatsCalculator)
         let wasAlreadySpotted = train.isSpotted
         self.isFirstCatch = !wasAlreadySpotted
         let basePoints = train.rarity.points
-        self.earnedPoints = isFirstCatch ? (basePoints + 50) : basePoints
-        
+        self.earnedPoints = isFirstCatch ? (basePoints * 2) : basePoints
+
         let finalStation = effectiveStationName
-        let stationToSave = (finalStation.isEmpty || finalStation.contains("wird ermittelt") || finalStation.contains("deaktiviert")) ? nil : finalStation
+        let stationToSave = Self.sanitizeStationName(finalStation)
         
         let newSpot = SpottedTrain(
             spottedAt: Date(),
@@ -118,5 +117,18 @@ public final class QuickSpotViewModel {
         photoData = nil
         selectedPhotoItem = nil
         locationManager.requestLocation()
+    }
+
+    public static func sanitizeStationName(_ name: String) -> String? {
+        let trimmed = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty,
+              !trimmed.contains("wird ermittelt"),
+              !trimmed.contains("deaktiviert"),
+              !trimmed.contains("nicht verfügbar"),
+              !trimmed.contains("unbekannt")
+        else {
+            return nil
+        }
+        return trimmed
     }
 }

@@ -57,5 +57,5 @@ public struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(for: [TrainModel.self, SpottedTrain.self], inMemory: true)
+        .modelContainer(for: [TrainModel.self, SpottedTrain.self, BingoGame.self, BingoCell.self], inMemory: true)
 }

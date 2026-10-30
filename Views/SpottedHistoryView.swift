@@ -11,14 +11,14 @@ public struct SpottedHistoryView: View {
         sort: \BingoGame.startedAt,
         order: .reverse
     ) private var pastBingoGames: [BingoGame]
-    
+
     @Binding private var selectedSection: LogbookSection
     @State private var viewMode: SpottingViewMode = .list
     @State private var inspectedTrain: TrainModel?
     @State private var inspectedBingoGame: BingoGame?
     @State private var selectedPhotoSpot: SpottedTrain?
     @State private var searchText: String = ""
-    
+
     private var filteredSpottings: [SpottedTrain] {
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
         guard !query.isEmpty else { return spottings }
@@ -30,19 +30,29 @@ public struct SpottedHistoryView: View {
             (spot.notes?.lowercased().contains(query) ?? false)
         }
     }
-    
+
+    private var filteredBingoGames: [BingoGame] {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
+        guard !query.isEmpty else { return pastBingoGames }
+        return pastBingoGames.filter { game in
+            (game.travelTitle?.lowercased().contains(query) ?? false) ||
+            game.startedAt.formatted(date: .abbreviated, time: .omitted).lowercased().contains(query) ||
+            game.cells.contains { $0.isChecked && !$0.isJoker && $0.text.lowercased().contains(query) }
+        }
+    }
+
     public enum LogbookSection: String, CaseIterable, Identifiable {
         case spottings = "Sichtungen"
         case bingo = "DB-Bingo"
-        
+
         public var id: String { rawValue }
     }
-    
+
     public enum SpottingViewMode: String, CaseIterable {
         case list = "Liste"
         case map = "Karte"
     }
-    
+
     public init(selectedSection: Binding<LogbookSection>? = nil) {
         if let binding = selectedSection {
             self._selectedSection = binding
@@ -50,7 +60,7 @@ public struct SpottedHistoryView: View {
             self._selectedSection = .constant(.spottings)
         }
     }
-    
+
     public var body: some View {
         NavigationStack {
             VStack(spacing: 0) {
@@ -63,7 +73,7 @@ public struct SpottedHistoryView: View {
                 .padding(.horizontal, 16)
                 .padding(.vertical, 8)
                 .background(Color(uiColor: .systemGroupedBackground))
-                
+
                 // Inhalt je nach gewähltem Bereich
                 Group {
                     if selectedSection == .spottings {
@@ -77,7 +87,9 @@ public struct SpottedHistoryView: View {
             .navigationBarTitleDisplayMode(.inline)
             .searchable(
                 text: $searchText,
-                prompt: "Nach Baureihe, Ort oder Tz suchen..."
+                prompt: selectedSection == .spottings
+                    ? "Nach Baureihe, Ort, Tz oder Notiz suchen..."
+                    : "Nach Reise oder Vorfall suchen..."
             )
             .background(Color(uiColor: .systemGroupedBackground))
             .sheet(item: $inspectedTrain) { train in
@@ -91,7 +103,7 @@ public struct SpottedHistoryView: View {
             }
         }
     }
-    
+
     // MARK: - Zugsichtungen Sektion
     private var spottingsSection: some View {
         Group {
@@ -113,7 +125,7 @@ public struct SpottedHistoryView: View {
                     .pickerStyle(.segmented)
                     .padding(.horizontal, 16)
                     .padding(.bottom, 8)
-                    
+
                     if viewMode == .list {
                         List {
                             ForEach(filteredSpottings) { spot in
@@ -154,7 +166,7 @@ public struct SpottedHistoryView: View {
             }
         }
     }
-    
+
     // MARK: - DB-Bingo Logbuch Sektion
     private var bingoHistorySection: some View {
         Group {
@@ -162,12 +174,14 @@ public struct SpottedHistoryView: View {
                 ContentUnavailableView(
                     "Keine Bingo-Runden archiviert",
                     systemImage: "checkerboard.rectangle",
-                    description: Text("Sobald du ein Bingo-Spiel im DB-Bingo abschließt oder ein neues startest, wird deine bisherige Fahrt hier im Logbuch archiviert.")
+                    description: Text("Sobald du eine Fahrt im DB-Bingo über „Reise beenden“ abschließt, wird deine Runde hier dauerhaft gespeichert.")
                 )
+            } else if filteredBingoGames.isEmpty {
+                ContentUnavailableView.search(text: searchText)
             } else {
                 List {
                     Section {
-                        HStack(spacing: 12) {
+                        HStack(spacing: 10) {
                             BingoStatPill(
                                 title: "Fahrten",
                                 value: "\(pastBingoGames.count)",
@@ -182,8 +196,14 @@ public struct SpottedHistoryView: View {
                             )
                             BingoStatPill(
                                 title: "Vorfälle",
-                                value: "\(pastBingoGames.reduce(0) { $0 + $1.cells.filter(\.isChecked).count })",
-                                icon: "exclamationmark.triangle.fill",
+                                value: "\(pastBingoGames.reduce(0) { $0 + $1.checkedIncidentsCount })",
+                                icon: "checkmark.seal.fill",
+                                color: .green
+                            )
+                            BingoStatPill(
+                                title: "Bingo-XP",
+                                value: "\(pastBingoGames.reduce(0) { $0 + $1.earnedXP })",
+                                icon: "bolt.fill",
                                 color: .orange
                             )
                         }
@@ -191,9 +211,9 @@ public struct SpottedHistoryView: View {
                     }
                     .listRowBackground(Color.clear)
                     .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-                    
-                    Section(header: Text("Archivierte Fahrten (\(pastBingoGames.count))")) {
-                        ForEach(pastBingoGames) { game in
+
+                    Section(header: Text("Gespeicherte Fahrten (\(filteredBingoGames.count))")) {
+                        ForEach(filteredBingoGames) { game in
                             Button {
                                 inspectedBingoGame = game
                             } label: {
@@ -208,7 +228,7 @@ public struct SpottedHistoryView: View {
             }
         }
     }
-    
+
     private func deleteSpotting(at offsets: IndexSet) {
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
@@ -218,12 +238,12 @@ public struct SpottedHistoryView: View {
         }
         try? modelContext.save()
     }
-    
+
     private func deleteBingoGames(at offsets: IndexSet) {
         let generator = UIImpactFeedbackGenerator(style: .medium)
         generator.impactOccurred()
         for index in offsets {
-            let game = pastBingoGames[index]
+            let game = filteredBingoGames[index]
             modelContext.delete(game)
         }
         try? modelContext.save()
@@ -233,12 +253,12 @@ public struct SpottedHistoryView: View {
 public struct SpottingRow: View {
     public let spot: SpottedTrain
     public var onPhotoTap: (() -> Void)? = nil
-    
+
     public init(spot: SpottedTrain, onPhotoTap: (() -> Void)? = nil) {
         self.spot = spot
         self.onPhotoTap = onPhotoTap
     }
-    
+
     public var body: some View {
         HStack(spacing: 14) {
             if let photoData = spot.photoData, let uiImage = UIImage(data: photoData) {
@@ -249,9 +269,9 @@ public struct SpottingRow: View {
                         Image(uiImage: uiImage)
                             .resizable()
                             .scaledToFill()
-                            .frame(width: 54, height: 54)
-                            .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-                        
+                            .frame(width: 58, height: 58)
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+
                         Image(systemName: "arrow.up.left.and.down.right.magnifyingglass")
                             .font(.system(size: 8, weight: .bold))
                             .foregroundColor(.white)
@@ -267,7 +287,7 @@ public struct SpottingRow: View {
                     .frame(width: 58, height: 58)
                     .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
             }
-            
+
             VStack(alignment: .leading, spacing: 3) {
                 HStack {
                     Text(spot.trainModel?.seriesCode ?? "Unbekannt")
@@ -277,13 +297,20 @@ public struct SpottingRow: View {
                         RarityBadgeView(rarity: rarity, style: .minimal)
                     }
                 }
-                
-                if let tz = spot.tzNumber {
+
+                if let tz = spot.tzNumber, !tz.isEmpty {
                     Text("Tz: \(tz)")
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(.secondary)
                 }
-                
+
+                if let notes = spot.notes, !notes.isEmpty {
+                    Text(notes)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(2)
+                }
+
                 HStack(spacing: 8) {
                     if let location = spot.stationOrLocationName {
                         Label(location, systemImage: "location")

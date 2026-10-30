@@ -26,6 +26,7 @@ public struct TrainDetailView: View {
     @State private var selectedPhotoIndex: Int = 0
     @State private var isShowingSpotSheet = false
     @State private var spotSuccessToast = false
+    @State private var lastEarnedSpotXP: Int = 0
     @State private var selectedAttributionPhoto: TrainPhotoDetail? = nil
     @State private var previewSpot: SpottedTrain? = nil
     
@@ -589,10 +590,16 @@ public struct TrainDetailView: View {
                                     Text(spot.stationOrLocationName ?? "Standort erfasst")
                                         .font(.subheadline.weight(.semibold))
                                         .foregroundStyle(.primary)
-                                    if let tz = spot.tzNumber {
+                                    if let tz = spot.tzNumber, !tz.isEmpty {
                                         Text("Triebzug: \(tz)")
                                             .font(.caption)
                                             .foregroundStyle(.secondary)
+                                    }
+                                    if let notes = spot.notes, !notes.isEmpty {
+                                        Text(notes)
+                                            .font(.caption2)
+                                            .foregroundStyle(.secondary)
+                                            .lineLimit(2)
                                     }
                                 }
                                 
@@ -747,15 +754,18 @@ public struct TrainDetailView: View {
     }
     
     private func saveDirectSpot() {
+        let isFirstCatch = !train.isSpotted
+        lastEarnedSpotXP = isFirstCatch ? (train.rarity.points * 2) : train.rarity.points
+
         let coord = locationManager.lastLocation?.coordinate
         let newSpot = SpottedTrain(
             spottedAt: Date(),
-            tzNumber: tzInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : tzInput,
+            tzNumber: tzInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : tzInput.trimmingCharacters(in: .whitespacesAndNewlines),
             latitude: coord?.latitude,
             longitude: coord?.longitude,
-            stationOrLocationName: locationManager.currentPlaceName.isEmpty ? nil : locationManager.currentPlaceName,
+            stationOrLocationName: QuickSpotViewModel.sanitizeStationName(locationManager.currentPlaceName),
             photoData: capturedPhotoData,
-            notes: notesInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : notesInput,
+            notes: notesInput.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ? nil : notesInput.trimmingCharacters(in: .whitespacesAndNewlines),
             trainModel: train
         )
         modelContext.insert(newSpot)
@@ -792,7 +802,7 @@ public struct TrainDetailView: View {
             VStack(alignment: .leading, spacing: 2) {
                 Text("Erfolgreich erfasst!")
                     .font(.subheadline.weight(.bold))
-                Text("+\(train.rarity.points) Sammler-XP hinzugefügt")
+                Text("+\(lastEarnedSpotXP) Sammler-XP hinzugefügt")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

@@ -10,7 +10,9 @@ public final class BingoCell: Identifiable {
     public var isChecked: Bool
     public var isJoker: Bool
     public var positionIndex: Int
-    
+    public var likelihoodPercent: Int = 50
+    public var category: String = "Allgemein"
+
     public init(
         id: UUID = UUID(),
         text: String,
@@ -18,7 +20,9 @@ public final class BingoCell: Identifiable {
         rarityRaw: String,
         isChecked: Bool = false,
         isJoker: Bool = false,
-        positionIndex: Int
+        positionIndex: Int,
+        likelihoodPercent: Int = 50,
+        category: String = "Allgemein"
     ) {
         self.id = id
         self.text = text
@@ -27,8 +31,10 @@ public final class BingoCell: Identifiable {
         self.isChecked = isChecked
         self.isJoker = isJoker
         self.positionIndex = positionIndex
+        self.likelihoodPercent = likelihoodPercent
+        self.category = category
     }
-    
+
     public var rarity: BingoRarity {
         BingoRarity(rawValue: rarityRaw) ?? .common
     }
@@ -43,10 +49,10 @@ public final class BingoGame: Identifiable {
     public var travelTitle: String? // z.B. "Fahrt nach Hamburg"
     public var isBingoAchieved: Bool
     public var isArchived: Bool = false
-    
+
     @Relationship(deleteRule: .cascade)
     public var cells: [BingoCell] = []
-    
+
     public init(
         id: UUID = UUID(),
         startedAt: Date = Date(),
@@ -66,8 +72,22 @@ public final class BingoGame: Identifiable {
         self.isArchived = isArchived
         self.cells = cells
     }
-    
+
     public var sortedCells: [BingoCell] {
         cells.sorted { $0.positionIndex < $1.positionIndex }
+    }
+
+    /// Anzahl der vom Nutzer abgekreuzten Vorfälle (ohne Gratis-Joker)
+    public var checkedIncidentsCount: Int {
+        cells.filter { $0.isChecked && !$0.isJoker }.count
+    }
+
+    /// Berechnete Bahn-XP für diese Bingo-Fahrt
+    public var earnedXP: Int {
+        let cellXP = cells.filter { $0.isChecked && !$0.isJoker }.reduce(0) { sum, cell in
+            sum + cell.rarity.xpPoints
+        }
+        let bingoBonus = isBingoAchieved ? 150 : 0
+        return cellXP + bingoBonus
     }
 }

@@ -6,9 +6,10 @@ public struct SettingsView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     @Query private var spottings: [SpottedTrain]
-    
+    @Query(filter: #Predicate<BingoGame> { $0.isArchived }) private var archivedBingos: [BingoGame]
+
     @State private var showDeleteAllAlert = false
-    @State private var showResetCatalogAlert = false
+    @State private var showDeleteBingoAlert = false
     @State private var showAttributionSheet = false
     
     public init() {}
@@ -132,11 +133,22 @@ public struct SettingsView: View {
                     } label: {
                         HStack {
                             Image(systemName: "trash")
-                            Text("Alle Sichtungen löschen (\(spottings.count))")
+                            Text("Alle Zugsichtungen löschen (\(spottings.count))")
                         }
                         .font(.subheadline)
                     }
                     .disabled(spottings.isEmpty)
+
+                    Button(role: .destructive) {
+                        showDeleteBingoAlert = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "checkerboard.rectangle")
+                            Text("Bingo-Logbuch leeren (\(archivedBingos.count))")
+                        }
+                        .font(.subheadline)
+                    }
+                    .disabled(archivedBingos.isEmpty)
                 }
                 
                 // 5. Footer / Credits
@@ -167,25 +179,42 @@ public struct SettingsView: View {
                     deleteAllSpottings()
                 }
             } message: {
-                Text("Bist du sicher? Alle deine gesammelten Sichtungen, Fotos und XP werden unwiderruflich gelöscht.")
+                Text("Bist du sicher? Alle deine gesammelten Zugsichtungen und Fotos werden unwiderruflich gelöscht.")
+            }
+            .alert("Bingo-Logbuch leeren?", isPresented: $showDeleteBingoAlert) {
+                Button("Abbrechen", role: .cancel) {}
+                Button("Löschen", role: .destructive) {
+                    deleteAllArchivedBingos()
+                }
+            } message: {
+                Text("Möchtest du alle gespeicherten DB-Bingo-Fahrten aus dem Logbuch löschen?")
             }
             .sheet(isPresented: $showAttributionSheet) {
                 AttributionSheetView()
             }
         }
     }
-    
+
     private var appVersionString: String {
-        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.5"
-        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.7"
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "5"
         return "Version \(version) (Build \(build))"
     }
-    
+
     private func deleteAllSpottings() {
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.warning)
         for spot in spottings {
             modelContext.delete(spot)
+        }
+        try? modelContext.save()
+    }
+
+    private func deleteAllArchivedBingos() {
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.warning)
+        for game in archivedBingos {
+            modelContext.delete(game)
         }
         try? modelContext.save()
     }
