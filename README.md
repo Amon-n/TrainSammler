@@ -4,7 +4,7 @@
 [![Swift 5.9+](https://img.shields.io/badge/Swift-5.9%2B-orange?logo=swift&style=flat-square)](https://swift.org/)
 [![SwiftUI](https://img.shields.io/badge/UI-SwiftUI-purple?style=flat-square)](https://developer.apple.com/xcode/swiftui/)
 [![SwiftData](https://img.shields.io/badge/Storage-SwiftData-green?style=flat-square)](https://developer.apple.com/documentation/swiftdata)
-[![Version](https://img.shields.io/badge/Version-1.7%20(Build%205)-teal?style=flat-square)](Info.plist)
+[![Version](https://img.shields.io/badge/Version-1.7%20(Build%206)-teal?style=flat-square)](Info.plist)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
 Das „Autokennzeichen-Sammeln“ für den Bahnverkehr in Deutschland! **TrainSammler** ist eine native, moderne und gamifizierte iOS-App zum Spotten von DB-Zügen, ICE-Baureihen, Regionalverkehr-Triebzügen, Triebzugnummern (Tz), seltenen Sonderzügen (wie dem Regenbogen- oder Europa-ICE) – inklusive interaktivem **DB-Bingo** für unterwegs.
@@ -19,9 +19,9 @@ Das „Autokennzeichen-Sammeln“ für den Bahnverkehr in Deutschland! **TrainSa
   - **Alltagsnaher Algorithmus:** Faire Verteilung mit Fokus auf normale Vorfälle (z. B. +5 Min. Verspätung, Ticketkontrolle, Durchsagen, Alltag im Wagen), sodass keine unlösbaren Reihen entstehen.
   - **„Reise beenden & speichern“:** Schließe deine Zugfahrt jederzeit ab, vergib einen Reisenamen, sammle Bahn-XP für erlebte Vorfälle (+150 XP Bingo-Bonus) und speichere das Brett dauerhaft im Logbuch.
   - **Einzel-Feld-Tausch:** Halte ein beliebiges Feld gedrückt, um die genaue Wahrscheinlichkeit zu sehen oder ein einzelnes Feld auszutauschen.
-- 🗂️ **Train-Dex (31 Baureihen):** Vollständiger Katalog über Fernverkehr (ICE 1 bis ICE 3neo, ICE L, ICE T, IC 1/2, Nightjet), Regionalverkehr (FLIRT, Talent 2, Desiro HC, Mireo, Twindexx, KISS, LINT, ET 423/425) sowie Test- und Sonderzüge (ICE S, advanced TrainLab, Regenbogen-ICE, Europa-ICE, BRD-ICE, Female ICE).
+- 🗂️ **Train-Dex (34 Baureihen):** Vollständiger Katalog über Fernverkehr (ICE 1 bis ICE 3neo, ICE L, ICE T, IC 1/2, ÖBB Railjet, SBB Giruno, Siemens Vectron, Nightjet), Regionalverkehr (FLIRT, Talent 2, Desiro HC, Mireo, Twindexx, KISS, LINT, ET 423/425) sowie Test- und Sonderzüge (ICE S, advanced TrainLab, Regenbogen-ICE, Europa-ICE, BRD-ICE, Female ICE).
 - 📸 **Multi-Bildergalerie & Eigene Fotos:**
-  - Wische interaktiv durch 65+ hochauflösende Perspektiven (Frontansicht, Seitenprofil, Streckenfahrt, Führerstand, Innenraum) inklusive Vollbild-Zoom.
+  - Wische interaktiv durch 70+ hochauflösende Perspektiven (Frontansicht, Seitenprofil, Streckenfahrt, Führerstand, Innenraum) inklusive Vollbild-Zoom.
   - Persönliche Beweisfotos deiner Sichtungen werden direkt in die Detail-Galerie des jeweiligen Zuges integriert.
 - 🔍 **Spotter-Guide & Erkennungsmerkmale:** Ausführliche Identifikationstipps pro Zug (Scheinwerferform, Frontnase, Stromabnehmer, Türanordnung) für zielsicheres Erkennen am Gleis.
 - 🏆 **Gamification & Rangsystem:** Bahn-XP aus Zugsichtungen (mit 2x First-Catch-Bonus für Erstfunde) und DB-Bingo-Runden. Steige vom *Bahnsteig-Neuling* bis zur *ICE-Legende* auf.
@@ -52,7 +52,7 @@ trainsammler/
 │   └── BingoItem.swift                    // Wahrscheinlichkeits-Stufen & Vorfalls-Katalog
 ├── Services/
 │   ├── LocationManager.swift              // CoreLocation Service mit async Reverse-Geocoding
-│   └── DataSeeder.swift                   // Lokales Catalog-Seeding (31 Züge) & Bildmapping
+│   └── DataSeeder.swift                   // Lokales Catalog-Seeding (34 Züge) & Bildmapping
 ├── ViewModels/
 │   ├── QuickSpotViewModel.swift           // Bahnsteig-Workflow, Validierung & Feedback
 │   ├── BingoViewModel.swift               // Gewichtete Brett-Generierung & Reise-Speicherung

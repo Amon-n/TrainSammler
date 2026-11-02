@@ -277,22 +277,6 @@ public struct BingoCatalog {
             likelihoodPercent: 80
         ),
         BingoIncident(
-            id: "reading_book_newspaper",
-            text: "Buch oder Zeitung lesen",
-            iconName: "book.fill",
-            rarity: .everyday,
-            category: "Fahrgäste",
-            likelihoodPercent: 75
-        ),
-        BingoIncident(
-            id: "headphones_everyone",
-            text: "Mind. 3× Kopfhörer sichtbar",
-            iconName: "headphones",
-            rarity: .everyday,
-            category: "Fahrgäste",
-            likelihoodPercent: 92
-        ),
-        BingoIncident(
             id: "scrolling_ticket_qr",
             text: "Hektische Ticket-Suche",
             iconName: "qrcode",
@@ -309,70 +293,6 @@ public struct BingoCatalog {
             likelihoodPercent: 86
         ),
         BingoIncident(
-            id: "sunblind_pulled",
-            text: "Sonnenrollo genutzt",
-            iconName: "sun.max.fill",
-            rarity: .everyday,
-            category: "Komfort",
-            likelihoodPercent: 68
-        ),
-        BingoIncident(
-            id: "jacket_on_hook",
-            text: "Jacke am Fensterhaken",
-            iconName: "tshirt.fill",
-            rarity: .everyday,
-            category: "Komfort",
-            likelihoodPercent: 84
-        ),
-        BingoIncident(
-            id: "table_folded_down",
-            text: "Klapptisch ausgeklappt",
-            iconName: "rectangle.split.3x1",
-            rarity: .everyday,
-            category: "Komfort",
-            likelihoodPercent: 90
-        ),
-        BingoIncident(
-            id: "water_bottle_on_table",
-            text: "Trinkflasche auf dem Tisch",
-            iconName: "waterbottle.fill",
-            rarity: .everyday,
-            category: "Verpflegung",
-            likelihoodPercent: 88
-        ),
-        BingoIncident(
-            id: "window_gazing",
-            text: "Blick aus dem Zugfenster",
-            iconName: "eye",
-            rarity: .everyday,
-            category: "Fahrgäste",
-            likelihoodPercent: 90
-        ),
-        BingoIncident(
-            id: "backpack_in_footwell",
-            text: "Rucksack im Fußraum",
-            iconName: "backpack.fill",
-            rarity: .everyday,
-            category: "Komfort",
-            likelihoodPercent: 86
-        ),
-        BingoIncident(
-            id: "powerbank_charging",
-            text: "Handy an der Powerbank",
-            iconName: "battery.100percent.bolt",
-            rarity: .everyday,
-            category: "Technik",
-            likelihoodPercent: 75
-        ),
-        BingoIncident(
-            id: "crossword_or_sudoku",
-            text: "Kreuzworträtsel / Sudoku",
-            iconName: "square.grid.3x3",
-            rarity: .everyday,
-            category: "Fahrgäste",
-            likelihoodPercent: 65
-        ),
-        BingoIncident(
             id: "Bahncard_shown",
             text: "BahnCard / D-Ticket gezeigt",
             iconName: "creditcard.fill",
@@ -381,32 +301,8 @@ public struct BingoCatalog {
             likelihoodPercent: 85
         ),
         BingoIncident(
-            id: "train_passes_bridge",
-            text: "Fahrt über Flussbrücke",
-            iconName: "water.waves",
-            rarity: .everyday,
-            category: "Strecke",
-            likelihoodPercent: 80
-        ),
-        BingoIncident(
-            id: "solar_panels_field",
-            text: "Solarpark an der Strecke",
-            iconName: "sun.max.trianglebadge.exclamationmark",
-            rarity: .everyday,
-            category: "Strecke",
-            likelihoodPercent: 82
-        ),
-        BingoIncident(
-            id: "church_tower_village",
-            text: "Kirchturm am Horizont",
-            iconName: "building.columns.fill",
-            rarity: .everyday,
-            category: "Strecke",
-            likelihoodPercent: 88
-        ),
-        BingoIncident(
             id: "graffiti_noise_wall",
-            text: "Bunte Lärmschutzwand",
+            text: "Graffiti an Lärmschutzwand",
             iconName: "paintbrush.pointed.fill",
             rarity: .everyday,
             category: "Strecke",
@@ -429,14 +325,6 @@ public struct BingoCatalog {
             likelihoodPercent: 72
         ),
         BingoIncident(
-            id: "station_clock_check",
-            text: "Blick zur Bahnhofsuhr",
-            iconName: "clock.fill",
-            rarity: .everyday,
-            category: "Bahnhof",
-            likelihoodPercent: 85
-        ),
-        BingoIncident(
             id: "door_button_pressed_early",
             text: "Türknopf zu früh gedrückt",
             iconName: "hand.point.up.left.fill",
@@ -453,44 +341,12 @@ public struct BingoCatalog {
             likelihoodPercent: 75
         ),
         BingoIncident(
-            id: "apple_or_banana_snack",
-            text: "Apfel oder Banane als Snack",
-            iconName: "leaf.fill",
-            rarity: .everyday,
-            category: "Verpflegung",
-            likelihoodPercent: 76
-        ),
-        BingoIncident(
-            id: "earbuds_one_ear",
-            text: "Nur ein Kopfhörer im Ohr",
-            iconName: "airpod.right",
-            rarity: .everyday,
-            category: "Fahrgäste",
-            likelihoodPercent: 78
-        ),
-        BingoIncident(
-            id: "seat_backrest_adjusted",
-            text: "Sitzlehne zurückgestellt",
-            iconName: "chair.fill",
-            rarity: .everyday,
-            category: "Komfort",
-            likelihoodPercent: 74
-        ),
-        BingoIncident(
             id: "conductor_walks_past",
             text: "Zugbegleiter läuft vorbei",
             iconName: "figure.walk",
             rarity: .everyday,
             category: "Service",
             likelihoodPercent: 90
-        ),
-        BingoIncident(
-            id: "window_reflection_dark",
-            text: "Fensterspiegelung im Tunnel",
-            iconName: "rectangle.portrait.on.rectangle.portrait.angled",
-            rarity: .everyday,
-            category: "Strecke",
-            likelihoodPercent: 78
         ),
 
         // --- Technik, Bahnhof & Strecke (Alltag) ---
@@ -519,14 +375,6 @@ public struct BingoCatalog {
             likelihoodPercent: 82
         ),
         BingoIncident(
-            id: "wind_turbines_outside",
-            text: "Windräder an der Strecke",
-            iconName: "fanblades.fill",
-            rarity: .everyday,
-            category: "Strecke",
-            likelihoodPercent: 86
-        ),
-        BingoIncident(
             id: "tunnel_ear_pressure",
             text: "Ohrendruck im Tunnel",
             iconName: "ear.fill",
@@ -552,11 +400,11 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "commuter_door_sprint",
-            text: "Sprint zur offenen Zugtür",
+            text: "Laufschritt am Bahnsteig",
             iconName: "figure.run",
             rarity: .everyday,
             category: "Bahnhof",
-            likelihoodPercent: 76
+            likelihoodPercent: 78
         ),
         BingoIncident(
             id: "screen_shows_speed",
@@ -565,14 +413,6 @@ public struct BingoCatalog {
             rarity: .everyday,
             category: "Technik",
             likelihoodPercent: 84
-        ),
-        BingoIncident(
-            id: "charger_plugged_in",
-            text: "Steckdose am Platz genutzt",
-            iconName: "powerplug.fill",
-            rarity: .everyday,
-            category: "Technik",
-            likelihoodPercent: 82
         ),
         BingoIncident(
             id: "trash_collector_walk",
@@ -1079,38 +919,6 @@ public struct BingoCatalog {
             rarity: .common,
             category: "Komfort",
             likelihoodPercent: 42
-        ),
-        BingoIncident(
-            id: "rain_streaks_window",
-            text: "Regentropfen am Fenster",
-            iconName: "cloud.rain.fill",
-            rarity: .common,
-            category: "Strecke",
-            likelihoodPercent: 45
-        ),
-        BingoIncident(
-            id: "sunset_from_train",
-            text: "Abendrot aus dem Zugfenster",
-            iconName: "sunset.fill",
-            rarity: .common,
-            category: "Strecke",
-            likelihoodPercent: 42
-        ),
-        BingoIncident(
-            id: "castle_on_hill",
-            text: "Burg oder Schloss am Hügel",
-            iconName: "building.2.crop.circle",
-            rarity: .common,
-            category: "Strecke",
-            likelihoodPercent: 46
-        ),
-        BingoIncident(
-            id: "deer_in_field",
-            text: "Tiere auf der Wiese",
-            iconName: "leaf.arrow.circlepath",
-            rarity: .common,
-            category: "Strecke",
-            likelihoodPercent: 56
         ),
         BingoIncident(
             id: "station_bakery_sprint",

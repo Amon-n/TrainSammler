@@ -1,0 +1,9 @@
+{
+  "id" : "694fcac1-e87c-444e-8c67-c50151893962",
+  "targets" : [
+    {
+      "id" : "7979acdf-bbe2-4a90-b201-b60c83ca5874",
+      "name" : "trainSammler"
+    }
+  ]
+}

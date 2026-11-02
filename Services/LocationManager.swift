@@ -44,7 +44,7 @@ public final class LocationManager: NSObject, CLLocationManagerDelegate {
         Task { @MainActor in
             self.authorizationStatus = status
             if status == .authorizedWhenInUse || status == .authorizedAlways {
-                manager.requestLocation()
+                self.manager.requestLocation()
             }
         }
     }

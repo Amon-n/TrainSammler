@@ -56,7 +56,7 @@ public final class BingoViewModel {
             self.selectedGridSize = active.gridSize
             self.tripName = active.travelTitle ?? ""
 
-            // Migriere ältere, zu lange Kacheltexte auf prägnante Kurztexte
+            // Migriere ältere oder entfernte Kacheln auf aktuelle Vorfälle
             let validTexts = Set(BingoCatalog.incidents.map(\.text))
             var migrated = false
             for cell in active.cells {
@@ -64,12 +64,19 @@ public final class BingoViewModel {
                     cell.text = "FREIFELD"
                     migrated = true
                 } else if !cell.isJoker && !validTexts.contains(cell.text) {
-                    if let match = BingoCatalog.incidents.first(where: { $0.iconName == cell.iconName && $0.category == cell.category }) {
+                    if let match = BingoCatalog.incidents.first(where: {
+                        $0.iconName == cell.iconName && $0.category == cell.category && !active.cells.map(\.text).contains($0.text)
+                    }) {
                         cell.text = match.text
+                        cell.likelihoodPercent = match.likelihoodPercent
                         migrated = true
-                    } else if let fallback = BingoCatalog.incidents.first(where: { $0.rarity == cell.rarity && !active.cells.map(\.text).contains($0.text) }) {
+                    } else if let fallback = BingoCatalog.incidents.first(where: {
+                        $0.rarity == cell.rarity && !active.cells.map(\.text).contains($0.text)
+                    }) {
                         cell.text = fallback.text
                         cell.iconName = fallback.iconName
+                        cell.category = fallback.category
+                        cell.likelihoodPercent = fallback.likelihoodPercent
                         migrated = true
                     }
                 }
