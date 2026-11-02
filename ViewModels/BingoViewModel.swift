@@ -56,6 +56,25 @@ public final class BingoViewModel {
             self.selectedGridSize = active.gridSize
             self.tripName = active.travelTitle ?? ""
 
+            // Migriere ältere, zu lange Kacheltexte auf prägnante Kurztexte
+            let validTexts = Set(BingoCatalog.incidents.map(\.text))
+            var migrated = false
+            for cell in active.cells {
+                if cell.isJoker && cell.text != "FREIFELD" {
+                    cell.text = "FREIFELD"
+                    migrated = true
+                } else if !cell.isJoker && !validTexts.contains(cell.text) {
+                    if let match = BingoCatalog.incidents.first(where: { $0.iconName == cell.iconName && $0.category == cell.category }) {
+                        cell.text = match.text
+                        migrated = true
+                    } else if let fallback = BingoCatalog.incidents.first(where: { $0.rarity == cell.rarity && !active.cells.map(\.text).contains($0.text) }) {
+                        cell.text = fallback.text
+                        cell.iconName = fallback.iconName
+                        migrated = true
+                    }
+                }
+            }
+
             // Falls mehr als ein unarchiviertes Spiel existiert, die älteren archivieren
             if games.count > 1 {
                 for extra in games.dropFirst() {
@@ -64,6 +83,9 @@ public final class BingoViewModel {
                         extra.completedAt = Date()
                     }
                 }
+                migrated = true
+            }
+            if migrated {
                 try? context.save()
             }
         } else {
@@ -146,7 +168,7 @@ public final class BingoViewModel {
         for i in 0..<totalCells {
             if isFiveByFive && i == middleIndex {
                 let jokerCell = BingoCell(
-                    text: "FREIFELD\n(Reise gestartet)",
+                    text: "FREIFELD",
                     iconName: "star.fill",
                     rarityRaw: BingoRarity.everyday.rawValue,
                     isChecked: true,

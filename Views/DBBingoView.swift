@@ -6,7 +6,6 @@ public struct DBBingoView: View {
     @State private var viewModel = BingoViewModel()
     @State private var showingEditTitleSheet = false
     @State private var showingHistorySheet = false
-    @State private var showingProbabilityInfoSheet = false
     @State private var tempTitle = ""
     @FocusState private var isTitleFocused: Bool
 
@@ -23,38 +22,32 @@ public struct DBBingoView: View {
                     .ignoresSafeArea()
 
                 ScrollView {
-                    VStack(spacing: 14) {
-                        // 1. Reise Header & Modus-Auswahl
-                        tripHeaderCard
+                    VStack(spacing: 16) {
+                        // 1. Ruhiger Reise-Header & Raster-Auswahl
+                        headerControlCard
 
-                        // 2. Raster-Größe & Wahrscheinlichkeits-Modus
-                        boardConfigurationBar
-
-                        // 3. Das interaktive Bingo-Feld
+                        // 2. Das minimalistische Bingo-Spielfeld
                         if let game = viewModel.activeGame {
                             bingoGrid(game: game)
                         } else {
                             ProgressView()
-                                .padding()
+                                .padding(.vertical, 40)
                         }
 
-                        // 4. Quick-Stats & Wahrscheinlichkeits-Legende
-                        statusAndLegendFooter
-
-                        // 5. Prominenter „Reise beenden & speichern“-Button
+                        // 3. Dezent integrierter „Reise beenden“-Button
                         finishTripButton
                     }
-                    .padding(.horizontal, 14)
+                    .padding(.horizontal, 16)
                     .padding(.vertical, 12)
                 }
                 .scrollDismissesKeyboard(.interactively)
 
-                // 6. Bingo-Gewinnfeiern Overlay
+                // 4. Bingo-Gewinn-Overlay
                 if viewModel.showWinAnimation {
                     bingoWinOverlay
                 }
             }
-            .navigationTitle("DB-Bingo 🎲")
+            .navigationTitle("DB-Bingo")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -62,7 +55,6 @@ public struct DBBingoView: View {
                         openLogbook()
                     } label: {
                         Label("Logbuch", systemImage: "clock.arrow.circlepath")
-                            .font(.system(size: 16, weight: .medium))
                     }
                 }
 
@@ -85,24 +77,14 @@ public struct DBBingoView: View {
                             Label("Reise umbenennen", systemImage: "pencil")
                         }
 
-                        Button {
-                            tempTitle = viewModel.activeGame?.travelTitle ?? ""
-                            viewModel.showFinishTripSheet = true
-                        } label: {
-                            Label("Reise beenden & speichern", systemImage: "flag.checkered")
-                        }
-
-                        Picker("Feld-Mischung", selection: $viewModel.difficultyMode) {
+                        Picker("Modus", selection: $viewModel.difficultyMode) {
                             ForEach(BingoDifficultyMode.allCases) { mode in
-                                Label(mode.rawValue, systemImage: mode == .realistic ? "checkmark.shield" : "sparkles")
-                                    .tag(mode)
+                                Label(
+                                    mode.shortTitle,
+                                    systemImage: mode == .realistic ? "checkmark.shield" : "sparkles"
+                                )
+                                .tag(mode)
                             }
-                        }
-
-                        Button {
-                            showingProbabilityInfoSheet = true
-                        } label: {
-                            Label("Wahrscheinlichkeiten & Hilfe", systemImage: "info.circle")
                         }
 
                         Divider()
@@ -114,14 +96,13 @@ public struct DBBingoView: View {
                         }
                     } label: {
                         Image(systemName: "ellipsis.circle")
-                            .font(.system(size: 18, weight: .medium))
                     }
                 }
             }
-            .alert("Bingo-Brett neu mischen?", isPresented: $viewModel.showNewGameAlert) {
+            .alert("Brett neu mischen?", isPresented: $viewModel.showNewGameAlert) {
                 Button("Abbrechen", role: .cancel) {}
                 Button("Neu mischen", role: .destructive) {
-                    withAnimation {
+                    withAnimation(.snappy) {
                         viewModel.startNewGame(
                             context: modelContext,
                             size: viewModel.selectedGridSize,
@@ -131,7 +112,7 @@ public struct DBBingoView: View {
                     }
                 }
             } message: {
-                Text("Möchtest du ein frisch gemischtes Brett für diese Fahrt erhalten? Wenn du deine aktuelle Fahrt stattdessen abschließen und speichern möchtest, nutze unten „Reise beenden“.")
+                Text("Dein aktuelles Spielfeld wird frisch gemischt. Um deine Fahrt stattdessen im Logbuch zu sichern, wähle unten „Reise beenden“.")
             }
             .sheet(isPresented: $showingEditTitleSheet) {
                 editTitleSheet
@@ -142,9 +123,6 @@ public struct DBBingoView: View {
             .sheet(isPresented: $showingHistorySheet) {
                 BingoHistorySheet()
             }
-            .sheet(isPresented: $showingProbabilityInfoSheet) {
-                probabilityInfoSheet
-            }
             .overlay(alignment: .top) {
                 if viewModel.showTripSavedToast {
                     tripSavedToast
@@ -153,7 +131,7 @@ public struct DBBingoView: View {
             }
             .animation(.spring(response: 0.35, dampingFraction: 0.8), value: viewModel.showTripSavedToast)
             .onChange(of: viewModel.difficultyMode) { _, _ in
-                withAnimation {
+                withAnimation(.snappy) {
                     viewModel.startNewGame(
                         context: modelContext,
                         size: viewModel.selectedGridSize,
@@ -181,113 +159,102 @@ public struct DBBingoView: View {
         let checked = game.cells.filter { $0.isChecked && !$0.isJoker }
         let title = game.travelTitle ?? "Meine Zugfahrt"
         let status = game.isBingoAchieved
-            ? "🎉 BINGO ERREICHT! (+\(game.earnedXP) XP)"
-            : "\(checked.count)/\(game.cells.count) Vorfällen eingetreten (+\(game.earnedXP) XP)"
+            ? "BINGO! (+\(game.earnedXP) XP)"
+            : "\(checked.count)/\(game.cells.filter { !$0.isJoker }.count) Treffer (+\(game.earnedXP) XP)"
 
-        var text = "🚆 DB-Bingo (\(title)):\n\(status)\n\n"
+        var text = "🚆 DB-Bingo (\(title)): \(status)\n\n"
         if !checked.isEmpty {
-            text += "Erlebt auf dieser Fahrt:\n"
             for c in checked.prefix(6) {
-                text += "✅ \(c.text)\n"
+                text += "• \(c.text)\n"
             }
             if checked.count > 6 {
-                text += "... und \(checked.count - 6) weitere!\n"
+                text += "… und \(checked.count - 6) weitere\n"
             }
         }
-        text += "\nGespielt mit TrainSammler 🚂"
         return text
     }
 
-    // MARK: - 1. Reise Header
-    private var tripHeaderCard: some View {
-        HStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(Color.accentColor.opacity(0.12))
-                    .frame(width: 44, height: 44)
-                Image(systemName: "tram.fill")
-                    .font(.system(size: 20, weight: .bold))
-                    .foregroundStyle(Color.accentColor)
-            }
+    // MARK: - 1. Ruhiger Reise-Header & Raster-Auswahl
+    private var headerControlCard: some View {
+        let checkedCount = viewModel.activeGame?.checkedIncidentsCount ?? 0
+        let totalCount = viewModel.activeGame?.cells.filter { !$0.isJoker }.count ?? 9
+        let earnedXP = viewModel.activeGame?.earnedXP ?? 0
 
-            Button {
-                tempTitle = viewModel.activeGame?.travelTitle ?? ""
-                showingEditTitleSheet = true
-            } label: {
-                VStack(alignment: .leading, spacing: 3) {
-                    HStack(spacing: 6) {
-                        Text(viewModel.activeGame?.travelTitle ?? "Aktuelle Zugfahrt")
-                            .font(.headline)
-                            .foregroundStyle(.primary)
-                            .lineLimit(1)
+        return VStack(spacing: 12) {
+            HStack(alignment: .center, spacing: 10) {
+                Button {
+                    tempTitle = viewModel.activeGame?.travelTitle ?? ""
+                    showingEditTitleSheet = true
+                } label: {
+                    VStack(alignment: .leading, spacing: 3) {
+                        HStack(spacing: 6) {
+                            Text(viewModel.activeGame?.travelTitle ?? "Aktuelle Zugfahrt")
+                                .font(.headline)
+                                .foregroundStyle(.primary)
+                                .lineLimit(1)
 
-                        Image(systemName: "pencil")
-                            .font(.caption2)
-                            .foregroundStyle(.tertiary)
+                            Image(systemName: "pencil")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
 
-                        if viewModel.activeGame?.isBingoAchieved == true {
-                            Text("BINGO!")
-                                .font(.system(size: 10, weight: .heavy))
-                                .foregroundStyle(.white)
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .background(Color.green)
-                                .clipShape(Capsule())
+                            if viewModel.activeGame?.isBingoAchieved == true {
+                                Text("BINGO")
+                                    .font(.system(size: 10, weight: .bold))
+                                    .foregroundStyle(.white)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(Color.green, in: Capsule())
+                            }
                         }
-                    }
 
-                    HStack(spacing: 6) {
-                        if let startedAt = viewModel.activeGame?.startedAt {
-                            Text("Start: \(startedAt.formatted(date: .omitted, time: .shortened)) Uhr")
+                        HStack(spacing: 6) {
+                            Text("\(checkedCount) von \(totalCount) Treffern")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
+
+                            if earnedXP > 0 {
+                                Text("•")
+                                    .font(.caption)
+                                    .foregroundStyle(.tertiary)
+                                Text("+\(earnedXP) XP")
+                                    .font(.caption.weight(.medium))
+                                    .foregroundStyle(Color.accentColor)
+                            } else {
+                                Text("•")
+                                    .font(.caption)
+                                    .foregroundStyle(.tertiary)
+                                Text(viewModel.difficultyMode.shortTitle)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
-
-                        Text("•")
-                            .font(.caption)
-                            .foregroundStyle(.tertiary)
-
-                        Text(viewModel.difficultyMode.shortTitle)
-                            .font(.caption.weight(.medium))
-                            .foregroundStyle(Color.accentColor)
                     }
                 }
+                .buttonStyle(.plain)
+
+                Spacer()
+
+                Button {
+                    viewModel.showNewGameAlert = true
+                } label: {
+                    Image(systemName: "arrow.clockwise")
+                        .font(.system(size: 14, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 32, height: 32)
+                        .background(Color(uiColor: .tertiarySystemGroupedBackground), in: Circle())
+                }
+                .accessibilityLabel("Brett neu mischen")
             }
-            .buttonStyle(.plain)
 
-            Spacer()
-
-            Button {
-                viewModel.showNewGameAlert = true
-            } label: {
-                Label("Mischen", systemImage: "dice.fill")
-                    .font(.caption.weight(.semibold))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 7)
-                    .background(Color.accentColor.opacity(0.12))
-                    .foregroundStyle(Color.accentColor)
-                    .clipShape(Capsule())
-            }
-        }
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(Color(uiColor: .secondarySystemGroupedBackground))
-        )
-    }
-
-    // MARK: - 2. Raster-Größen & Modus Umschalter
-    private var boardConfigurationBar: some View {
-        HStack(spacing: 8) {
-            Picker("Größe", selection: $viewModel.selectedGridSize) {
-                Text("3×3 (Kurz)").tag(3)
-                Text("4×4 (Normal)").tag(4)
-                Text("5×5 (Joker ⭐️)").tag(5)
+            Picker("Rastergröße", selection: $viewModel.selectedGridSize) {
+                Text("3×3").tag(3)
+                Text("4×4").tag(4)
+                Text("5×5").tag(5)
             }
             .pickerStyle(.segmented)
             .onChange(of: viewModel.selectedGridSize) { _, newSize in
                 guard let active = viewModel.activeGame, active.gridSize != newSize else { return }
-                withAnimation {
+                withAnimation(.snappy) {
                     viewModel.startNewGame(
                         context: modelContext,
                         size: newSize,
@@ -296,27 +263,21 @@ public struct DBBingoView: View {
                     )
                 }
             }
-
-            Button {
-                showingProbabilityInfoSheet = true
-            } label: {
-                Image(systemName: "slider.horizontal.3")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundStyle(Color.accentColor)
-                    .frame(width: 34, height: 32)
-                    .background(Color(uiColor: .secondarySystemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-            }
-            .accessibilityLabel("Wahrscheinlichkeiten & Modus anpassen")
         }
+        .padding(14)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color(uiColor: .secondarySystemGroupedBackground))
+        )
     }
 
-    // MARK: - 3. Interaktives Bingo Grid
+    // MARK: - 2. Minimalistisches Bingo-Spielfeld
     private func bingoGrid(game: BingoGame) -> some View {
         let size = game.gridSize
-        let columns = Array(repeating: GridItem(.flexible(), spacing: 8), count: size)
+        let spacing: CGFloat = size == 5 ? 6 : 8
+        let columns = Array(repeating: GridItem(.flexible(), spacing: spacing), count: size)
 
-        return LazyVGrid(columns: columns, spacing: 8) {
+        return LazyVGrid(columns: columns, spacing: spacing) {
             ForEach(game.sortedCells) { cell in
                 BingoCellView(
                     cell: cell,
@@ -325,7 +286,7 @@ public struct DBBingoView: View {
                         viewModel.toggleCell(cell, context: modelContext)
                     },
                     onReplace: {
-                        withAnimation(.spring(response: 0.3, dampingFraction: 0.75)) {
+                        withAnimation(.snappy) {
                             viewModel.replaceSingleCell(cell, context: modelContext)
                         }
                     }
@@ -334,139 +295,64 @@ public struct DBBingoView: View {
         }
         .padding(10)
         .background(
-            RoundedRectangle(cornerRadius: 16, style: .continuous)
+            RoundedRectangle(cornerRadius: 18, style: .continuous)
                 .fill(Color(uiColor: .secondarySystemGroupedBackground))
         )
     }
 
-    // MARK: - 4. Status & Wahrscheinlichkeits-Legende
-    private var statusAndLegendFooter: some View {
-        let checkedCount = viewModel.activeGame?.checkedIncidentsCount ?? 0
-        let totalCount = viewModel.activeGame?.cells.filter { !$0.isJoker }.count ?? 9
-        let earnedXP = viewModel.activeGame?.earnedXP ?? 0
-
-        return VStack(spacing: 8) {
-            HStack {
-                HStack(spacing: 6) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundStyle(.green)
-                        .font(.caption)
-                    Text("\(checkedCount) von \(totalCount) Vorfällen")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.secondary)
-                }
-
-                Spacer()
-
-                if earnedXP > 0 {
-                    Text("+\(earnedXP) Bahn-XP")
-                        .font(.caption.weight(.bold))
-                        .foregroundStyle(Color.orange)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 2)
-                        .background(Color.orange.opacity(0.14))
-                        .clipShape(Capsule())
-                } else {
-                    Text("Gedrückt halten zum Tauschen")
-                        .font(.caption2)
-                        .foregroundStyle(.tertiary)
-                }
-            }
-
-            // Dezente Wahrscheinlichkeits-Legende
-            HStack(spacing: 12) {
-                ForEach(BingoRarity.allCases, id: \.rawValue) { rarity in
-                    HStack(spacing: 4) {
-                        Circle()
-                            .fill(rarity.badgeColor)
-                            .frame(width: 6, height: 6)
-                        Text(rarity.shortLabel)
-                            .font(.system(size: 10, weight: .medium))
-                            .foregroundStyle(.secondary)
-                    }
-                }
-                Spacer()
-                Button {
-                    showingProbabilityInfoSheet = true
-                } label: {
-                    Text("Quoten-Info")
-                        .font(.system(size: 10, weight: .semibold))
-                        .foregroundStyle(Color.accentColor)
-                }
-            }
-        }
-        .padding(.horizontal, 4)
-    }
-
-    // MARK: - 5. „Reise beenden & speichern“-Button
+    // MARK: - 3. Dezenter „Reise beenden“-Button
     private var finishTripButton: some View {
         let checkedCount = viewModel.activeGame?.checkedIncidentsCount ?? 0
         let isBingo = viewModel.activeGame?.isBingoAchieved == true
         let xp = viewModel.activeGame?.earnedXP ?? 0
+        let hasProgress = checkedCount > 0 || isBingo
 
         return Button {
-            let impact = UIImpactFeedbackGenerator(style: .medium)
+            let impact = UIImpactFeedbackGenerator(style: .light)
             impact.impactOccurred()
             tempTitle = viewModel.activeGame?.travelTitle ?? ""
             viewModel.showFinishTripSheet = true
         } label: {
-            HStack(spacing: 12) {
-                ZStack {
-                    Circle()
-                        .fill(.white.opacity(0.2))
-                        .frame(width: 36, height: 36)
-                    Image(systemName: "flag.checkered")
-                        .font(.system(size: 16, weight: .bold))
-                        .foregroundStyle(.white)
-                }
+            HStack(spacing: 10) {
+                Image(systemName: isBingo ? "trophy.fill" : "flag.checkered")
+                    .font(.subheadline.weight(.semibold))
 
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("Reise beenden & speichern")
-                        .font(.subheadline.weight(.bold))
-                        .foregroundStyle(.white)
-                    Text(
-                        checkedCount > 0
-                            ? "\(checkedCount) Treffer im Logbuch sichern (+\(xp) XP)"
-                            : "Aktuelle Fahrt abschließen & ins Logbuch speichern"
-                    )
-                    .font(.caption2)
-                    .foregroundStyle(.white.opacity(0.88))
-                }
+                Text("Reise beenden & speichern")
+                    .font(.subheadline.weight(.semibold))
 
                 Spacer()
 
-                Image(systemName: "arrow.right.circle.fill")
-                    .font(.title3)
-                    .foregroundStyle(.white.opacity(0.9))
+                if hasProgress {
+                    Text("+\(xp) XP")
+                        .font(.caption.weight(.bold))
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 3)
+                        .background(.white.opacity(0.2), in: Capsule())
+                } else {
+                    Image(systemName: "chevron.right")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.tertiary)
+                }
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 12)
+            .foregroundStyle(hasProgress ? .white : .primary)
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
             .background(
-                LinearGradient(
-                    colors: isBingo
-                        ? [Color.green, Color.teal]
-                        : (checkedCount > 0
-                            ? [Color.accentColor, Color.accentColor.opacity(0.85)]
-                            : [Color.secondary.opacity(0.75), Color.secondary.opacity(0.6)]),
-                    startPoint: .topLeading,
-                    endPoint: .bottomTrailing
-                )
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-            .shadow(
-                color: (isBingo ? Color.green : Color.accentColor).opacity(checkedCount > 0 ? 0.25 : 0.08),
-                radius: 8,
-                y: 4
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(
+                        isBingo
+                            ? Color.green
+                            : (hasProgress ? Color.accentColor : Color(uiColor: .secondarySystemGroupedBackground))
+                    )
             )
         }
         .buttonStyle(.plain)
-        .padding(.top, 2)
     }
 
-    // MARK: - 6. Gewinn-Overlay
+    // MARK: - 4. Gewinn-Overlay
     private var bingoWinOverlay: some View {
         ZStack {
-            Color.black.opacity(0.45)
+            Color.black.opacity(0.4)
                 .ignoresSafeArea()
                 .onTapGesture {
                     withAnimation {
@@ -474,128 +360,81 @@ public struct DBBingoView: View {
                     }
                 }
 
-            VStack(spacing: 16) {
-                ZStack {
-                    Circle()
-                        .fill(
-                            RadialGradient(
-                                colors: [Color.yellow.opacity(0.35), Color.orange.opacity(0.1)],
-                                center: .center,
-                                startRadius: 10,
-                                endRadius: 60
-                            )
-                        )
-                        .frame(width: 96, height: 96)
+            VStack(spacing: 18) {
+                Image(systemName: "trophy.fill")
+                    .font(.system(size: 40, weight: .bold))
+                    .foregroundStyle(.orange)
+                    .frame(width: 76, height: 76)
+                    .background(Color.orange.opacity(0.14), in: Circle())
 
-                    Circle()
-                        .fill(LinearGradient(colors: [.yellow, .orange], startPoint: .topLeading, endPoint: .bottomTrailing))
-                        .frame(width: 72, height: 72)
-                        .shadow(color: .orange.opacity(0.4), radius: 10, y: 4)
-
-                    Image(systemName: "trophy.fill")
-                        .font(.system(size: 36, weight: .bold))
-                        .foregroundStyle(.white)
-                }
-
-                VStack(spacing: 8) {
-                    HStack(spacing: 6) {
-                        Text("🎉")
-                        Text("BINGO!")
-                            .font(.system(size: 32, weight: .black, design: .rounded))
-                            .foregroundStyle(LinearGradient(colors: [.orange, .red], startPoint: .leading, endPoint: .trailing))
-                        Text("🎉")
-                    }
-
-                    Text(viewModel.winningLineType ?? "Eine komplette Reihe geschafft!")
-                        .font(.headline.weight(.bold))
+                VStack(spacing: 6) {
+                    Text("Bingo!")
+                        .font(.title.weight(.bold))
                         .foregroundStyle(.primary)
 
-                    if let xp = viewModel.activeGame?.earnedXP {
-                        Text("+\(xp) Bahn-XP inkl. 150 XP Bingo-Bonus!")
-                            .font(.caption.weight(.bold))
-                            .foregroundStyle(.orange)
-                            .padding(.horizontal, 10)
-                            .padding(.vertical, 4)
-                            .background(Color.orange.opacity(0.14))
-                            .clipShape(Capsule())
-                    }
-
-                    Text("Du kannst jetzt weiterfahren und noch mehr Felder sammeln oder die Reise direkt im Logbuch abschließen.")
-                        .font(.subheadline)
+                    Text(viewModel.winningLineType ?? "Eine komplette Reihe geschafft!")
+                        .font(.subheadline.weight(.medium))
                         .foregroundStyle(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 8)
+
+                    if let xp = viewModel.activeGame?.earnedXP {
+                        Text("+\(xp) Bahn-XP")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(Color.accentColor)
+                            .padding(.top, 2)
+                    }
                 }
 
                 VStack(spacing: 10) {
                     Button {
-                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                        withAnimation(.snappy) {
                             viewModel.showWinAnimation = false
                         }
                         tempTitle = viewModel.activeGame?.travelTitle ?? ""
                         viewModel.showFinishTripSheet = true
                     } label: {
-                        HStack(spacing: 8) {
-                            Image(systemName: "flag.checkered")
-                            Text("Reise beenden & speichern")
-                                .font(.headline.weight(.bold))
-                        }
-                        .foregroundStyle(.white)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(
-                            LinearGradient(colors: [Color.green, Color.teal], startPoint: .topLeading, endPoint: .bottomTrailing)
-                        )
-                        .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                        Text("Reise beenden & speichern")
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.white)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 13)
+                            .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                     }
 
                     Button {
-                        withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
+                        withAnimation(.snappy) {
                             viewModel.showWinAnimation = false
                         }
                     } label: {
-                        Text("Weiterfahren & weitersammeln")
-                            .font(.subheadline.weight(.semibold))
-                            .foregroundStyle(Color.accentColor)
+                        Text("Weiterspielen")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 10)
+                            .padding(.vertical, 8)
                     }
                 }
-                .padding(.horizontal, 8)
-                .padding(.top, 4)
             }
             .padding(24)
             .background(
-                RoundedRectangle(cornerRadius: 26, style: .continuous)
+                RoundedRectangle(cornerRadius: 24, style: .continuous)
                     .fill(Color(uiColor: .systemBackground))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 26, style: .continuous)
-                            .strokeBorder(Color.orange.opacity(0.3), lineWidth: 1.5)
-                    )
-                    .shadow(color: .black.opacity(0.25), radius: 25, x: 0, y: 12)
+                    .shadow(color: .black.opacity(0.18), radius: 20, y: 10)
             )
-            .padding(28)
+            .padding(32)
         }
-        .transition(.opacity.combined(with: .scale(scale: 0.88)))
+        .transition(.opacity.combined(with: .scale(scale: 0.92)))
     }
 
     // MARK: - Toast nach „Reise beenden“
     private var tripSavedToast: some View {
         HStack(spacing: 12) {
-            ZStack {
-                Circle()
-                    .fill(LinearGradient(colors: [.green, .teal], startPoint: .topLeading, endPoint: .bottomTrailing))
-                    .frame(width: 40, height: 40)
-                Image(systemName: "flag.checkered")
-                    .font(.headline.bold())
-                    .foregroundStyle(.white)
-            }
+            Image(systemName: "checkmark.circle.fill")
+                .font(.title3)
+                .foregroundStyle(.green)
 
             VStack(alignment: .leading, spacing: 2) {
-                Text("Reise im Logbuch gespeichert!")
-                    .font(.subheadline.weight(.bold))
-                    .foregroundStyle(.primary)
-                Text("„\(viewModel.lastSavedTripTitle)“ • +\(viewModel.lastSavedTripXP) Bahn-XP")
+                Text("Fahrt gespeichert")
+                    .font(.subheadline.weight(.semibold))
+                Text("\(viewModel.lastSavedTripTitle) • +\(viewModel.lastSavedTripXP) XP")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
@@ -603,26 +442,19 @@ public struct DBBingoView: View {
 
             Spacer()
 
-            Button {
+            Button("Logbuch") {
                 viewModel.showTripSavedToast = false
                 openLogbook()
-            } label: {
-                Text("Ansehen")
-                    .font(.caption.weight(.bold))
-                    .padding(.horizontal, 10)
-                    .padding(.vertical, 6)
-                    .background(Color.accentColor.opacity(0.15))
-                    .foregroundStyle(Color.accentColor)
-                    .clipShape(Capsule())
             }
+            .font(.caption.weight(.semibold))
+            .buttonStyle(.bordered)
+            .controlSize(.small)
         }
-        .padding(14)
-        .background(
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.12), radius: 12, y: 6)
-        )
         .padding(.horizontal, 14)
+        .padding(.vertical, 12)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .shadow(color: .black.opacity(0.08), radius: 10, y: 4)
+        .padding(.horizontal, 16)
         .padding(.top, 8)
     }
 
@@ -637,29 +469,29 @@ public struct DBBingoView: View {
         return NavigationStack {
             Form {
                 Section {
-                    HStack(spacing: 14) {
-                        ZStack {
-                            Circle()
-                                .fill(game?.isBingoAchieved == true ? Color.green.opacity(0.15) : Color.accentColor.opacity(0.12))
-                                .frame(width: 52, height: 52)
-                            Image(systemName: game?.isBingoAchieved == true ? "trophy.fill" : "flag.checkered")
-                                .font(.title2.bold())
-                                .foregroundStyle(game?.isBingoAchieved == true ? Color.green : Color.accentColor)
-                        }
+                    HStack(spacing: 12) {
+                        Image(systemName: game?.isBingoAchieved == true ? "trophy.fill" : "flag.checkered")
+                            .font(.title3.weight(.semibold))
+                            .foregroundStyle(game?.isBingoAchieved == true ? Color.green : Color.accentColor)
+                            .frame(width: 40, height: 40)
+                            .background(
+                                (game?.isBingoAchieved == true ? Color.green : Color.accentColor).opacity(0.12),
+                                in: Circle()
+                            )
 
-                        VStack(alignment: .leading, spacing: 4) {
-                            Text(game?.isBingoAchieved == true ? "Bingo geschafft! 🎉" : "Fahrt abschließen")
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(game?.isBingoAchieved == true ? "Bingo erreicht!" : "Fahrt abschließen")
                                 .font(.headline)
-                            Text("\(checkedCount) von \(totalCount) Vorfällen erlebt • +\(xp) Bahn-XP")
+                            Text("\(checkedCount) von \(totalCount) Treffern • +\(xp) XP")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
                     }
-                    .padding(.vertical, 4)
+                    .padding(.vertical, 2)
                 }
 
-                Section(header: Text("Name der Reise (Optional)")) {
-                    TextField("z.B. ICE 574 nach Hamburg", text: $tempTitle)
+                Section(header: Text("Titel der Fahrt")) {
+                    TextField("z. B. ICE nach Hamburg", text: $tempTitle)
                         .focused($isTitleFocused)
                         .submitLabel(.done)
 
@@ -676,15 +508,15 @@ public struct DBBingoView: View {
                                         .background(
                                             tempTitle == suggestion
                                                 ? Color.accentColor
-                                                : Color.secondary.opacity(0.12)
+                                                : Color.secondary.opacity(0.12),
+                                            in: Capsule()
                                         )
                                         .foregroundStyle(tempTitle == suggestion ? .white : .primary)
-                                        .clipShape(Capsule())
                                 }
                                 .buttonStyle(.plain)
                             }
                         }
-                        .padding(.vertical, 4)
+                        .padding(.vertical, 2)
                     }
                 }
 
@@ -694,13 +526,11 @@ public struct DBBingoView: View {
                     } label: {
                         HStack {
                             Spacer()
-                            Image(systemName: "checkmark.seal.fill")
-                            Text("Reise speichern & beenden")
-                                .fontWeight(.bold)
+                            Text("Im Logbuch speichern")
+                                .fontWeight(.semibold)
                             Spacer()
                         }
                         .foregroundStyle(.white)
-                        .padding(.vertical, 6)
                     }
                     .listRowBackground(Color.accentColor)
                 }
@@ -718,104 +548,29 @@ public struct DBBingoView: View {
                     Button("Speichern") {
                         completeAndSaveTrip()
                     }
-                    .fontWeight(.bold)
+                    .fontWeight(.semibold)
                 }
             }
         }
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.medium])
     }
 
     private func completeAndSaveTrip() {
         viewModel.showFinishTripSheet = false
         viewModel.finishCurrentTrip(context: modelContext, customTitle: tempTitle)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 4.0) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
             withAnimation {
                 viewModel.showTripSavedToast = false
             }
         }
     }
 
-    // MARK: - Sheet: Wahrscheinlichkeiten & Modus-Einstellungen
-    private var probabilityInfoSheet: some View {
-        NavigationStack {
-            List {
-                Section(header: Text("Feld-Mischung wählen")) {
-                    ForEach(BingoDifficultyMode.allCases) { mode in
-                        Button {
-                            viewModel.difficultyMode = mode
-                        } label: {
-                            HStack(spacing: 12) {
-                                Image(
-                                    systemName: viewModel.difficultyMode == mode
-                                        ? "checkmark.circle.fill"
-                                        : "circle"
-                                )
-                                .foregroundStyle(viewModel.difficultyMode == mode ? Color.accentColor : .secondary)
-                                .font(.title3)
-
-                                VStack(alignment: .leading, spacing: 3) {
-                                    Text(mode.rawValue)
-                                        .font(.subheadline.weight(.semibold))
-                                        .foregroundStyle(.primary)
-                                    Text(mode.description)
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
-                                }
-                            }
-                            .padding(.vertical, 4)
-                        }
-                    }
-                }
-
-                Section(
-                    header: Text("Wahrscheinlichkeits-Stufen (\(BingoCatalog.incidents.count) Felder im Pool)"),
-                    footer: Text("Tipp: Halte ein beliebiges Feld auf deinem Bingo-Brett gedrückt, um die genaue Wahrscheinlichkeit zu sehen oder ein einzelnes Feld auszutauschen.")
-                ) {
-                    ForEach(BingoRarity.allCases, id: \.rawValue) { rarity in
-                        let count = BingoCatalog.incidents.filter { $0.rarity == rarity }.count
-                        HStack(spacing: 12) {
-                            Circle()
-                                .fill(rarity.badgeColor)
-                                .frame(width: 12, height: 12)
-
-                            VStack(alignment: .leading, spacing: 2) {
-                                HStack {
-                                    Text(rarity.displayName)
-                                        .font(.subheadline.weight(.semibold))
-                                    Spacer()
-                                    Text("+\(rarity.xpPoints) XP")
-                                        .font(.caption.weight(.bold))
-                                        .foregroundStyle(rarity.badgeColor)
-                                }
-                                Text("\(count) verschiedene Vorfälle • ca. \(rarity.defaultLikelihood)% Chance pro Fahrt")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                        .padding(.vertical, 3)
-                    }
-                }
-            }
-            .navigationTitle("Bingo-Wahrscheinlichkeiten")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Fertig") {
-                        showingProbabilityInfoSheet = false
-                    }
-                    .fontWeight(.semibold)
-                }
-            }
-        }
-        .presentationDetents([.medium, .large])
-    }
-
     // MARK: - Edit Title Sheet
     private var editTitleSheet: some View {
         NavigationStack {
             Form {
-                Section(header: Text("Reisedetails")) {
-                    TextField("z.B. ICE 574 nach Hamburg", text: $tempTitle)
+                Section(header: Text("Titel der Fahrt")) {
+                    TextField("z. B. ICE nach Hamburg", text: $tempTitle)
                         .focused($isTitleFocused)
                         .submitLabel(.done)
                         .onSubmit {
@@ -827,25 +582,18 @@ public struct DBBingoView: View {
             .navigationTitle("Reise benennen")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItemGroup(placement: .keyboard) {
-                    Spacer()
-                    Button("Fertig") {
-                        isTitleFocused = false
-                    }
-                    .fontWeight(.semibold)
-                }
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Abbrechen") { showingEditTitleSheet = false }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Speichern") {
+                    Button("Sichern") {
                         saveTitle()
                     }
                     .fontWeight(.semibold)
                 }
             }
         }
-        .presentationDetents([.fraction(0.35)])
+        .presentationDetents([.height(220)])
     }
 
     private func saveTitle() {
@@ -857,7 +605,7 @@ public struct DBBingoView: View {
     }
 }
 
-// MARK: - Einzelne Bingo-Zelle
+// MARK: - Minimalistische Bingo-Kachel (Keine abgeschnittenen Texte)
 struct BingoCellView: View {
     let cell: BingoCell
     let gridSize: Int
@@ -866,128 +614,100 @@ struct BingoCellView: View {
 
     private var cellHeight: CGFloat {
         switch gridSize {
-        case 3: return 104
-        case 4: return 82
-        case 5: return 68
-        default: return 82
+        case 3: return 102
+        case 4: return 84
+        case 5: return 72
+        default: return 84
         }
     }
 
     private var fontSize: CGFloat {
         switch gridSize {
-        case 3: return 11
-        case 4: return 9.5
-        case 5: return 8
-        default: return 10
+        case 3: return 13
+        case 4: return 11
+        case 5: return 9.5
+        default: return 11
         }
     }
 
     private var iconSize: CGFloat {
         switch gridSize {
-        case 3: return 20
-        case 4: return 16
+        case 3: return 19
+        case 4: return 15
         case 5: return 13
-        default: return 16
+        default: return 15
         }
     }
 
     var body: some View {
         Button(action: onTap) {
             ZStack(alignment: .topTrailing) {
-                VStack(spacing: 4) {
-                    Spacer(minLength: 2)
-
+                VStack(spacing: gridSize == 5 ? 3 : 5) {
                     Image(systemName: cell.iconName)
-                        .font(.system(size: iconSize, weight: .semibold))
+                        .font(.system(size: iconSize, weight: .medium))
                         .foregroundStyle(
                             cell.isChecked
-                                ? (cell.isJoker ? .yellow : .white)
-                                : cell.rarity.badgeColor
+                                ? .white
+                                : Color.accentColor.opacity(0.85)
                         )
 
                     Text(cell.text)
-                        .font(.system(size: fontSize, weight: cell.isChecked ? .bold : .medium))
+                        .font(.system(size: fontSize, weight: cell.isChecked ? .semibold : .medium))
                         .multilineTextAlignment(.center)
-                        .lineLimit(gridSize == 3 ? 4 : 3)
-                        .minimumScaleFactor(0.78)
+                        .lineLimit(3)
+                        .minimumScaleFactor(0.62)
+                        .allowsTightening(true)
                         .foregroundStyle(cell.isChecked ? .white : .primary)
-                        .padding(.horizontal, 3)
-
-                    Spacer(minLength: 2)
-
-                    // Dezente Wahrscheinlichkeits-Pille am unteren Rand (bei 3x3 und 4x4)
-                    if !cell.isJoker && gridSize <= 4 {
-                        HStack(spacing: 3) {
-                            Circle()
-                                .fill(cell.isChecked ? .white.opacity(0.9) : cell.rarity.badgeColor)
-                                .frame(width: 4.5, height: 4.5)
-                            Text("\(cell.likelihoodPercent)%")
-                                .font(.system(size: gridSize == 3 ? 8.5 : 7.5, weight: .semibold))
-                                .foregroundStyle(cell.isChecked ? .white.opacity(0.85) : .secondary)
-                        }
-                        .padding(.bottom, 3)
-                    }
+                        .fixedSize(horizontal: false, vertical: false)
                 }
-                .frame(maxWidth: .infinity)
+                .padding(.horizontal, gridSize == 5 ? 4 : 6)
+                .padding(.vertical, gridSize == 5 ? 4 : 6)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .frame(height: cellHeight)
 
-                // Checked Indikator oben rechts oder Seltenheits-Punkt bei 5x5
-                if cell.isChecked {
-                    Image(systemName: cell.isJoker ? "star.fill" : "checkmark.circle.fill")
-                        .font(.system(size: gridSize == 5 ? 10 : 12))
-                        .foregroundStyle(cell.isJoker ? .yellow : .white)
-                        .padding(4)
-                } else if gridSize == 5 {
-                    Circle()
-                        .fill(cell.rarity.badgeColor)
-                        .frame(width: 5, height: 5)
-                        .padding(5)
+                if cell.isChecked && !cell.isJoker {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: gridSize == 5 ? 9 : 11, weight: .semibold))
+                        .foregroundStyle(.white.opacity(0.9))
+                        .padding(gridSize == 5 ? 4 : 6)
                 }
             }
             .background(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                RoundedRectangle(cornerRadius: gridSize == 5 ? 10 : 12, style: .continuous)
                     .fill(
                         cell.isChecked
-                            ? (cell.isJoker ? Color.purple.opacity(0.85) : Color.accentColor)
+                            ? (cell.isJoker ? Color.orange : Color.accentColor)
                             : Color(uiColor: .systemBackground)
                     )
             )
             .overlay(
-                RoundedRectangle(cornerRadius: 10, style: .continuous)
-                    .stroke(
+                RoundedRectangle(cornerRadius: gridSize == 5 ? 10 : 12, style: .continuous)
+                    .strokeBorder(
                         cell.isChecked
                             ? Color.clear
-                            : cell.rarity.badgeColor.opacity(0.25),
+                            : Color.primary.opacity(0.06),
                         lineWidth: 1
                     )
             )
-            .shadow(
-                color: cell.isChecked ? Color.accentColor.opacity(0.25) : Color.black.opacity(0.03),
-                radius: cell.isChecked ? 4 : 2,
-                y: 1
-            )
-            .scaleEffect(cell.isChecked ? 1.02 : 1.0)
-            .animation(.spring(response: 0.25, dampingFraction: 0.65), value: cell.isChecked)
+            .animation(.easeInOut(duration: 0.18), value: cell.isChecked)
         }
         .buttonStyle(.plain)
         .contextMenu {
             if !cell.isJoker {
-                Section(header: Text("\(cell.category) • ca. \(cell.likelihoodPercent)% Chance (\(cell.rarity.shortLabel))")) {
-                    Button {
-                        onTap()
-                    } label: {
-                        Label(
-                            cell.isChecked ? "Markierung aufheben" : "Als eingetreten abhaken (+\(cell.rarity.xpPoints) XP)",
-                            systemImage: cell.isChecked ? "xmark.circle" : "checkmark.circle.fill"
-                        )
-                    }
+                Button {
+                    onTap()
+                } label: {
+                    Label(
+                        cell.isChecked ? "Markierung aufheben" : "Abhaken (+\(cell.rarity.xpPoints) XP)",
+                        systemImage: cell.isChecked ? "xmark.circle" : "checkmark.circle"
+                    )
+                }
 
-                    if let onReplace {
-                        Button {
-                            onReplace()
-                        } label: {
-                            Label("Feld gegen anderes tauschen", systemImage: "arrow.triangle.2.circlepath")
-                        }
+                if let onReplace {
+                    Button {
+                        onReplace()
+                    } label: {
+                        Label("Feld tauschen", systemImage: "arrow.triangle.2.circlepath")
                     }
                 }
             }

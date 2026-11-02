@@ -197,7 +197,7 @@ public struct SettingsView: View {
 
     private var appVersionString: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.7"
-        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "5"
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "6"
         return "Version \(version) (Build \(build))"
     }
 
@@ -544,6 +544,48 @@ struct AttributionSheetView: View {
             train: "Nightjet Viaggio NextGen",
             perspective: "Mini-Cabin Schlafkapseln",
             author: "TheFrog001",
+            license: "CC0 / Public Domain"
+        ),
+        TrainImageAttribution(
+            category: "Intercity & Lokomotiven",
+            train: "Siemens Vectron (BR 193)",
+            perspective: "DB-Mehrsystemlokomotive",
+            author: "EM311",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Intercity & Lokomotiven",
+            train: "Siemens Vectron (BR 193)",
+            perspective: "Vectron im EuroCity-Dienst",
+            author: "Rainerhaufe",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Intercity & Lokomotiven",
+            train: "ÖBB Railjet (RJ / BR 1116)",
+            perspective: "ÖBB Railjet Wendezug",
+            author: "Manfred Kopka",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Intercity & Lokomotiven",
+            train: "ÖBB Railjet (RJ / BR 1116)",
+            perspective: "Taurus-Lokomotive (Rh 1116)",
+            author: "Pedalito",
+            license: "CC0 / Public Domain"
+        ),
+        TrainImageAttribution(
+            category: "Intercity & Lokomotiven",
+            train: "SBB Giruno (RABe 501)",
+            perspective: "SBB Giruno in Zürich HB",
+            author: "JoachimKohler-HB",
+            license: "CC BY-SA 4.0"
+        ),
+        TrainImageAttribution(
+            category: "Intercity & Lokomotiven",
+            train: "SBB Giruno (RABe 501)",
+            perspective: "Stadler Smile Niederflur-HGV",
+            author: "Plutowiki",
             license: "CC0 / Public Domain"
         ),
         // MARK: 4. Regionalverkehr & S-Bahn

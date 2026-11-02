@@ -588,6 +588,54 @@ extension TrainModel {
             photographer: "Wikimedia-User Jivee Blau",
             license: "CC BY-SA 3.0",
             commonsUrl: "https://commons.wikimedia.org/wiki/File:DBAG-Baureihe_425-_Interieur.JPG"
+        ),
+        "br_193_vectron": TrainPhotoDetail(
+            assetName: "br_193_vectron",
+            label: "Siemens Vectron (BR 193)",
+            characteristicDescription: "Die markante Front der 500. gelieferten Siemens-Vectron-Lokomotive (193 331) mit den typischen seitlichen „Kiemen“.",
+            photographer: "EM311",
+            license: "CC BY-SA 4.0",
+            commonsUrl: "https://commons.wikimedia.org/wiki/File:Siemens_Vectron_DB_Cargo_193_331_Graben-Neudorf.jpg"
+        ),
+        "br_193_vectron_dresden": TrainPhotoDetail(
+            assetName: "br_193_vectron_dresden",
+            label: "Streckenfahrt (Dresden Hbf)",
+            characteristicDescription: "Mehrsystemlokomotive 193 389 im grenzüberschreitenden Einsatz in Dresden Hauptbahnhof.",
+            photographer: "Rainerhaufe",
+            license: "CC BY-SA 4.0",
+            commonsUrl: "https://commons.wikimedia.org/wiki/File:DB_193_389_Dresden_Hauptbahnhof_Ensogeb%C3%A4ude.jpg"
+        ),
+        "oebb_railjet": TrainPhotoDetail(
+            assetName: "oebb_railjet",
+            label: "ÖBB Railjet auf Strecke",
+            characteristicDescription: "Siebenteiliger Hochgeschwindigkeits-Wendezug der ÖBB mit passend lackierter Taurus-Lokomotive 1116 bei Rosenheim.",
+            photographer: "Manfred Kopka",
+            license: "CC BY-SA 4.0",
+            commonsUrl: "https://commons.wikimedia.org/wiki/File:%C3%96BB_1116_237_mit_Railjet_bei_Rosenheim.jpg"
+        ),
+        "oebb_railjet_taurus": TrainPhotoDetail(
+            assetName: "oebb_railjet_taurus",
+            label: "Taurus-Lokomotive (Rh 1116)",
+            characteristicDescription: "Die berühmte „Tonleiter-Lok“ EuroSprinter ES64U2 (Rh 1116) im rubinroten Railjet-Design am Bahnsteig.",
+            photographer: "Pedalito",
+            license: "CC0 / Public Domain",
+            commonsUrl: "https://commons.wikimedia.org/wiki/File:%C3%96BB_railjet_Taurus_1116_218.jpg"
+        ),
+        "sbb_giruno_zurich": TrainPhotoDetail(
+            assetName: "sbb_giruno_zurich",
+            label: "SBB Giruno Kopfform (Zürich HB)",
+            characteristicDescription: "Aerodynamische Frontpartie des Stadler SMILE (RABe 501) mit SBB-Signet im Zürcher Hauptbahnhof.",
+            photographer: "JoachimKohler-HB",
+            license: "CC BY-SA 4.0",
+            commonsUrl: "https://commons.wikimedia.org/wiki/File:SBB_RABe_501_030_%22Lambarda%22_in_Z%C3%BCrich_HB_(2026).jpg"
+        ),
+        "sbb_giruno": TrainPhotoDetail(
+            assetName: "sbb_giruno",
+            label: "Elfteiliger Gliederzug auf Strecke",
+            characteristicDescription: "Der 202 Meter lange Niederflur-Hochgeschwindigkeitszug RABe 501 mit Jakobs-Drehgestellen bei Erlen.",
+            photographer: "Plutowiki",
+            license: "CC0 / Public Domain",
+            commonsUrl: "https://commons.wikimedia.org/wiki/File:SBB_RABe_501_Erlen.jpg"
         )
     ]
     
@@ -603,7 +651,7 @@ extension TrainModel {
         case _ where seriesCode.contains("412 (Tz 9457)"):
             return [catalog["ice_4_brd"], catalog["ice_4_altengronau"], catalog["ice_4_interior"]].compactMap { $0 }
         case _ where seriesCode.contains("412 (Tz 9015)"):
-            return [catalog["ice_4"], catalog["ice_female_cab"], catalog["ice_female_restaurant"]].compactMap { $0 }
+            return [catalog["ice_female_cab"], catalog["ice_female_restaurant"], catalog["ice_4"]].compactMap { $0 }
         case _ where seriesCode.contains("410"):
             return [catalog["ice_s"], catalog["ice_s_run"]].compactMap { $0 }
         case _ where seriesCode.contains("605"):
@@ -615,11 +663,11 @@ extension TrainModel {
         case _ where seriesCode.contains("403"):
             return [catalog["ice_3_sfs"], catalog["ice_3_lounge"], catalog["ice_3_velaro"]].compactMap { $0 }
         case _ where seriesCode.contains("406"):
-            return [catalog["ice_europa"], catalog["ice_3m_multi"], catalog["ice_3_lounge"]].compactMap { $0 }
+            return [catalog["ice_3m_multi"], catalog["ice_3_sfs"], catalog["ice_3_lounge"]].compactMap { $0 }
         case _ where seriesCode.contains("412 (XXL)"):
-            return [catalog["ice_4"], catalog["ice_4_altengronau"], catalog["ice_4_front"]].compactMap { $0 }
+            return [catalog["ice_4_altengronau"], catalog["ice_4"], catalog["ice_4_front"], catalog["ice_4_interior"]].compactMap { $0 }
         case _ where seriesCode.contains("412 (K7)"):
-            return [catalog["ice_4"], catalog["ice_4_front"], catalog["ice_4_interior"]].compactMap { $0 }
+            return [catalog["ice_4_front"], catalog["ice_4"], catalog["ice_4_interior"]].compactMap { $0 }
         case _ where seriesCode.contains("412"):
             return [catalog["ice_4"], catalog["ice_4_front"], catalog["ice_4_altengronau"], catalog["ice_4_interior"]].compactMap { $0 }
         case _ where seriesCode.contains("411"):
@@ -631,17 +679,23 @@ extension TrainModel {
         case _ where seriesCode.contains("402"):
             return [catalog["ice_2"], catalog["ice_2_cab"], catalog["ice_2_front"]].compactMap { $0 }
         case _ where seriesCode.contains("105"):
-            return [catalog["ice_l"], catalog["ice_l_cab"], catalog["ice_l_side"], catalog["ice_l_interior"]].compactMap { $0 }
+            return [catalog["ice_l_cab"], catalog["ice_l"], catalog["ice_l_side"], catalog["ice_l_interior"]].compactMap { $0 }
+        case _ where seriesCode.contains("501"):
+            return [catalog["sbb_giruno_zurich"], catalog["sbb_giruno"]].compactMap { $0 }
+        case _ where seriesCode.contains("1116") || seriesCode.contains("RJ"):
+            return [catalog["oebb_railjet"], catalog["oebb_railjet_taurus"]].compactMap { $0 }
+        case _ where seriesCode.contains("193"):
+            return [catalog["br_193_vectron"], catalog["br_193_vectron_dresden"]].compactMap { $0 }
         case _ where seriesCode.contains("101"):
             return [catalog["br_101"], catalog["br_101_cab"]].compactMap { $0 }
         case _ where seriesCode.contains("146"):
-            return [catalog["twindexx_vario"], catalog["ic2_twindexx_cab"]].compactMap { $0 }
+            return [catalog["ic2_twindexx_cab"]].compactMap { $0 }
         case _ where seriesCode.contains("147"):
-            return [catalog["twindexx_vario"], catalog["ic2_twindexx_cab"]].compactMap { $0 }
+            return [catalog["ic2_twindexx_cab"]].compactMap { $0 }
         case _ where seriesCode.contains("4110"):
             return [catalog["ic2_kiss"], catalog["ic2_kiss_front"], catalog["ic2_kiss_wien"]].compactMap { $0 }
         case _ where seriesCode.contains("Nightjet"):
-            return [catalog["nightjet_viaggio"], catalog["nightjet_cab"], catalog["nightjet_minicabin"]].compactMap { $0 }
+            return [catalog["nightjet_cab"], catalog["nightjet_viaggio"], catalog["nightjet_minicabin"]].compactMap { $0 }
         case _ where seriesCode.contains("462"):
             return [catalog["desiro_hc"], catalog["desiro_hc_hybrid"], catalog["desiro_hc_interior"]].compactMap { $0 }
         case _ where seriesCode.contains("442"):
@@ -692,173 +746,212 @@ extension TrainModel {
     /// Spotter-Guide: Visuelle Erkennungsmerkmale zum Identifizieren am Bahnsteig
     public var spotterFeatures: [SpotterFeature] {
         switch seriesCode {
-        // MARK: - ICE Flotte
-        case _ where seriesCode.contains("401"):
-            return [
-                SpotterFeature(icon: "arrow.forward.to.line", title: "Kopfform & Lokomotiven", description: "Zwei separate, geschwungene Triebköpfe an den Zugenden mit mittigem DB-Keks."),
-                SpotterFeature(icon: "building.2.crop.none", title: "Buckelspeisewagen", description: "Bordrestaurant in der Zugmitte besitzt das legendäre erhöhte Dach ('Buckel')."),
-                SpotterFeature(icon: "number", title: "Baureihen-Code", description: "Triebköpfe sind mit '401' beschriftet. Züge haben feste 9- oder 12-Wagen-Länge.")
-            ]
-            
-        case _ where seriesCode.contains("402"):
-            return [
-                SpotterFeature(icon: "arrow.triangle.pull", title: "Triebkopf & Steuerwagen", description: "Besteht aus nur EINEM Triebkopf (402) und einem Steuerwagen mit Fahrgastplätzen am anderen Ende."),
-                SpotterFeature(icon: "link", title: "Flügelzug-Kupplung", description: "Wird häufig in Hamm (Westfalen) geteilt oder gekoppelt. Flachere Bugklappe als ICE 1.")
-            ]
-            
-        case _ where seriesCode.contains("403") && !seriesCode.contains("Tz 304"):
-            return [
-                SpotterFeature(icon: "speedometer", title: "Aerodynamische Pfeilfront", description: "Triebzug ohne separate Lokomotive – die Motoren liegen unterflur über den ganzen Zug verteilt."),
-                SpotterFeature(icon: "eye.fill", title: "Panoramalounge", description: "Sitzplätze mit Glaswand direkt hinter dem Führerstand mit freiem Blick auf die Gleise.")
-            ]
-            
-        case _ where seriesCode.contains("406") && !seriesCode.contains("Tz 4601"):
-            return [
-                SpotterFeature(icon: "bolt.fill", title: "Viersystem-Stromabnehmer", description: "Trägt 4 verschiedene Stromabnehmer auf den Dächern für Fahrten nach Frankreich, Belgien und Niederlande."),
-                SpotterFeature(icon: "flag.fill", title: "Grenzverkehr", description: "Verkehrt typischerweise auf internationalen Linien nach Paris, Brüssel oder Amsterdam.")
-            ]
-            
-        case _ where seriesCode.contains("407"):
-            return [
-                SpotterFeature(icon: "shield.lefthalf.filled", title: "Erhöhter Dachaufbau", description: "Aerodynamisch verkleidete Dachhaube für besseren Lärmschutz bei 320 km/h."),
-                SpotterFeature(icon: "door.left.hand.open", title: "Türanordnung", description: "Doppelflügelige Außentüren für schnelleren Fahrgastwechsel.")
-            ]
-            
-        case _ where seriesCode.contains("408"):
-            return [
-                SpotterFeature(icon: "window.shade.closed", title: "Dunkles Scheibenband", description: "Charakteristisches durchgehend schwarz abgesetztes Fensterband entlang der Wagen."),
-                SpotterFeature(icon: "bolt.badge.automatic", title: "Dachverkleidung", description: "Vollständig integrierte Stromabnehmer-Wannen auf dem Dach."),
-                SpotterFeature(icon: "figure.roll", title: "Rollstuhllift-Tür", description: "Zusätzliche Einstiegstür mit integrierter Hebebühne an Wagen 2.")
-            ]
-            
-        case _ where seriesCode.contains("412"):
-            return [
-                SpotterFeature(icon: "diamond.fill", title: "Haifisch-Kopfform", description: "Sehr markante, kantig gestaltete Front mit roter Begleitlinie oberhalb der Frontscheibe."),
-                SpotterFeature(icon: "ruler.fill", title: "28-Meter-Großraumwagen", description: "Wagenkästen sind spürbar länger als bei allen früheren ICE-Generationen."),
-                SpotterFeature(icon: "paintbrush.fill", title: "Gelber 1.-Klasse-Streifen", description: "Oberhalb der Fenster der 1. Klasse verläuft ein gut sichtbarer gelber Signalstreifen.")
-            ]
-            
-        case _ where seriesCode.contains("411") || seriesCode.contains("415"):
-            return [
-                SpotterFeature(icon: "arrow.left.and.right", title: "Neigetechnik (GNT)", description: "Neigt sich in engen Kurven um bis zu 8 Grad. Etwas schmalerer Wagenkasten oben."),
-                SpotterFeature(icon: "wind", title: "Kompakte Kopfform", description: "Ähnelt dem ICE 3, hat jedoch eine einteilige Frontscheibe ohne Mittelsteg.")
-            ]
-            
-        case _ where seriesCode.contains("105"):
-            return [
-                SpotterFeature(icon: "figure.roll", title: "Ebenerdiger Einstieg", description: "Erster Fernverkehrszug mit 76 cm stufenlosem Einstieg an jedem Bahnsteig."),
-                SpotterFeature(icon: "circle.grid.2x1.fill", title: "Kurze Talgo-Wagen", description: "Nur 13 Meter kurze Wagenkästen mit charakteristischen Einzelrad-Fahrwerken.")
-            ]
-            
-        // MARK: - Sonderzüge
+        // MARK: - 1. Sonderzüge (zuerst prüfen, damit sie nicht von allgemeinen Baureihen abgefangen werden)
         case _ where seriesCode.contains("Tz 304"):
             return [
-                SpotterFeature(icon: "paintpalette.fill", title: "Regenbogen-Streifen", description: "Trägt den berühmten Pride-Regenbogenstreifen über die gesamte Länge der beiden Endwagen."),
-                SpotterFeature(icon: "tag.fill", title: "Taufname 'München'", description: "Seit Sommer 2021 als Botschafter für Vielfalt im gesamten ICE-Netz unterwegs.")
+                SpotterFeature(icon: "paintpalette.fill", title: "Regenbogen-Streifen", description: "Trägt den sechsfarbigen Pride-Regenbogenstreifen an beiden Endwagen anstelle des roten DB-Streifens."),
+                SpotterFeature(icon: "tag.fill", title: "Taufname „München“", description: "Einzelstück (Tz 304) der Baureihe 403 als Botschafter für Vielfalt im gesamten ICE-Netz.")
             ]
             
         case _ where seriesCode.contains("Tz 4601"):
             return [
-                SpotterFeature(icon: "flag.fill", title: "Europa-Lackierung", description: "Blauer Zierstreifen mit goldenen Europa-Sternen anstelle des roten DB-Streifens."),
-                SpotterFeature(icon: "network", title: "Mehrsystemzug", description: "ICE 3M der Baureihe 406, regelmäßig zwischen Deutschland, Brüssel und Amsterdam im Einsatz.")
+                SpotterFeature(icon: "flag.fill", title: "Blauer Europa-Zierstreifen", description: "Dunkelblauer Streifen mit gelben europäischen Sternen anstelle des verkehrsroten Bands."),
+                SpotterFeature(icon: "network", title: "Mehrsystemzug Tz 4601", description: "Einer der bekanntesten Sonderbotschafter der Baureihe 406 im grenzüberschreitenden Verkehr.")
             ]
             
         case _ where seriesCode.contains("9457"):
             return [
-                SpotterFeature(icon: "flag.2.crossed", title: "Schwarz-Rot-Gold", description: "Beide Triebköpfe tragen die deutsche Bundesflagge als markanten Zierstreifen."),
-                SpotterFeature(icon: "crown.fill", title: "13-Teiler XXL", description: "Längster Zug im ICE-Netz (374 Meter) mit Platz für 918 Fahrgäste.")
+                SpotterFeature(icon: "flag.2.crossed", title: "Schwarz-Rot-Gold", description: "Beide Endwagen tragen die deutsche Bundesflagge als langen Zierstreifen."),
+                SpotterFeature(icon: "crown.fill", title: "13-Teiler XXL (Tz 9457)", description: "Auf den Namen „Bundesrepublik Deutschland“ getaufter 374-Meter-Langzug.")
+            ]
+            
+        case _ where seriesCode.contains("9015"):
+            return [
+                SpotterFeature(icon: "person.2.fill", title: "Female-ICE-Signet", description: "Auffälliges „Female ICE“-Aktionslogo mit weiblicher Silhouette am Triebkopf und Bordrestaurant."),
+                SpotterFeature(icon: "tag.fill", title: "Triebzug 9015 „Mainz“", description: "12-teiliger ICE 4 als rollender Botschafter für Frauen in eisenbahntechnischen Berufen.")
             ]
             
         case _ where seriesCode.contains("410"):
             return [
-                SpotterFeature(icon: "gearshape.2.fill", title: "Mess- & Prüfzug", description: "Zahlreiche Kameras, Laser und Sensoraufbauten auf dem Dach und an den Drehgestellen."),
-                SpotterFeature(icon: "speedometer", title: "Rekordzug", description: "Ehemaliger deutscher Rekordhalter mit 393 km/h.")
+                SpotterFeature(icon: "gearshape.2.fill", title: "Mess- & Prüfzug", description: "Zahlreiche Kameras, Laser-Sensoren und Messstromabnehmer auf dem Dach und an den Drehgestellen."),
+                SpotterFeature(icon: "speedometer", title: "393-km/h-Versuchsträger", description: "Kurzer Spezialzug der DB Systemtechnik mit gelbem „ICE S“-Schriftzug.")
             ]
             
-        case _ where seriesCode.contains("5505") || (seriesCode.contains("605") && commercialName.contains("TrainLab")):
+        case _ where seriesCode.contains("605"):
             return [
-                SpotterFeature(icon: "waveform.path.ecg", title: "Grau-Türkise Beklebung", description: "Spezielle 'advanced TrainLab'-Lackierung mit Antennen und Radarsensoren."),
-                SpotterFeature(icon: "engine.combustion", title: "Diesel-Power", description: "Ehemaliger ICE-TD mit vier Dieselmotoren für fahrleitungsunabhängige Testfahrten.")
+                SpotterFeature(icon: "waveform.path.ecg", title: "Grau-Türkise Sensorbeklebung", description: "Auffällige „advanced TrainLab“-Lackierung mit Lidar-, Radar- und 5G-Antennen an der Nase."),
+                SpotterFeature(icon: "engine.combustion", title: "Diesel-elektrischer Antrieb", description: "Ehemaliger ICE TD (BR 605), der auch ohne Oberleitung überall im Netz testen kann.")
+            ]
+
+        // MARK: - 2. ICE-Flotte & DACH-Fernverkehr
+        case _ where seriesCode.contains("401"):
+            return [
+                SpotterFeature(icon: "arrow.forward.to.line", title: "Zwei Triebköpfe", description: "Klassische Lokomotiv-Triebköpfe ohne Fahrgastfenster an beiden Zugenden mit mittigem DB-Logo."),
+                SpotterFeature(icon: "building.2.crop.none", title: "Buckelspeisewagen", description: "Das Bordrestaurant in der Zugmitte überragt mit seinem erhöhten Dach alle anderen Wagen.")
             ]
             
-        // MARK: - Intercity & Nachtzug
+        case _ where seriesCode.contains("402"):
+            return [
+                SpotterFeature(icon: "arrow.triangle.pull", title: "Triebkopf + Steuerwagen", description: "Ein Ende besitzt einen Triebkopf (402), das andere einen Steuerwagen (808) mit Fahrgasttüren."),
+                SpotterFeature(icon: "link", title: "Flügelzug-Bugklappe", description: "Glatte, zweiteilige Bugklappe für schnelles Kuppeln zweier Halbzüge.")
+            ]
+            
+        case _ where seriesCode.contains("403"):
+            return [
+                SpotterFeature(icon: "speedometer", title: "Unterflur-Triebzug", description: "Keine Triebköpfe: Die Technik verteilt sich unter dem gesamten 8-teiligen Zug."),
+                SpotterFeature(icon: "eye.fill", title: "Panorama-Lounge", description: "Sitzplätze direkt hinter dem Lokführer mit freier Sicht durch die Frontscheibe auf die Strecke.")
+            ]
+            
+        case _ where seriesCode.contains("406"):
+            return [
+                SpotterFeature(icon: "bolt.fill", title: "Sechs Dachstromabnehmer", description: "Ausgerüstet für vier Stromsysteme (DE/AT/CH, FR, BE, NL) auf den Mittelwagen."),
+                SpotterFeature(icon: "flag.fill", title: "Internationaler Pionier", description: "Äußerlich fast baugleich zum BR 403, aber an den zusätzlichen Stromabnehmern auf dem Dach erkennbar.")
+            ]
+            
+        case _ where seriesCode.contains("407"):
+            return [
+                SpotterFeature(icon: "shield.lefthalf.filled", title: "Durchgehender Dachbuckel", description: "Markant erhöhte, aerodynamische Dachverkleidung über die gesamte Zuglänge."),
+                SpotterFeature(icon: "window.ceiling", title: "Separate Führerstandstür", description: "Eigene Außentür zum Führerstand und steilere, bulligere Velaro-Kopfform als beim BR 403.")
+            ]
+            
+        case _ where seriesCode.contains("408"):
+            return [
+                SpotterFeature(icon: "window.shade.closed", title: "Laser-Scheiben & schwarzes Band", description: "Feines Raster in den Fensterscheiben für perfekten Mobilfunkempfang und tiefschwarzes Fensterband."),
+                SpotterFeature(icon: "figure.roll", title: "10 Einstiegstüren pro Seite", description: "Zwei zusätzliche Türen gegenüber dem BR 407 sowie integrierter Rollstuhllift.")
+            ]
+            
+        case _ where seriesCode.contains("412 (XXL)"):
+            return [
+                SpotterFeature(icon: "ruler.fill", title: "374 Meter (13 Wagen)", description: "Füllt selbst längste Fernbahnsteige komplett aus – erkennbar an Wagen 11, 12 und 14."),
+                SpotterFeature(icon: "number", title: "Triebzugnummern 94xx", description: "Außen am Bug mit einer vierstelligen Tz-Nummer ab 9401 (BR 412.4) gekennzeichnet.")
+            ]
+            
+        case _ where seriesCode.contains("412 (K7)"):
+            return [
+                SpotterFeature(icon: "scissors", title: "Kompakter 7-Teiler (200 m)", description: "Deutlich kürzere Garnitur mit nur einem 1.-Klasse-Endwagen, oft in Doppeltraktion gekuppelt."),
+                SpotterFeature(icon: "speedometer", title: "250 km/h (BR 412.2)", description: "Trägt außen Triebzugnummern im 92xx-Bereich und ist für 250 km/h zugelassen.")
+            ]
+            
+        case _ where seriesCode.contains("412"):
+            return [
+                SpotterFeature(icon: "diamond.fill", title: "Kantige ICE-4-Kopfform", description: "Markante Front mit schmalem roten Zierstreifen oberhalb der Führerstandsscheibe."),
+                SpotterFeature(icon: "ruler.fill", title: "28-Meter-Großraumwagen", description: "Ungewöhnlich lange Wagenkästen mit außenliegenden Trittstufen an den Türen.")
+            ]
+            
+        case _ where seriesCode.contains("411") || seriesCode.contains("415"):
+            return [
+                SpotterFeature(icon: "arrow.left.and.right", title: "Neigetechnik-Wagenkasten", description: "Nach oben hin leicht verjüngter Querschnitt, der sich in Kurven um bis zu 8 Grad neigt."),
+                SpotterFeature(icon: "wind", title: "Steile Frontpartie", description: "Kürzere, steilere Nase als beim ICE 3 mit einem einzigen zentralen Scheibenwischer.")
+            ]
+            
+        case _ where seriesCode.contains("105"):
+            return [
+                SpotterFeature(icon: "figure.roll", title: "Stufenloser 76-cm-Einstieg", description: "Durchgehend ebenerdiger Einstieg ohne Treppenstufen an Standardbahnsteigen."),
+                SpotterFeature(icon: "circle.grid.2x1.fill", title: "Kurze Talgo-Gliederwagen", description: "Charakteristisch kurze 13-Meter-Wagen mit Einzelrad-Fahrwerken und Talgo-Lok BR 105.")
+            ]
+
+        case _ where seriesCode.contains("501") || commercialName.contains("Giruno"):
+            return [
+                SpotterFeature(icon: "plus.square.fill", title: "Schweizer SBB-Design", description: "Rot-weiß-schwarze Kopfform mit Schweizer Kreuz an der Front und vier Stromabnehmern."),
+                SpotterFeature(icon: "figure.walk", title: "Zwei Einstiegshöhen", description: "Besitzt separate Niederflurtüren für 55 cm (CH/IT) und 76 cm (DE) Bahnsteighöhe.")
+            ]
+
+        case _ where seriesCode.contains("1116") || commercialName.contains("Railjet"):
+            return [
+                SpotterFeature(icon: "music.note", title: "Taurus-Tonleiter beim Anfahren", description: "Die Lokomotive Rh 1116 erzeugt beim Anfahren eine weltberühmte akustische Tonleiter."),
+                SpotterFeature(icon: "paintbrush.fill", title: "Rubinrot-Anthrazit", description: "Durchgängiges Design von der Taurus-Lok bis zum aerodynamischen Steuerwagen.")
+            ]
+
+        case _ where seriesCode.contains("193") || commercialName.contains("Vectron"):
+            return [
+                SpotterFeature(icon: "line.3.horizontal", title: "Charakteristische Front-Kiemen", description: "Drei horizontale Sicken („Kiemen“) links und rechts neben dem Frontlogo."),
+                SpotterFeature(icon: "bolt.horizontal.fill", title: "Mehrsystem-Dachgarten", description: "Bis zu vier Stromabnehmer für den Einsatz von Skandinavien über DACH bis Italien und den Balkan.")
+            ]
+            
+        // MARK: - 3. Intercity & Nachtzug
         case _ where seriesCode.contains("101"):
             return [
-                SpotterFeature(icon: "cube.fill", title: "Klassische Kantige Front", description: "Vierachsige Schnellzuglokomotive der 90er Jahre vor klassischen einstöckigen IC-Wagen."),
-                SpotterFeature(icon: "antenna.radiowaves.left.and.right", title: "Puffer & Kupplung", description: "Klassische Schraubenkupplung mit runden Seitenpuffern an der Front.")
+                SpotterFeature(icon: "cube.fill", title: "Abgeschrägte Drehstrom-Front", description: "Kräftige vierachsige Schnellzuglokomotive mit glatten Seitenwänden vor klassischen IC-Wagen."),
+                SpotterFeature(icon: "antenna.radiowaves.left.and.right", title: "Schraubenkupplung & Puffer", description: "Klassische Zug- und Stoßeinrichtung an beiden Führerständen.")
             ]
             
         case _ where seriesCode.contains("146") || seriesCode.contains("147") || (commercialName.contains("Twindexx") && category == .highSpeed):
             return [
-                SpotterFeature(icon: "arrow.up.and.down", title: "Weißer Doppelstock-IC", description: "Weiß lackierte Bombardier-Doppelstockwagen mit rotem DB-Streifen, gezogen von BR 146.5 oder 147.5."),
-                SpotterFeature(icon: "arrow.up.left.and.down.right.magnifyingglass", title: "Panoramablick", description: "Fenster im Oberdeck bieten hervorragende Aussicht über Lärmschutzwände hinweg.")
+                SpotterFeature(icon: "arrow.up.and.down", title: "Weißer Doppelstock-Wendezug", description: "Fünfteilige Doppelstockgarnitur im weißen ICE-Farbschema, geschoben/gezogen von BR 146.5 oder 147.5."),
+                SpotterFeature(icon: "arrow.up.left.and.down.right.magnifyingglass", title: "Panoramablick im Oberdeck", description: "Große Fenster im Obergeschoss bieten weite Sicht über Lärmschutzwände.")
             ]
             
         case _ where seriesCode.contains("4110") || commercialName.contains("KISS"):
             return [
-                SpotterFeature(icon: "bolt.fill", title: "Stadler KISS Triebzug", description: "Weißer Doppelstock-Triebzug mit auffallend spitz zulaufender, moderner Stadler-Frontpartie."),
-                SpotterFeature(icon: "hare.fill", title: "Enorme Beschleunigung", description: "Spurtschneller 4- oder 6-teiliger Triebzug, ursprünglich für die österreichische WESTbahn gefertigt.")
+                SpotterFeature(icon: "bolt.fill", title: "Stadler-KISS-Kopfform", description: "Doppelstock-Triebzug (ohne separate Lok) mit dynamisch geschwungener Schweizer Front."),
+                SpotterFeature(icon: "hare.fill", title: "Spurtstarker 200-km/h-Dosto", description: "Angetriebene Drehgestelle unter den Endwagen sorgen für hohe Beschleunigung.")
             ]
             
         case _ where commercialName.contains("Nightjet"):
             return [
-                SpotterFeature(icon: "moon.stars.fill", title: "Dunkelblaues Design", description: "Elegante dunkelblaue Lackierung der ÖBB mit Sternenhimmel-Muster."),
-                SpotterFeature(icon: "bed.double.fill", title: "Mini-Cabins", description: "Erkennbar an den versetzten Fenstern der innovativen Schlafkapseln.")
+                SpotterFeature(icon: "moon.stars.fill", title: "Nachtblaues Sternendesign", description: "Dunkelblaue Lackierung mit feinem Sternenhimmel-Dekor und roter Kontrastlinie."),
+                SpotterFeature(icon: "bed.double.fill", title: "Versetzte Mini-Cabin-Fenster", description: "Am Liegewagen sind die zweistöckig versetzten Fenster der Einzel-Schlafkapseln erkennbar.")
             ]
             
-        // MARK: - Regionalverkehr
+        // MARK: - 4. Regionalverkehr & S-Bahn
         case _ where seriesCode.contains("462") || commercialName.contains("Desiro HC"):
             return [
-                SpotterFeature(icon: "arrow.up.arrow.down.square", title: "Hybrid-Dosto-Bauweise", description: "Die beiden Endwagen sind EINSTÖCKIG, die Mittelwagen sind DOPPELSTÖCKIG!"),
-                SpotterFeature(icon: "lightbulb.fill", title: "LED-Frontleuchten", description: "Markante, schräg angeordnete LED-Scheinwerfer im Siemens Desiro-Familiendesign.")
+                SpotterFeature(icon: "arrow.up.arrow.down.square", title: "Einstöckig außen, Dosto innen", description: "Markantes Hybrid-Profil: Die beiden angetriebenen Endwagen sind einstöckig, die Mittelwagen doppelstöckig."),
+                SpotterFeature(icon: "lightbulb.fill", title: "Schräge LED-Scheinwerfer", description: "Typisches Siemens-Desiro-Gesicht mit großer Zielanzeige hinter der Frontscheibe.")
             ]
             
         case _ where seriesCode.contains("442") || commercialName.contains("Talent 2"):
             return [
-                SpotterFeature(icon: "face.smiling", title: "'Hamsterbacken'-Front", description: "Kräftig nach außen gewölbte Frontschürze, die dem Zug seinen Spitznamen gab."),
-                SpotterFeature(icon: "arrow.down.to.line", title: "Tiefer Einstieg", description: "Niedrige Fensterlinie und stufenloser Einstieg an regionalen Bahnsteigen.")
+                SpotterFeature(icon: "face.smiling", title: "„Hamsterbacken“-Wölbung", description: "Kräftig nach außen gewölbte Seitenpartien an der Front gaben ihm seinen berühmten Spitznamen."),
+                SpotterFeature(icon: "arrow.down.to.line", title: "Jakobs-Drehgestelle", description: "Wagenkästen liegen an den Übergängen gemeinsam auf einem Drehgestell auf.")
             ]
             
         case _ where seriesCode.contains("1428") || seriesCode.contains("1429") || commercialName.contains("FLIRT"):
             return [
-                SpotterFeature(icon: "tram.fill", title: "Jakobs-Drehgestelle", description: "Die Wagenkästen teilen sich jeweils ein gemeinsames Drehgestell am Übergang."),
-                SpotterFeature(icon: "windshield.front.and.heat.waves", title: "Steile Frontscheibe", description: "Sehr aufrechte, polygonale Frontscheibe im typischen Schweizer Stadler-Design.")
+                SpotterFeature(icon: "windshield.front.and.heat.waves", title: "Kantige Stadler-Front", description: "Steile, aerodynamische Frontscheibe mit tief sitzenden LED-Scheinwerfern."),
+                SpotterFeature(icon: "tram.fill", title: "Große Panoramafenster", description: "Durchgehend helle Niederflur-Großräume mit stufenlosen Wagenübergängen.")
             ]
             
         case _ where seriesCode.contains("463") || commercialName.contains("Mireo"):
             return [
-                SpotterFeature(icon: "leaf.fill", title: "Futuristische Leichtbau-Front", description: "Fließende, geschwungene Linienführung mit horizontalen LED-Tagfahrleuchten."),
-                SpotterFeature(icon: "gauge.with.needle", title: "Extrem leise", description: "Modernste Schalldämmung und hohe Energieeffizienz dank Leichtbauweise.")
+                SpotterFeature(icon: "leaf.fill", title: "Scharf geschnittene Leichtbau-Nase", description: "Markante horizontale Bügelfalte an der Front mit schmalen LED-Lichtleisten."),
+                SpotterFeature(icon: "bolt.batteryblock.fill", title: "Auch als Plus B / Plus H", description: "Verkehrt vielerorts auch als Batterie-Hybrid (BR 563) auf teil-elektrifizierten Strecken.")
             ]
             
         case _ where seriesCode.contains("445") || seriesCode.contains("446") || commercialName.contains("Twindexx Vario"):
             return [
-                SpotterFeature(icon: "arrow.up.and.down", title: "Roter Doppelstock-Triebkopf", description: "DB Regio Verkehrsrot mit angetriebenen Triebköpfen an beiden Enden der Wagengarnitur."),
-                SpotterFeature(icon: "person.3.fill", title: "Hohe Kapazität", description: "Breite Treppenaufgänge im Einstiegsbereich führen ins Ober- und Unterdeck.")
+                SpotterFeature(icon: "arrow.up.and.down", title: "Angetriebene Dosto-Endwagen", description: "Doppelstockzug ohne Lokomotive: Die Endwagen (BR 445/446) besitzen eigene Dachstromabnehmer und Motoren."),
+                SpotterFeature(icon: "person.3.fill", title: "Hohe Pendlerkapazität", description: "Durchgehend doppelstöckiger Zugverband im Verkehrsrot oder Landesdesign.")
+            ]
+
+        case _ where seriesCode.contains("1440") || commercialName.contains("Coradia Continental"):
+            return [
+                SpotterFeature(icon: "face.smiling.inverse", title: "„Grinsekatze“-Front", description: "Die geschwungene Scheinwerfer- und Kühlerpartie der neueren Bauserie erinnert an ein breites Lächeln."),
+                SpotterFeature(icon: "arrow.up.to.line", title: "Dach-Technikcontainer", description: "fast die gesamte Antriebs- und Klimatechnik sitzt auf dem Dach für durchgehenden Niederflurboden.")
             ]
             
         case _ where seriesCode.contains("423") || seriesCode.contains("430") || commercialName.contains("S-Bahn"):
             return [
-                SpotterFeature(icon: "door.left.hand.open", title: "3 Türen pro Wagenseite", description: "Speziell für extrem schnellen Fahrgastwechsel in Großstadtnetzen entwickelt."),
-                SpotterFeature(icon: "rectangle.compress.vertical", title: "Kompakte Höhe", description: "Exakt abgestimmt auf 96 cm Hochbahnsteige der S-Bahnen.")
+                SpotterFeature(icon: "door.left.hand.open", title: "12 Türen pro Zugseite", description: "Drei Doppelschwenkschiebetüren je Wagenkasten für sekundenschnellen Fahrgastwechsel."),
+                SpotterFeature(icon: "rectangle.compress.vertical", title: "96-cm-Hochflur-Einstieg", description: "Speziell für die Hochbahnsteige der S-Bahn-Stammstrecken konstruiert.")
             ]
             
         case _ where seriesCode.contains("425") || commercialName.contains("ET 425"):
             return [
-                SpotterFeature(icon: "speaker.wave.3.fill", title: "Fahrgeräusch ('Quietschie')", description: "Unverwechselbares heulendes und quietschendes Anfahrgeräusch der Frequenzumrichter."),
-                SpotterFeature(icon: "rectangle.portrait.split.2x1", title: "Durchgängiger Wagenkasten", description: "Kompakte rote Regionalbahn mit Jakobs-Drehgestellen und ungeteiltem Innenraum.")
+                SpotterFeature(icon: "speaker.wave.3.fill", title: "Unverwechselbares „Quietschie“-Heulen", description: "Charakteristisches elektronisches Anfahr- und Bremsgeräusch der Stromrichter."),
+                SpotterFeature(icon: "rectangle.portrait.split.2x1", title: "Zwei Türen pro Wagenseite", description: "Optisch eng verwandt mit der BR 423, aber mit nur zwei Türen je Wagen und Trittstufen für Regionalbahnsteige.")
             ]
             
         case _ where seriesCode.contains("622") || seriesCode.contains("648") || commercialName.contains("LINT"):
             return [
-                SpotterFeature(icon: "engine.combustion", title: "Diesel-Sound", description: "Deutliches Dieseln beim Anfahren auf nicht elektrifizierten Nebenstrecken."),
-                SpotterFeature(icon: "car.side.fill", title: "Kompakter 1- bis 2-Teiler", description: "Schlanker Triebwagen mit Dachkühlanlagen für gemütliche Regionalstrecken.")
+                SpotterFeature(icon: "engine.combustion", title: "Unterflur-Dieselmotoren", description: "Markantes Dieselgeräusch beim Beschleunigen auf nicht elektrifizierten Strecken."),
+                SpotterFeature(icon: "car.side.fill", title: "Kompakter 1- bis 3-Teiler", description: "Niederflur-Einstiegsbereich zwischen den Drehgestellen und große Seitenfenster.")
             ]
             
         default:
             return [
-                SpotterFeature(icon: "tag.fill", title: "Baureihe & Anschrift", description: "Die Baureihennummer (z. B. \(seriesCode)) findest du außen an den Türen und Triebköpfen."),
-                SpotterFeature(icon: "speedometer", title: "Höchstgeschwindigkeit", description: "Ausgelegt für bis zu \(maxSpeedKmH ?? 160) km/h im regulären Streckendienst.")
+                SpotterFeature(icon: "tag.fill", title: "Baureihe & Anschrift", description: "Die Baureihennummer (\(seriesCode)) findest du seitlich an den Endwagen angeschrieben."),
+                SpotterFeature(icon: "speedometer", title: "Höchstgeschwindigkeit", description: "Ausgelegt für bis zu \(maxSpeedKmH ?? 160) km/h im planmäßigen Streckendienst.")
             ]
         }
     }

@@ -347,47 +347,51 @@ struct ArchivedCellView: View {
 
     private var cellHeight: CGFloat {
         switch gridSize {
-        case 3: return 84
-        case 4: return 66
-        case 5: return 54
-        default: return 70
+        case 3: return 88
+        case 4: return 72
+        case 5: return 62
+        default: return 72
         }
     }
 
     var body: some View {
         ZStack(alignment: .topTrailing) {
             VStack(spacing: 3) {
-                Spacer(minLength: 1)
                 Image(systemName: cell.iconName)
-                    .font(.system(size: gridSize == 5 ? 12 : 15, weight: .semibold))
-                    .foregroundStyle(cell.isChecked ? (cell.isJoker ? .yellow : .white) : cell.rarity.badgeColor)
+                    .font(.system(size: gridSize == 5 ? 12 : 14, weight: .medium))
+                    .foregroundStyle(cell.isChecked ? .white : Color.accentColor.opacity(0.8))
 
-                Text(cell.text)
-                    .font(.system(size: gridSize == 5 ? 7 : 8.5, weight: cell.isChecked ? .bold : .medium))
+                Text(cell.isJoker ? "FREIFELD" : cell.text)
+                    .font(.system(size: gridSize == 5 ? 8.5 : (gridSize == 4 ? 9.5 : 11), weight: cell.isChecked ? .semibold : .medium))
                     .multilineTextAlignment(.center)
                     .lineLimit(3)
-                    .minimumScaleFactor(0.8)
+                    .minimumScaleFactor(0.6)
+                    .allowsTightening(true)
                     .foregroundStyle(cell.isChecked ? .white : .primary)
-                Spacer(minLength: 1)
             }
-            .frame(maxWidth: .infinity)
+            .padding(.horizontal, 4)
+            .padding(.vertical, 4)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
             .frame(height: cellHeight)
-            .padding(2)
 
-            if cell.isChecked {
-                Image(systemName: cell.isJoker ? "star.fill" : "checkmark.circle.fill")
-                    .font(.system(size: 8))
-                    .foregroundStyle(cell.isJoker ? .yellow : .white)
-                    .padding(3)
+            if cell.isChecked && !cell.isJoker {
+                Image(systemName: "checkmark.circle.fill")
+                    .font(.system(size: 8.5))
+                    .foregroundStyle(.white.opacity(0.9))
+                    .padding(4)
             }
         }
         .background(
-            RoundedRectangle(cornerRadius: 8, style: .continuous)
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .fill(
                     cell.isChecked
-                        ? (cell.isJoker ? Color.purple.opacity(0.85) : Color.accentColor)
+                        ? (cell.isJoker ? Color.orange : Color.accentColor)
                         : Color(uiColor: .systemBackground)
                 )
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 10, style: .continuous)
+                .strokeBorder(cell.isChecked ? Color.clear : Color.primary.opacity(0.06), lineWidth: 1)
         )
     }
 }

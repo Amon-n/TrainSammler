@@ -16,7 +16,7 @@ public struct DataSeeder {
                     designation: "München",
                     rarity: .legendary,
                     category: .special,
-                    overviewDescription: "Der berühmte ICE 3 mit Regenbogen-Zierstreifen für Toleranz, Vielfalt und Respekt auf deutschen Schienen.",
+                    overviewDescription: "Der berühmte ICE 3 mit sechsfarbigem Regenbogen-Zierstreifen für Toleranz, Vielfalt und Respekt auf deutschen Schienen.",
                     assetName: "ice_regenbogen",
                     maxSpeedKmH: 330
                 ),
@@ -26,9 +26,9 @@ public struct DataSeeder {
                     designation: "Europa / Frankfurt am Main",
                     rarity: .legendary,
                     category: .special,
-                    overviewDescription: "ICE 3M Mehrsystemzug mit blauem Europa-Streifen und europäischen Sternen als Botschafter für ein vereintes Europa.",
+                    overviewDescription: "ICE 3M Mehrsystemzug mit blauem Europa-Streifen und Sternen als Botschafter für ein vereintes Europa.",
                     assetName: "ice_europa",
-                    maxSpeedKmH: 330
+                    maxSpeedKmH: 320
                 ),
                 TrainModel(
                     seriesCode: "BR 412 (Tz 9457)",
@@ -36,7 +36,7 @@ public struct DataSeeder {
                     designation: "Bundesrepublik Deutschland",
                     rarity: .legendary,
                     category: .special,
-                    overviewDescription: "Feierlicher Jubiläums-ICE 4 mit schwarz-rot-goldener Flaggen-Linierung an beiden Endwagen.",
+                    overviewDescription: "Feierlicher 13-teiliger Jubiläums-ICE 4 mit schwarz-rot-goldener Flaggen-Linierung an beiden Endwagen.",
                     assetName: "ice_4_brd",
                     maxSpeedKmH: 265
                 ),
@@ -46,8 +46,8 @@ public struct DataSeeder {
                     designation: "Mainz",
                     rarity: .legendary,
                     category: .special,
-                    overviewDescription: "Symbolzug für Frauenförderung im Schienenverkehr, der 2022 von einer rein weiblichen Besatzung pilotiert wurde.",
-                    assetName: "ice_4",
+                    overviewDescription: "Symbolzug für Frauenförderung im Schienenverkehr mit markanter Aktionsbeklebung am Triebkopf und Bordrestaurant.",
+                    assetName: "ice_female_cab",
                     maxSpeedKmH: 265
                 ),
                 TrainModel(
@@ -56,7 +56,7 @@ public struct DataSeeder {
                     designation: "Mess- & Erprobungszug",
                     rarity: .legendary,
                     category: .special,
-                    overviewDescription: "Hochgeschwindigkeits-Messzug der DB Systemtechnik. Hielt mit 393 km/h zeitweise den deutschen Schienenrekord.",
+                    overviewDescription: "Hochgeschwindigkeits-Messzug der DB Systemtechnik für Streckenprüfungen und Stromabnehmer-Tests bis 393 km/h.",
                     assetName: "ice_s",
                     maxSpeedKmH: 393
                 ),
@@ -66,29 +66,29 @@ public struct DataSeeder {
                     designation: "Fahrendes Digitallabor",
                     rarity: .legendary,
                     category: .special,
-                    overviewDescription: "Ehemaliger dieselgetriebener ICE TD, der heute als Versuchsträger für Sensorik, 5G und automatisiertes Fahren dient.",
+                    overviewDescription: "Ehemaliger dieselgetriebener ICE TD, der als Versuchsträger für Sensorik, Lidar, 5G und automatisiertes Fahren dient.",
                     assetName: "ice_605_trainlab",
                     maxSpeedKmH: 200
                 ),
                 
-                // MARK: - 2. FERNVERKEHR / ICE & IC (High Speed)
+                // MARK: - 2. FERNVERKEHR / ICE, EC, RJ & LOKOMOTIVEN (High Speed)
                 TrainModel(
                     seriesCode: "BR 408",
                     commercialName: "ICE 3neo",
-                    designation: "Velaro MS",
+                    designation: "Siemens Velaro MS",
                     rarity: .rare,
                     category: .highSpeed,
-                    overviewDescription: "Modernste Weiterentwicklung der Siemens-Velaro-Plattform mit 320 km/h, mobilfunkdurchlässigen Scheiben und Fahrradstellplätzen.",
+                    overviewDescription: "Neueste Viersystem-Weiterentwicklung der Siemens-Velaro-Plattform (15 kV / 25 kV AC, 1,5 kV / 3 kV DC) mit mobilfunkdurchlässigen Scheiben und neuem Innendesign.",
                     assetName: "ice_3neo",
                     maxSpeedKmH: 320
                 ),
                 TrainModel(
                     seriesCode: "BR 407",
                     commercialName: "ICE 3 (Velaro D)",
-                    designation: "Eurostar / Frankreich",
+                    designation: "Mehrsystem-Sprinter",
                     rarity: .uncommon,
                     category: .highSpeed,
-                    overviewDescription: "Viersystem-ICE der 3. Generation für den anspruchsvollen internationalen Verkehr nach Paris und Brüssel.",
+                    overviewDescription: "Viersystem-Hochgeschwindigkeitszug von Siemens für den internationalen Fernverkehr nach Frankreich und Belgien.",
                     assetName: "ice_3_velaro",
                     maxSpeedKmH: 320
                 ),
@@ -98,27 +98,27 @@ public struct DataSeeder {
                     designation: "Der Ur-Sprinter",
                     rarity: .uncommon,
                     category: .highSpeed,
-                    overviewDescription: "Die Design-Ikone der Schnellfahrstrecke Köln–Rhein/Main mit Lounge-Blick direkt hinter dem Lokführer.",
+                    overviewDescription: "Die Design-Ikone der Schnellfahrstrecke Köln–Rhein/Main mit Unterflurantrieb und Panorama-Lounge direkt hinter dem Führerstand.",
                     assetName: "ice_3_sfs",
                     maxSpeedKmH: 330
                 ),
                 TrainModel(
                     seriesCode: "BR 406",
                     commercialName: "ICE 3M",
-                    designation: "Mehrsystem-Triebzug",
+                    designation: "Mehrsystem-Pionier",
                     rarity: .uncommon,
                     category: .highSpeed,
-                    overviewDescription: "Internationale Variante des ICE 3 für Fahrten unter vier verschiedenen europäischen Bahnstromsystemen.",
-                    assetName: "ice_europa",
-                    maxSpeedKmH: 330
+                    overviewDescription: "Erste internationale Mehrsystem-Variante des ICE 3 mit sechs Dachstromabnehmern für vier europäische Bahnstromsysteme.",
+                    assetName: "ice_3m_multi",
+                    maxSpeedKmH: 320
                 ),
                 TrainModel(
                     seriesCode: "BR 412",
                     commercialName: "ICE 4 (12-Teiler)",
-                    designation: "Rückgrat der DB",
+                    designation: "Rückgrat des Fernverkehrs",
                     rarity: .common,
                     category: .highSpeed,
-                    overviewDescription: "Das moderne Arbeitspferd im DB-Fernverkehr mit modularem Powercar-Konzept und hoher Energieeffizienz.",
+                    overviewDescription: "Das moderne Arbeitspferd im DB-Fernverkehr von Siemens mit modularem Powercar-Konzept und 28 Meter langen Großraumwagen.",
                     assetName: "ice_4",
                     maxSpeedKmH: 265
                 ),
@@ -128,19 +128,19 @@ public struct DataSeeder {
                     designation: "374-Meter-Kapazitätsriese",
                     rarity: .rare,
                     category: .highSpeed,
-                    overviewDescription: "Längster Triebzug im DB-Netz mit 13 Wagen und Platz für 918 Fahrgäste auf hochfrequentierten Magistralen.",
-                    assetName: "ice_4",
+                    overviewDescription: "Längster Triebzug im DB-Netz (BR 412.4) mit 13 Wagen und 918 Sitzplätzen auf hochfrequentierten Nord-Süd-Magistralen.",
+                    assetName: "ice_4_altengronau",
                     maxSpeedKmH: 265
                 ),
                 TrainModel(
                     seriesCode: "BR 412 (K7)",
                     commercialName: "ICE 4 (7-Teiler)",
-                    designation: "Kurzzug / Sprinter",
+                    designation: "Kurzzug / Flügelzug",
                     rarity: .uncommon,
                     category: .highSpeed,
-                    overviewDescription: "Kurze 7-Wagen-Garnitur des ICE 4 für Linien mit mittlerer Nachfrage oder flexible Zugflügelung.",
-                    assetName: "ice_4",
-                    maxSpeedKmH: 265
+                    overviewDescription: "Kompakte 7-Wagen-Ausführung (BR 412.2) des ICE 4 für bis zu 250 km/h, oft in Doppeltraktion oder auf Tagesrandlinien unterwegs.",
+                    assetName: "ice_4_front",
+                    maxSpeedKmH: 250
                 ),
                 TrainModel(
                     seriesCode: "BR 411",
@@ -148,7 +148,7 @@ public struct DataSeeder {
                     designation: "Elektrischer Neigezug",
                     rarity: .rare,
                     category: .highSpeed,
-                    overviewDescription: "Mit Neigetechnik ausgestatteter ICE für bogenreiche Strecken wie die Gäubahn oder das Saaletal.",
+                    overviewDescription: "Mit aktiver Neigetechnik ausgestatteter ICE für kurvenreiche Strecken in Mitteldeutschland und nach Österreich.",
                     assetName: "ice_t",
                     maxSpeedKmH: 230
                 ),
@@ -158,17 +158,17 @@ public struct DataSeeder {
                     designation: "Kurzer Neigezug",
                     rarity: .rare,
                     category: .highSpeed,
-                    overviewDescription: "Kürzere 5-Wagen-Ausführung des ICE T, häufig in Doppeltraktion oder auf grenzüberschreitenden Routen nach Österreich unterwegs.",
+                    overviewDescription: "Kürzere 5-Wagen-Variante des ICE T mit Neigetechnik für schnelle Verbindungen auf bogenreichen Hauptbahnen.",
                     assetName: "ice_t",
                     maxSpeedKmH: 230
                 ),
                 TrainModel(
                     seriesCode: "BR 401",
                     commercialName: "ICE 1 (LDV)",
-                    designation: "Lebensdauerverlängerung",
+                    designation: "Der Ur-ICE mit Buckelspeisewagen",
                     rarity: .uncommon,
                     category: .highSpeed,
-                    overviewDescription: "Der Ur-ICE von 1991. Aufwändig modernisiert mit verkürzten 9-Wagen-Garnituren und zeitlosem Komfort.",
+                    overviewDescription: "Der Klassiker von 1991 mit zwei Triebköpfen und dem berühmten erhöhten Bordrestaurant, modernisiert als 9-Wagen-Zug.",
                     assetName: "ice_1",
                     maxSpeedKmH: 280
                 ),
@@ -178,7 +178,7 @@ public struct DataSeeder {
                     designation: "Halbzug mit Steuerwagen",
                     rarity: .uncommon,
                     category: .highSpeed,
-                    overviewDescription: "Die 2. ICE-Generation mit Triebkopf und Steuerwagen, berühmt für das Flügelungskonzept in Hamm (Westf).",
+                    overviewDescription: "Die 2. ICE-Generation mit einem Triebkopf und einem Steuerwagen (808), konzipiert für das Flügelzugkonzept.",
                     assetName: "ice_2",
                     maxSpeedKmH: 280
                 ),
@@ -188,28 +188,58 @@ public struct DataSeeder {
                     designation: "Talgo 230 Niederflur",
                     rarity: .rare,
                     category: .highSpeed,
-                    overviewDescription: "Die neueste Generation barrierefreier Fernverkehrszüge von Talgo mit stufenlosem Einstieg für Urlauberlinien.",
-                    assetName: "ice_l",
+                    overviewDescription: "Neueste Generation stufenloser Fernverkehrszüge von Talgo mit Einzelrad-Fahrwerken, Steuerwagen und Mehrsystemlok BR 105.",
+                    assetName: "ice_l_cab",
                     maxSpeedKmH: 230
                 ),
                 TrainModel(
-                    seriesCode: "BR 101",
-                    commercialName: "Intercity 1",
-                    designation: "Lokbespannter Klassiker",
+                    seriesCode: "RABe 501",
+                    commercialName: "SBB Giruno",
+                    designation: "Stadler SMILE (EC 250)",
+                    rarity: .rare,
+                    category: .highSpeed,
+                    overviewDescription: "Elfteiliger Schweizer Hochgeschwindigkeits-Niederflurtriebzug von Stadler Rail für den alpenquerenden Verkehr zwischen Deutschland, der Schweiz und Italien.",
+                    assetName: "sbb_giruno_zurich",
+                    maxSpeedKmH: 250
+                ),
+                TrainModel(
+                    seriesCode: "RJ / BR 1116",
+                    commercialName: "ÖBB Railjet",
+                    designation: "Taurus & Viaggio Comfort",
                     rarity: .uncommon,
                     category: .highSpeed,
-                    overviewDescription: "Die legendäre Schnellzuglokomotive der 90er Jahre vor traditionellen Intercity-Wagengarnituren.",
+                    overviewDescription: "Hochgeschwindigkeits-Wendezug der Österreichischen Bundesbahnen (Siemens Viaggio Comfort & Rh 1116 „Taurus“) im DACH-Fernverkehr.",
+                    assetName: "oebb_railjet",
+                    maxSpeedKmH: 230
+                ),
+                TrainModel(
+                    seriesCode: "BR 193",
+                    commercialName: "Siemens Vectron",
+                    designation: "Europas Universallokomotive",
+                    rarity: .common,
+                    category: .highSpeed,
+                    overviewDescription: "Moderne Mehrsystem-Elektrolokomotive von Siemens Mobility vor internationalen EuroCity-, Nacht- und Güterzügen im gesamten DACH-Raum.",
+                    assetName: "br_193_vectron",
+                    maxSpeedKmH: 200
+                ),
+                TrainModel(
+                    seriesCode: "BR 101",
+                    commercialName: "Intercity 1 (BR 101)",
+                    designation: "Drehstrom-Schnellzuglok",
+                    rarity: .uncommon,
+                    category: .highSpeed,
+                    overviewDescription: "Die legendäre Hochleistungs-Schnellzuglokomotive von Adtranz vor klassischen Intercity- und EuroCity-Wagengarnituren.",
                     assetName: "br_101",
                     maxSpeedKmH: 220
                 ),
                 TrainModel(
                     seriesCode: "BR 146.5 / 147.5",
                     commercialName: "Intercity 2 (Twindexx)",
-                    designation: "Doppelstock-Intercity",
+                    designation: "Doppelstock-Wendezug",
                     rarity: .common,
                     category: .highSpeed,
-                    overviewDescription: "Weiß lackierter Bombardier-Doppelstockzug mit Lokomotive und Panoramablick aus dem Oberdeck.",
-                    assetName: "twindexx_vario",
+                    overviewDescription: "Weiß lackierter Bombardier-Doppelstock-Wendezug im Fernverkehrsdesign mit TRAXX-Lokomotive und Steuerwagen.",
+                    assetName: "ic2_twindexx_cab",
                     maxSpeedKmH: 160
                 ),
                 TrainModel(
@@ -218,18 +248,18 @@ public struct DataSeeder {
                     designation: "Stadler Dosto-Triebzug",
                     rarity: .rare,
                     category: .highSpeed,
-                    overviewDescription: "Ursprünglich für die österreichische WESTbahn gebaute, besonders spurtschnelle Doppelstock-Triebzüge auf der Gäubahn und Ostseeküste.",
+                    overviewDescription: "Spurtschneller Doppelstock-Triebzug von Stadler Rail für 200 km/h mit markanter Front und hohem Reisekomfort.",
                     assetName: "ic2_kiss",
                     maxSpeedKmH: 200
                 ),
                 TrainModel(
                     seriesCode: "Nightjet Viaggio",
-                    commercialName: "ÖBB Nightjet",
-                    designation: "Neuer Nachtzug der Zukunft",
+                    commercialName: "ÖBB Nightjet (NextGen)",
+                    designation: "Siemens Viaggio Next Level",
                     rarity: .rare,
                     category: .highSpeed,
-                    overviewDescription: "Hochmoderne Nachtzug-Garnituren von Siemens mit Mini-Cabins für ungestörten Schlaf quer durch Europa.",
-                    assetName: "nightjet_viaggio",
+                    overviewDescription: "Siebenteilige Nachtzug-Generation von Siemens mit Steuerwagen, barrierefreiem Einstieg und innovativen Mini-Cabins.",
+                    assetName: "nightjet_cab",
                     maxSpeedKmH: 230
                 ),
                 
@@ -237,10 +267,10 @@ public struct DataSeeder {
                 TrainModel(
                     seriesCode: "BR 462",
                     commercialName: "Siemens Desiro HC",
-                    designation: "Rhein-Ruhr-Express (RRX)",
+                    designation: "High Capacity (z. B. RRX)",
                     rarity: .uncommon,
                     category: .regional,
-                    overviewDescription: "Teil-Doppelstocktriebzug mit einstöckigen Endwagen und doppelstöckigen Mittelwagen für hohe Fahrgastströme.",
+                    overviewDescription: "Teil-Doppelstocktriebzug von Siemens mit einstöckigen angetriebenen Endwagen und doppelstöckigen Mittelwagen (u. a. RRX, Franken-Thüringen-Express, Rheintalbahn).",
                     assetName: "desiro_hc",
                     maxSpeedKmH: 160
                 ),
@@ -250,7 +280,7 @@ public struct DataSeeder {
                     designation: "„Hamsterbacke“",
                     rarity: .common,
                     category: .regional,
-                    overviewDescription: "Charakteristischer Regionaltriebzug von Bombardier mit prägnantem Frontdesign, in ganz Deutschland im RE- und S-Bahn-Einsatz.",
+                    overviewDescription: "Weitverbreiteter elektrischer Regional- und S-Bahn-Triebzug von Bombardier mit charakteristischer gewölbter Kopfform.",
                     assetName: "talent_2",
                     maxSpeedKmH: 160
                 ),
@@ -260,57 +290,57 @@ public struct DataSeeder {
                     designation: "Flinker Leichter Regionaltriebzug",
                     rarity: .common,
                     category: .regional,
-                    overviewDescription: "Spurtschneller Niederflurtriebzug mit hervorragender Beschleunigung auf elektrifizierten Nahverkehrslinien.",
+                    overviewDescription: "Spurtschneller elektrischer Niederflurtriebzug von Stadler Rail (auch als BR 429 / 1430 / FLIRT 3 XL) im Regionalexpress- und S-Bahn-Dienst.",
                     assetName: "flirt_3",
                     maxSpeedKmH: 160
                 ),
                 TrainModel(
                     seriesCode: "BR 463",
                     commercialName: "Siemens Mireo",
-                    designation: "Leichtbau-Zukunftszug",
+                    designation: "Leichtbau-Regionaltriebzug",
                     rarity: .uncommon,
                     category: .regional,
-                    overviewDescription: "Extrem energieeffizienter, leichter Nahverkehrszug, auch als Batterie- (Plus B) und Wasserstoffvariante (Plus H) im Einsatz.",
+                    overviewDescription: "Energieeffizienter Leichtbau-Triebzug von Siemens in Aluminium-Integralbauweise, auch als Batterie- (Plus B, BR 563) und Wasserstoffzug (Plus H) im Einsatz.",
                     assetName: "mireo",
                     maxSpeedKmH: 160
                 ),
                 TrainModel(
                     seriesCode: "BR 445 / 446",
-                    commercialName: "Twindexx Vario",
+                    commercialName: "Twindexx Vario (Regio)",
                     designation: "Doppelstock-Triebzug",
                     rarity: .common,
                     category: .regional,
-                    overviewDescription: "Bewährter Doppelstock-Triebzug der DB Regio für dichten Berufsverkehr in Ballungsräumen.",
+                    overviewDescription: "Verkehrsroter oder im Landesdesign lackierter Doppelstock-Triebzug mit angetriebenen Endwagen für aufkommensstarke Regionallinien.",
                     assetName: "twindexx_vario",
                     maxSpeedKmH: 160
                 ),
                 TrainModel(
                     seriesCode: "BR 1440",
                     commercialName: "Coradia Continental",
-                    designation: "Alstom Nahverkehrszug",
+                    designation: "„Grinsekatze“ (Alstom)",
                     rarity: .common,
                     category: .regional,
-                    overviewDescription: "Weitverbreiteter elektrischer Gelenktriebzug für S-Bahn-Netze (z. B. Breisgau, Hannover) und Regionalbahnen.",
+                    overviewDescription: "Elektrischer Niederflur-Triebzug von Alstom mit markanter Scheinwerferpartie und Dach-Antriebstechnik für S-Bahn- und Regionalnetze.",
                     assetName: "coradia_continental",
                     maxSpeedKmH: 160
                 ),
                 TrainModel(
                     seriesCode: "BR 622 / 648",
                     commercialName: "Coradia LINT",
-                    designation: "Diesel-Regionalzug",
+                    designation: "Diesel-Regionaltriebwagen",
                     rarity: .common,
                     category: .regional,
-                    overviewDescription: "Der unbestrittene König nicht elektrifizierter Nebenbahnen im ländlichen Raum Deutschlands.",
+                    overviewDescription: "Bewährter Dieseltriebwagen von Alstom (LINT 27 / 41 / 54 / 81) für nicht elektrifizierte Regional- und Nebenbahnen.",
                     assetName: "coradia_lint",
                     maxSpeedKmH: 140
                 ),
                 TrainModel(
                     seriesCode: "BR 423 / 430",
                     commercialName: "S-Bahn Triebzug",
-                    designation: "Metropolen-Express",
+                    designation: "Metropolen-S-Bahn",
                     rarity: .common,
                     category: .regional,
-                    overviewDescription: "Das unermüdliche Rückgrat der großen S-Bahn-Netze in München, Frankfurt am Main, Stuttgart und Köln.",
+                    overviewDescription: "Vierteiliger S-Bahn-Triebzug mit 12 Einstiegstüren pro Seite für München, Frankfurt/Rhein-Main, Stuttgart und Köln.",
                     assetName: "et_423",
                     maxSpeedKmH: 140
                 ),
@@ -320,21 +350,19 @@ public struct DataSeeder {
                     designation: "„Quietschie“",
                     rarity: .common,
                     category: .regional,
-                    overviewDescription: "Kult-Regionalbahn mit unverwechselbarem Frequenzumrichter-Quietschen beim Anfahren.",
+                    overviewDescription: "Klassischer Elektrotriebzug mit Jakobs-Drehgestellen und markantem Stromrichter-Klang im Regional- und S-Bahn-Verkehr.",
                     assetName: "et_425",
                     maxSpeedKmH: 160
                 )
             ]
             
             if existingTrains.isEmpty {
-                // Frische Datenbank: Alle Züge einfügen
                 for train in defaultTrains {
                     context.insert(train)
                 }
                 try context.save()
                 print("✅ Katalog mit \(defaultTrains.count) Zügen initialisiert!")
             } else {
-                // Bestehende Datenbank: Neue Baureihen hinzufügen & Bilder aktualisieren
                 let existingCodes = Set(existingTrains.map { $0.seriesCode })
                 var changesMade = false
                 
@@ -347,12 +375,20 @@ public struct DataSeeder {
                     }
                 }
                 
-                // 2. Bestehende Züge auf die neuesten Bild-Assets und Daten synchronisieren
+                // 2. Bestehende Züge auf die neuesten Bild-Assets und technischen Daten synchronisieren
                 let defaultMap = Dictionary(uniqueKeysWithValues: defaultTrains.map { ($0.seriesCode, $0) })
                 for train in existingTrains {
                     if let updated = defaultMap[train.seriesCode] {
                         if train.assetName != updated.assetName {
                             train.assetName = updated.assetName
+                            changesMade = true
+                        }
+                        if train.commercialName != updated.commercialName {
+                            train.commercialName = updated.commercialName
+                            changesMade = true
+                        }
+                        if train.designation != updated.designation {
+                            train.designation = updated.designation
                             changesMade = true
                         }
                         if train.overviewDescription != updated.overviewDescription {

@@ -9,20 +9,15 @@ public enum BingoRarity: String, Codable, CaseIterable, Sendable {
 
     public var displayName: String {
         switch self {
-        case .everyday: return "Sehr häufig (Alltag)"
-        case .common: return "Häufig (Typisch DB)"
-        case .uncommon: return "Gelegentlich"
-        case .rare: return "Selten (Rarität)"
-        }
-    }
-
-    public var shortLabel: String {
-        switch self {
         case .everyday: return "Alltag"
         case .common: return "Häufig"
         case .uncommon: return "Gelegentlich"
         case .rare: return "Selten"
         }
+    }
+
+    public var shortLabel: String {
+        displayName
     }
 
     public var badgeColor: Color {
@@ -61,7 +56,7 @@ public struct BingoIncident: Identifiable, Sendable {
     public let category: String
     /// Geschätzte Auftretenswahrscheinlichkeit pro Fahrt in Prozent (1–95)
     public let likelihoodPercent: Int
-    /// Optionale Gruppe, damit sich sehr ähnliche Felder (z. B. mehrere reine Minuten-Verspätungen) nicht auf kleinen Brettern doppeln
+    /// Optionale Gruppe, damit sich sehr ähnliche Felder nicht auf kleinen Brettern doppeln
     public let exclusivityGroup: String?
 
     public init(
@@ -86,14 +81,13 @@ public struct BingoIncident: Identifiable, Sendable {
 public struct BingoCatalog {
     public static let incidents: [BingoIncident] = [
         // =========================================================================
-        // MARK: - 1. SEHR HÄUFIG / ALLTAG (Everyday, 65–92% Wahrscheinlichkeit)
-        // Normale Ereignisse, die auf fast jeder Zugfahrt zu beobachten sind
+        // MARK: - 1. SEHR HÄUFIG / ALLTAG (Everyday, 65–95% Wahrscheinlichkeit)
         // =========================================================================
 
         // --- Verspätung & Fahrplan (Alltag) ---
         BingoIncident(
             id: "delay_3_min",
-            text: "Mindestens 3 Min. Verspätung",
+            text: "Mind. 3 Min. Verspätung",
             iconName: "clock",
             rarity: .everyday,
             category: "Verspätung",
@@ -102,7 +96,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "delay_5_min",
-            text: "Mindestens 5 Min. Verspätung",
+            text: "Mind. 5 Min. Verspätung",
             iconName: "clock.badge.exclamationmark",
             rarity: .everyday,
             category: "Verspätung",
@@ -111,7 +105,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "delay_10_min",
-            text: "Mindestens 10 Min. Verspätung",
+            text: "Mind. 10 Min. Verspätung",
             iconName: "clock.arrow.circlepath",
             rarity: .everyday,
             category: "Verspätung",
@@ -120,7 +114,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "punctual_start",
-            text: "Pünktliche Abfahrt am Einstiegsbahnhof",
+            text: "Pünktliche Abfahrt",
             iconName: "checkmark.circle",
             rarity: .everyday,
             category: "Fahrplan",
@@ -128,7 +122,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "longer_station_dwell",
-            text: "Haltezeit am Bahnhof dauert länger als geplant",
+            text: "Längerer Halt am Bahnhof",
             iconName: "timer",
             rarity: .everyday,
             category: "Verspätung",
@@ -136,7 +130,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "db_nav_refresh",
-            text: "Blick in den DB Navigator zur Verbindungsprüfung",
+            text: "Blick in den DB Navigator",
             iconName: "iphone.gen3",
             rarity: .everyday,
             category: "Fahrplan",
@@ -144,7 +138,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "red_time_in_app",
-            text: "Rote Minutenanzeige im DB Navigator",
+            text: "Rote Zeit im DB Navigator",
             iconName: "exclamationmark.circle",
             rarity: .everyday,
             category: "Verspätung",
@@ -152,7 +146,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "stop_before_station",
-            text: "Zug rollt langsam in den Bahnhof ein",
+            text: "Langsame Bahnhofseinfahrt",
             iconName: "tortoise",
             rarity: .everyday,
             category: "Betrieb",
@@ -162,7 +156,7 @@ public struct BingoCatalog {
         // --- Durchsagen & Service (Alltag) ---
         BingoIncident(
             id: "next_stop_announcement",
-            text: "Durchsage: „Nächster Halt …“",
+            text: "Ansage: „Nächster Halt …“",
             iconName: "speaker.wave.2.fill",
             rarity: .everyday,
             category: "Ansage",
@@ -170,7 +164,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "exit_direction_left_right",
-            text: "Ansage: „Ausstieg in Fahrtrichtung links/rechts“",
+            text: "„Ausstieg links / rechts“",
             iconName: "arrow.left.and.right.square",
             rarity: .everyday,
             category: "Ansage",
@@ -178,7 +172,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "welcome_announcement",
-            text: "Zugbegleiter begrüßt neu zugestiegene Fahrgäste",
+            text: "Begrüßung per Durchsage",
             iconName: "hand.wave.fill",
             rarity: .everyday,
             category: "Ansage",
@@ -186,7 +180,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "english_announcement",
-            text: "Durchsage wird auf Englisch wiederholt",
+            text: "Durchsage auf Englisch",
             iconName: "globe.europe.africa.fill",
             rarity: .everyday,
             category: "Ansage",
@@ -194,7 +188,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "ticket_check_normal",
-            text: "Fahrkartenkontrolle im Abteil / Wagen",
+            text: "Fahrkartenkontrolle",
             iconName: "qrcode.viewfinder",
             rarity: .everyday,
             category: "Service",
@@ -202,7 +196,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "connection_announcement",
-            text: "Ansage der Anschlusszüge vor dem Bahnhof",
+            text: "Ansage der Anschlüsse",
             iconName: "arrow.triangle.branch",
             rarity: .everyday,
             category: "Ansage",
@@ -210,7 +204,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "farewell_announcement",
-            text: "„Wir verabschieden uns von allen Fahrgästen, die aussteigen“",
+            text: "Verabschiedung am Halt",
             iconName: "megaphone",
             rarity: .everyday,
             category: "Ansage",
@@ -220,7 +214,7 @@ public struct BingoCatalog {
         // --- Alltag im Wagen & Mitreisende ---
         BingoIncident(
             id: "seat_free_question",
-            text: "Jemand fragt: „Ist hier noch frei?“",
+            text: "„Ist hier noch frei?“",
             iconName: "bubble.left.and.bubble.right.fill",
             rarity: .everyday,
             category: "Fahrgäste",
@@ -228,7 +222,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "backpack_on_seat",
-            text: "Rucksack oder Tasche besetzt einen Nebensitz",
+            text: "Tasche auf dem Nebensitz",
             iconName: "bag.fill",
             rarity: .everyday,
             category: "Fahrgäste",
@@ -236,7 +230,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "laptop_worker",
-            text: "Fahrgast arbeitet konzentriert am Laptop",
+            text: "Arbeiten am Laptop",
             iconName: "laptopcomputer",
             rarity: .everyday,
             category: "Fahrgäste",
@@ -244,7 +238,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "sleeping_passenger",
-            text: "Mitreisender schläft mit Kopf an der Scheibe",
+            text: "Schlafender Mitreisender",
             iconName: "zzz",
             rarity: .everyday,
             category: "Fahrgäste",
@@ -252,7 +246,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "bakery_bag_snack",
-            text: "Jemand packt Bäcker-Tüte oder belegtes Brötchen aus",
+            text: "Bäcker-Tüte ausgepackt",
             iconName: "takeoutbag.and.cup.and.straw.fill",
             rarity: .everyday,
             category: "Verpflegung",
@@ -260,7 +254,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "coffee_to_go_cup",
-            text: "Coffee-to-go-Becher steht auf dem Klapptisch",
+            text: "Coffee-to-go am Platz",
             iconName: "cup.and.saucer.fill",
             rarity: .everyday,
             category: "Verpflegung",
@@ -268,7 +262,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "searching_seat_number",
-            text: "Fahrgast läuft suchend durch den Gang & schaut auf Sitznummern",
+            text: "Suche nach Sitzplatznummer",
             iconName: "magnifyingglass",
             rarity: .everyday,
             category: "Fahrgäste",
@@ -276,7 +270,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "luggage_rack_lift",
-            text: "Schwerer Koffer wird in die Gepäckablage gewuchtet",
+            text: "Koffer ins Gepäckfach",
             iconName: "suitcase.rolling.fill",
             rarity: .everyday,
             category: "Fahrgäste",
@@ -284,7 +278,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "reading_book_newspaper",
-            text: "Jemand liest ein gedrucktes Buch oder eine Zeitung",
+            text: "Buch oder Zeitung lesen",
             iconName: "book.fill",
             rarity: .everyday,
             category: "Fahrgäste",
@@ -292,7 +286,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "headphones_everyone",
-            text: "Mindestens 3 Personen im Umfeld tragen Kopfhörer",
+            text: "Mind. 3× Kopfhörer sichtbar",
             iconName: "headphones",
             rarity: .everyday,
             category: "Fahrgäste",
@@ -300,7 +294,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "scrolling_ticket_qr",
-            text: "Fahrgast sucht hektisch den Ticket-QR-Code am Handy",
+            text: "Hektische Ticket-Suche",
             iconName: "qrcode",
             rarity: .everyday,
             category: "Fahrgäste",
@@ -308,7 +302,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "standing_up_too_early",
-            text: "Fahrgäste stehen schon 5 Min. vor dem Halt an der Tür",
+            text: "Viel zu früh an der Tür",
             iconName: "figure.stand",
             rarity: .everyday,
             category: "Fahrgäste",
@@ -316,7 +310,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "sunblind_pulled",
-            text: "Sonnenrollo am Fenster wird heruntergezogen",
+            text: "Sonnenrollo genutzt",
             iconName: "sun.max.fill",
             rarity: .everyday,
             category: "Komfort",
@@ -324,7 +318,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "jacket_on_hook",
-            text: "Jacke hängt am Kleiderhaken neben dem Fenster",
+            text: "Jacke am Fensterhaken",
             iconName: "tshirt.fill",
             rarity: .everyday,
             category: "Komfort",
@@ -332,7 +326,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "table_folded_down",
-            text: "Klapptisch am Vordersitz wird heruntergeklappt",
+            text: "Klapptisch ausgeklappt",
             iconName: "rectangle.split.3x1",
             rarity: .everyday,
             category: "Komfort",
@@ -340,7 +334,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "water_bottle_on_table",
-            text: "Wasserflasche oder Thermoskanne steht auf dem Tisch",
+            text: "Trinkflasche auf dem Tisch",
             iconName: "waterbottle.fill",
             rarity: .everyday,
             category: "Verpflegung",
@@ -348,7 +342,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "window_gazing",
-            text: "Fahrgast schaut verträumt aus dem Fenster",
+            text: "Blick aus dem Zugfenster",
             iconName: "eye",
             rarity: .everyday,
             category: "Fahrgäste",
@@ -356,7 +350,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "backpack_in_footwell",
-            text: "Rucksack klemmt zwischen den Beinen im Fußraum",
+            text: "Rucksack im Fußraum",
             iconName: "backpack.fill",
             rarity: .everyday,
             category: "Komfort",
@@ -364,7 +358,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "powerbank_charging",
-            text: "Handy hängt an einer Powerbank",
+            text: "Handy an der Powerbank",
             iconName: "battery.100percent.bolt",
             rarity: .everyday,
             category: "Technik",
@@ -372,7 +366,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "crossword_or_sudoku",
-            text: "Jemand löst Kreuzworträtsel oder Sudoku",
+            text: "Kreuzworträtsel / Sudoku",
             iconName: "square.grid.3x3",
             rarity: .everyday,
             category: "Fahrgäste",
@@ -380,7 +374,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "Bahncard_shown",
-            text: "BahnCard oder Deutschlandticket wird vorgezeigt",
+            text: "BahnCard / D-Ticket gezeigt",
             iconName: "creditcard.fill",
             rarity: .everyday,
             category: "Service",
@@ -388,7 +382,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "train_passes_bridge",
-            text: "Zug überquert eine große Flussbrücke",
+            text: "Fahrt über Flussbrücke",
             iconName: "water.waves",
             rarity: .everyday,
             category: "Strecke",
@@ -396,7 +390,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "solar_panels_field",
-            text: "Großer Solarpark neben der Bahnstrecke sichtbar",
+            text: "Solarpark an der Strecke",
             iconName: "sun.max.trianglebadge.exclamationmark",
             rarity: .everyday,
             category: "Strecke",
@@ -404,7 +398,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "church_tower_village",
-            text: "Kirchturm eines Dorfes zieht am Fenster vorbei",
+            text: "Kirchturm am Horizont",
             iconName: "building.columns.fill",
             rarity: .everyday,
             category: "Strecke",
@@ -412,7 +406,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "graffiti_noise_wall",
-            text: "Bunt besprühte Lärmschutzwand entlang der Gleise",
+            text: "Bunte Lärmschutzwand",
             iconName: "paintbrush.pointed.fill",
             rarity: .everyday,
             category: "Strecke",
@@ -420,7 +414,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "yellow_bauzug_parked",
-            text: "Gelbes Baufahrzeug steht auf einem Nebengleis",
+            text: "Gelber Bauzug am Gleis",
             iconName: "wrench.and.screwdriver.fill",
             rarity: .everyday,
             category: "Strecke",
@@ -428,7 +422,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "s_bahn_parallel_drive",
-            text: "S-Bahn oder Regionalbahn fährt kurz parallel nebenher",
+            text: "Parallelfahrt mit S-Bahn/RB",
             iconName: "tram",
             rarity: .everyday,
             category: "Strecke",
@@ -436,7 +430,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "station_clock_check",
-            text: "Blick auf die klassische Bahnhofsuhr am Bahnsteig",
+            text: "Blick zur Bahnhofsuhr",
             iconName: "clock.fill",
             rarity: .everyday,
             category: "Bahnhof",
@@ -444,7 +438,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "door_button_pressed_early",
-            text: "Türknopf wird gedrückt, bevor er grün leuchtet",
+            text: "Türknopf zu früh gedrückt",
             iconName: "hand.point.up.left.fill",
             rarity: .everyday,
             category: "Fahrgäste",
@@ -452,7 +446,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "step_gap_announcement",
-            text: "„Bitte achten Sie auf den Spalt zwischen Zug und Bahnsteigkante“",
+            text: "Ansage: „Bahnsteigkante“",
             iconName: "figure.step.training",
             rarity: .everyday,
             category: "Ansage",
@@ -460,7 +454,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "apple_or_banana_snack",
-            text: "Jemand isst einen Apfel oder eine Banane im Abteil",
+            text: "Apfel oder Banane als Snack",
             iconName: "leaf.fill",
             rarity: .everyday,
             category: "Verpflegung",
@@ -468,7 +462,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "earbuds_one_ear",
-            text: "Fahrgast trägt nur einen einzelnen AirPod / Kopfhörer",
+            text: "Nur ein Kopfhörer im Ohr",
             iconName: "airpod.right",
             rarity: .everyday,
             category: "Fahrgäste",
@@ -476,7 +470,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "seat_backrest_adjusted",
-            text: "Sitzlehne wird mit einem Ruck nach hinten verstellt",
+            text: "Sitzlehne zurückgestellt",
             iconName: "chair.fill",
             rarity: .everyday,
             category: "Komfort",
@@ -484,7 +478,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "conductor_walks_past",
-            text: "Zugbegleiter läuft eilig durch den Mittelgang",
+            text: "Zugbegleiter läuft vorbei",
             iconName: "figure.walk",
             rarity: .everyday,
             category: "Service",
@@ -492,7 +486,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "window_reflection_dark",
-            text: "Im Tunnel spiegelt sich das Abteil im Zugfenster",
+            text: "Fensterspiegelung im Tunnel",
             iconName: "rectangle.portrait.on.rectangle.portrait.angled",
             rarity: .everyday,
             category: "Strecke",
@@ -502,7 +496,7 @@ public struct BingoCatalog {
         // --- Technik, Bahnhof & Strecke (Alltag) ---
         BingoIncident(
             id: "mobile_dead_zone",
-            text: "Funkloch: Handy hat kurzzeitig keinen Empfang",
+            text: "Funkloch unterwegs",
             iconName: "antenna.radiowaves.left.and.right.slash",
             rarity: .everyday,
             category: "Technik",
@@ -510,7 +504,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "oncoming_train_whoosh",
-            text: "Gegenzug rauscht mit lautem Druckschlag vorbei",
+            text: "Gegenzug rauscht vorbei",
             iconName: "wind",
             rarity: .everyday,
             category: "Strecke",
@@ -518,7 +512,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "freight_train_seen",
-            text: "Güterzug auf dem Nachbargleis gesichtet",
+            text: "Güterzug gesichtet",
             iconName: "shippingbox.fill",
             rarity: .everyday,
             category: "Strecke",
@@ -526,7 +520,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "wind_turbines_outside",
-            text: "Windräder ziehen am Zugfenster vorbei",
+            text: "Windräder an der Strecke",
             iconName: "fanblades.fill",
             rarity: .everyday,
             category: "Strecke",
@@ -534,7 +528,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "tunnel_ear_pressure",
-            text: "Druck auf den Ohren bei einer Tunneleinfahrt",
+            text: "Ohrendruck im Tunnel",
             iconName: "ear.fill",
             rarity: .everyday,
             category: "Strecke",
@@ -542,7 +536,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "platform_crowd_one_door",
-            text: "Alle drängen sich an einer Tür, die nächste ist frei",
+            text: "Stau vor einer Einstiegstür",
             iconName: "person.3.sequence.fill",
             rarity: .everyday,
             category: "Bahnhof",
@@ -550,7 +544,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "pigeon_on_platform",
-            text: "Taube spaziert seelenruhig über den Bahnsteig",
+            text: "Taube auf dem Bahnsteig",
             iconName: "bird.fill",
             rarity: .everyday,
             category: "Bahnhof",
@@ -558,7 +552,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "commuter_door_sprint",
-            text: "Fahrgast sprintet am Bahnsteig noch schnell zur Tür",
+            text: "Sprint zur offenen Zugtür",
             iconName: "figure.run",
             rarity: .everyday,
             category: "Bahnhof",
@@ -566,7 +560,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "screen_shows_speed",
-            text: "Innenanzeige zeigt Route oder Geschwindigkeit an",
+            text: "Anzeige zeigt Tempo / Route",
             iconName: "tv",
             rarity: .everyday,
             category: "Technik",
@@ -574,7 +568,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "charger_plugged_in",
-            text: "Handy-Ladekabel steckt in der Bordsteckdose",
+            text: "Steckdose am Platz genutzt",
             iconName: "powerplug.fill",
             rarity: .everyday,
             category: "Technik",
@@ -582,7 +576,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "trash_collector_walk",
-            text: "Reinigungskraft sammelt Müll im Wagen ein",
+            text: "Müllsammlung im Wagen",
             iconName: "trash",
             rarity: .everyday,
             category: "Service",
@@ -590,7 +584,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "bike_or_stroller_boarded",
-            text: "Fahrrad oder Kinderwagen wird eingeladen",
+            text: "Fahrrad / Kinderwagen an Bord",
             iconName: "bicycle",
             rarity: .everyday,
             category: "Wagen",
@@ -599,13 +593,12 @@ public struct BingoCatalog {
 
         // =========================================================================
         // MARK: - 2. HÄUFIG / TYPISCH DB (Common, 35–60% Wahrscheinlichkeit)
-        // Klassische Bahn-Erlebnisse, die regelmäßig vorkommen
         // =========================================================================
 
         // --- Verspätung & Betrieb (Häufig) ---
         BingoIncident(
             id: "delay_15_min",
-            text: "Mindestens 15 Min. Verspätung",
+            text: "Mind. 15 Min. Verspätung",
             iconName: "clock.badge.exclamationmark.fill",
             rarity: .common,
             category: "Verspätung",
@@ -614,7 +607,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "delay_20_min",
-            text: "Mindestens 20 Min. Verspätung",
+            text: "Mind. 20 Min. Verspätung",
             iconName: "hourglass.bottomhalf.filled",
             rarity: .common,
             category: "Verspätung",
@@ -623,7 +616,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "prev_delay",
-            text: "„Verspätung aus vorheriger Fahrt“",
+            text: "„Aus vorheriger Fahrt“",
             iconName: "clock.badge.exclamationmark",
             rarity: .common,
             category: "Betrieb",
@@ -631,7 +624,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "delay_creeping_up",
-            text: "Verspätung klettert schrittweise um +5 Min. höher",
+            text: "Verspätung steigt um +5 Min.",
             iconName: "hourglass",
             rarity: .common,
             category: "Verspätung",
@@ -639,7 +632,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "delay_made_up",
-            text: "Zug holt unterwegs ein paar Minuten Verspätung auf",
+            text: "Einige Minuten aufgeholt",
             iconName: "gauge.with.dots.needle.67percent",
             rarity: .common,
             category: "Verspätung",
@@ -647,7 +640,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "stop_open_track",
-            text: "Ungeplanter Halt auf freier Strecke",
+            text: "Halt auf freier Strecke",
             iconName: "pause.circle",
             rarity: .common,
             category: "Betrieb",
@@ -655,7 +648,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "track_occupied_wait",
-            text: "Warten vor dem Bahnhof, weil das Gleis noch belegt ist",
+            text: "Einfahrtgleis noch belegt",
             iconName: "octagon",
             rarity: .common,
             category: "Betrieb",
@@ -663,7 +656,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "waiting_for_other_train",
-            text: "„Verzögerung im Betriebsablauf“",
+            text: "„Verzögerung im Betrieb“",
             iconName: "gearshape.2",
             rarity: .common,
             category: "Betrieb",
@@ -671,7 +664,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "passed_by_ice",
-            text: "Warten wegen Überholung durch einen anderen Zug",
+            text: "Überholung durch anderen Zug",
             iconName: "hare.fill",
             rarity: .common,
             category: "Betrieb",
@@ -679,7 +672,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "waiting_single_track",
-            text: "Warten auf entgegenkommenden Zug",
+            text: "Warten auf Gegenzug",
             iconName: "arrow.left.arrow.right.circle",
             rarity: .common,
             category: "Betrieb",
@@ -687,7 +680,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "waiting_for_passengers",
-            text: "Zug wartet kurz auf Anschlussreisende",
+            text: "Warten auf Anschlussgäste",
             iconName: "person.2.badge.gearshape.fill",
             rarity: .common,
             category: "Betrieb",
@@ -695,7 +688,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "tight_transfer_run",
-            text: "Umsteigezeit schmilzt auf unter 5 Minuten",
+            text: "Umsteigezeit unter 5 Min.",
             iconName: "figure.run.circle",
             rarity: .common,
             category: "Fahrplan",
@@ -703,7 +696,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "polite_apology",
-            text: "„Wir bitten um Entschuldigung für die Verspätung“",
+            text: "Entschuldigungs-Durchsage",
             iconName: "hand.raised.fill",
             rarity: .common,
             category: "Ansage",
@@ -711,7 +704,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "abrupt_braking",
-            text: "Ruckartiges Bremsen vor einer Weiche oder einem Signal",
+            text: "Ruckartiges Abbremsen",
             iconName: "brakesignal",
             rarity: .common,
             category: "Betrieb",
@@ -721,7 +714,7 @@ public struct BingoCatalog {
         // --- Bahnhof, Wagen & Infrastruktur (Häufig) ---
         BingoIncident(
             id: "track_change",
-            text: "Gleiswechsel („Heute von Gleis …“)",
+            text: "Gleiswechsel am Bahnhof",
             iconName: "arrow.triangle.swap",
             rarity: .common,
             category: "Bahnhof",
@@ -729,7 +722,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "reverse_order",
-            text: "Abweichende oder umgekehrte Wagenreihung",
+            text: "Geänderte Wagenreihung",
             iconName: "arrow.left.arrow.right",
             rarity: .common,
             category: "Wagen",
@@ -737,7 +730,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "wrong_sector_stop",
-            text: "Wagen hält in einem anderen Bahnsteigabschnitt als gedacht",
+            text: "Wagen hält in anderem Sektor",
             iconName: "signpost.right.fill",
             rarity: .common,
             category: "Bahnhof",
@@ -745,7 +738,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "smoker_pause_platform",
-            text: "Raucher-Pause am Bahnsteig bei kurzem Zwischenhalt",
+            text: "Kurze Raucherpause am Gleis",
             iconName: "smoke",
             rarity: .common,
             category: "Bahnhof",
@@ -753,7 +746,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "escalator_broken",
-            text: "Rolltreppe oder Aufzug am Bahnhof außer Betrieb",
+            text: "Rolltreppe / Aufzug defekt",
             iconName: "stairs",
             rarity: .common,
             category: "Bahnhof",
@@ -761,7 +754,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "slow_down_construction",
-            text: "Langsamfahrstelle wegen Baustelle an der Strecke",
+            text: "Langsamfahrt an Baustelle",
             iconName: "cone.fill",
             rarity: .common,
             category: "Infrastruktur",
@@ -769,7 +762,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "signal_fault",
-            text: "Verzögerung wegen Signal- oder Weichenstörung",
+            text: "Signal- oder Weichenstörung",
             iconName: "trafficlight.fill",
             rarity: .common,
             category: "Infrastruktur",
@@ -777,7 +770,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "app_vs_platform_mismatch",
-            text: "DB Navigator & Bahnsteiganzeige zeigen unterschiedliche Zeiten",
+            text: "App & Anzeige widersprechen",
             iconName: "arrow.up.and.down.and.sparkles",
             rarity: .common,
             category: "Technik",
@@ -787,7 +780,7 @@ public struct BingoCatalog {
         // --- Technik & Komfort (Häufig) ---
         BingoIncident(
             id: "wifi_portal_only",
-            text: "WLAN im Zug ist langsam oder lädt kurz nicht",
+            text: "Zug-WLAN lahmt oder hakt",
             iconName: "wifi.exclamationmark",
             rarity: .common,
             category: "Technik",
@@ -795,7 +788,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "no_reservation_system",
-            text: "Reservierungsanzeige zeigt „ggf. reserviert“ oder ist aus",
+            text: "Anzeige: „ggf. reserviert“",
             iconName: "tag.slash.fill",
             rarity: .common,
             category: "Technik",
@@ -803,7 +796,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "wc_occupied_wait",
-            text: "Nächste Toilette ist besetzt – Schlange vor der Tür",
+            text: "Schlange vor dem Zug-WC",
             iconName: "person.line.dotted.person.fill",
             rarity: .common,
             category: "Komfort",
@@ -812,7 +805,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "one_wc_locked",
-            text: "Eine Toilette im Wagen ist wegen Störung abgeschlossen",
+            text: "Ein WC im Wagen gesperrt",
             iconName: "lock.fill",
             rarity: .common,
             category: "Komfort",
@@ -821,7 +814,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "door_between_coaches_stuck",
-            text: "Zwischentür zum nächsten Wagen schließt ständig auf und zu",
+            text: "Zwischentür öffnet ständig",
             iconName: "door.sliding.left.hand.closed",
             rarity: .common,
             category: "Technik",
@@ -829,7 +822,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "speaker_crackling",
-            text: "Lautsprecherdurchsage sehr leise oder rauscht",
+            text: "Lautsprecher rauscht / leise",
             iconName: "waveform.badge.exclamationmark",
             rarity: .common,
             category: "Ansage",
@@ -837,7 +830,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "no_power_plug",
-            text: "Steckdose am Platz ist ausgeleiert oder ohne Strom",
+            text: "Steckdose ohne Strom",
             iconName: "bolt.slash.fill",
             rarity: .common,
             category: "Technik",
@@ -845,7 +838,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "ac_drafty",
-            text: "Klimaanlage oder Lüftung zieht spürbar kalt",
+            text: "Klimaanlage zieht spürbar",
             iconName: "snowflake",
             rarity: .common,
             category: "Komfort",
@@ -853,7 +846,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "aisle_blocked_suitcases",
-            text: "Große Koffer stehen mitten im Gang",
+            text: "Koffer blockiert den Gang",
             iconName: "suitcase.fill",
             rarity: .common,
             category: "Komfort",
@@ -861,7 +854,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "overhead_rack_full",
-            text: "Gepäckablage über den Sitzen ist komplett voll",
+            text: "Gepäckablage komplett voll",
             iconName: "tray.full.fill",
             rarity: .common,
             category: "Komfort",
@@ -869,7 +862,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "trash_overflow",
-            text: "Kleiner Platz-Mülleimer ist randvoll",
+            text: "Platz-Mülleimer randvoll",
             iconName: "trash.fill",
             rarity: .common,
             category: "Komfort",
@@ -879,7 +872,7 @@ public struct BingoCatalog {
         // --- Mitreisende & Atmosphäre (Häufig) ---
         BingoIncident(
             id: "loud_phone_call",
-            text: "Lautes Telefonat im Wagen („Ja, ich sitze gerade im Zug!“)",
+            text: "Lautes Telefonat im Wagen",
             iconName: "phone.arrow.up.right.fill",
             rarity: .common,
             category: "Fahrgäste",
@@ -887,7 +880,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "phone_call_drops_tunnel",
-            text: "Telefonat des Sitznachbarn bricht im Tunnel ab („Hallo? Hörst du mich?“)",
+            text: "Telefonat bricht im Tunnel ab",
             iconName: "phone.down.fill",
             rarity: .common,
             category: "Fahrgäste",
@@ -895,7 +888,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "seat_taken",
-            text: "Diskussion um einen reservierten Sitzplatz",
+            text: "Diskussion um Sitzplatz",
             iconName: "chair.lounge.fill",
             rarity: .common,
             category: "Fahrgäste",
@@ -903,7 +896,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "tiktok_speaker",
-            text: "Jemand schaut Videos oder Sprachnachrichten ohne Kopfhörer",
+            text: "Videos ohne Kopfhörer",
             iconName: "speaker.wave.3.fill",
             rarity: .common,
             category: "Fahrgäste",
@@ -911,7 +904,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "quiet_zone_talking",
-            text: "Laute Unterhaltung mitten im Ruhebereich",
+            text: "Gespräche im Ruhebereich",
             iconName: "speaker.slash.fill",
             rarity: .common,
             category: "Fahrgäste",
@@ -919,7 +912,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "loud_typing",
-            text: "Schnelles, lautes Tippen auf einer Laptop-Tastatur",
+            text: "Lautes Laptop-Tippen",
             iconName: "keyboard.fill",
             rarity: .common,
             category: "Fahrgäste",
@@ -927,7 +920,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "smell_of_food",
-            text: "Herzhafter Essensduft (Ei, Döner, Frikadelle oder Fast Food) im Wagen",
+            text: "Kräftiger Essensduft im Zug",
             iconName: "fork.knife",
             rarity: .common,
             category: "Verpflegung",
@@ -935,7 +928,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "crying_or_laughing_kid",
-            text: "Kleinkind quengelt oder lacht laut durch den Wagen",
+            text: "Kind weint oder lacht laut",
             iconName: "figure.and.child.holdinghands",
             rarity: .common,
             category: "Fahrgäste",
@@ -943,7 +936,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "school_or_travel_group",
-            text: "Schulklasse, Verein oder Reisegruppe steigt ein",
+            text: "Reisegruppe / Schulklasse",
             iconName: "person.3.fill",
             rarity: .common,
             category: "Fahrgäste",
@@ -951,7 +944,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "dog_on_train",
-            text: "Hund fährt brav im Wagen mit",
+            text: "Hund fährt im Wagen mit",
             iconName: "pawprint.fill",
             rarity: .common,
             category: "Fahrgäste",
@@ -959,7 +952,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "beer_opened_sound",
-            text: "Feierabend-Bier oder Getränkeflasche ploppt / zischt",
+            text: "Feierabend-Getränk zischt",
             iconName: "mug.fill",
             rarity: .common,
             category: "Verpflegung",
@@ -967,7 +960,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "wrong_coach_walkthrough",
-            text: "Fahrgäste ziehen mit Rollkoffern durch mehrere Wagen",
+            text: "Rollkoffer-Zug durchs Abteil",
             iconName: "figure.walk.motion",
             rarity: .common,
             category: "Fahrgäste",
@@ -975,7 +968,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "delay_8_min",
-            text: "Verspätung zwischen 5 und 10 Minuten",
+            text: "5 bis 10 Min. Verspätung",
             iconName: "clock.badge",
             rarity: .common,
             category: "Verspätung",
@@ -984,7 +977,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "delay_25_min",
-            text: "Mindestens 25 Min. Verspätung",
+            text: "Mind. 25 Min. Verspätung",
             iconName: "clock.badge.exclamationmark",
             rarity: .common,
             category: "Verspätung",
@@ -993,7 +986,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "table_neighbor_laptop_elbow",
-            text: "Ellenbogen-Duell um die Mittelarmlehne",
+            text: "Kampf um die Armlehne",
             iconName: "person.2.fill",
             rarity: .common,
             category: "Komfort",
@@ -1001,7 +994,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "shoes_taken_off",
-            text: "Mitreisender zieht im Abteil die Schuhe aus",
+            text: "Schuhe im Abteil ausgezogen",
             iconName: "shoe.2.fill",
             rarity: .common,
             category: "Fahrgäste",
@@ -1009,7 +1002,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "tupperware_meal",
-            text: "Tupperdose mit mitgebrachtem Essen wird geöffnet",
+            text: "Tupperdose wird geöffnet",
             iconName: "takeoutbag.and.cup.and.straw",
             rarity: .common,
             category: "Verpflegung",
@@ -1017,7 +1010,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "bistro_coffee_carried",
-            text: "Jemand balanciert einen Bordbistro-Kaffee durch den wackelnden Wagen",
+            text: "Bordbistro-Kaffee balanciert",
             iconName: "cup.and.saucer",
             rarity: .common,
             category: "Verpflegung",
@@ -1025,7 +1018,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "headphone_bleed",
-            text: "Musik oder Podcast aus den Kopfhörern des Nachbarn deutlich hörbar",
+            text: "laute Kopfhörer-Musik hörbar",
             iconName: "ear.badge.waveform",
             rarity: .common,
             category: "Fahrgäste",
@@ -1033,7 +1026,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "video_call_on_train",
-            text: "Jemand hält einen Video-Call / Teams-Meeting im Zug",
+            text: "Video-Call / Meeting im Zug",
             iconName: "video.fill",
             rarity: .common,
             category: "Fahrgäste",
@@ -1041,7 +1034,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "card_game_table",
-            text: "Am Vierertisch wird Karten oder ein Reisespiel gespielt",
+            text: "Kartenspiel am Vierertisch",
             iconName: "suit.spade.fill",
             rarity: .common,
             category: "Fahrgäste",
@@ -1049,7 +1042,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "curve_squeal",
-            text: "Lautes Quietschen der Räder in einer engen Bahnhofskurve",
+            text: "Kurvenquietschen der Räder",
             iconName: "waveform.path.ecg",
             rarity: .common,
             category: "Betrieb",
@@ -1057,7 +1050,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "horn_honk_track",
-            text: "Lokführer gibt ein lautes Makrofon-Signal (Zug-Hupe) ab",
+            text: "Lokführer hupt (Makrofon)",
             iconName: "speaker.wave.3",
             rarity: .common,
             category: "Betrieb",
@@ -1065,7 +1058,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "neutral_section_power_dip",
-            text: "Kurzes Klacken / Lüftungspause an einer Schutzstrecke",
+            text: "Kurzer Lüftungs-Aussetzer",
             iconName: "bolt.circle",
             rarity: .common,
             category: "Technik",
@@ -1073,7 +1066,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "wrong_direction_seat",
-            text: "Sitzplatz ist entgegen der Fahrtrichtung (Rückwärtsfahren)",
+            text: "Sitzplatz rückwärts",
             iconName: "arrow.uturn.left.circle",
             rarity: .common,
             category: "Komfort",
@@ -1081,7 +1074,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "pillar_window_seat",
-            text: "„Wandfensterplatz“: Ausblick wird von der Seitenwand verdeckt",
+            text: "Wandfensterplatz erwischt",
             iconName: "rectangle.split.2x1.slash",
             rarity: .common,
             category: "Komfort",
@@ -1089,7 +1082,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "rain_streaks_window",
-            text: "Regentropfen ziehen waagerecht über die Zugscheibe",
+            text: "Regentropfen am Fenster",
             iconName: "cloud.rain.fill",
             rarity: .common,
             category: "Strecke",
@@ -1097,7 +1090,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "sunset_from_train",
-            text: "Schöner Sonnenauf- oder Sonnenuntergang aus dem Zugfenster",
+            text: "Abendrot aus dem Zugfenster",
             iconName: "sunset.fill",
             rarity: .common,
             category: "Strecke",
@@ -1105,7 +1098,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "castle_on_hill",
-            text: "Burg oder Schloss auf einem Hügel neben der Strecke",
+            text: "Burg oder Schloss am Hügel",
             iconName: "building.2.crop.circle",
             rarity: .common,
             category: "Strecke",
@@ -1113,7 +1106,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "deer_in_field",
-            text: "Rehe, Kühe oder Pferde auf einer Wiese neben den Gleisen",
+            text: "Tiere auf der Wiese",
             iconName: "leaf.arrow.circlepath",
             rarity: .common,
             category: "Strecke",
@@ -1121,7 +1114,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "station_bakery_sprint",
-            text: "Knapper Sprint zum Bahnhofsbäcker vor der Abfahrt",
+            text: "Schneller Kauf beim Bäcker",
             iconName: "bag.badge.plus",
             rarity: .common,
             category: "Bahnhof",
@@ -1129,7 +1122,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "display_scroll_reasons",
-            text: "Laufschrift an der Anzeige nennt Verspätungsgrund",
+            text: "Laufschrift am Bahnsteig",
             iconName: "text.line.first.and.arrowtriangle.forward",
             rarity: .common,
             category: "Bahnhof",
@@ -1137,7 +1130,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "security_walkthrough",
-            text: "DB-Sicherheit oder Bundespolizei läuft auf Streife durch den Zug",
+            text: "DB-Sicherheit läuft vorbei",
             iconName: "shield.fill",
             rarity: .common,
             category: "Service",
@@ -1145,7 +1138,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "backpack_hit_aisle",
-            text: "Vorbeigehender Fahrgast streift mit dem Rucksack eine Sitzlehne",
+            text: "Rucksack streift Sitzlehne",
             iconName: "figure.walk.arrival",
             rarity: .common,
             category: "Fahrgäste",
@@ -1153,7 +1146,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "seat_reservation_last_minute",
-            text: "Anzeige springt auf „ggf. freigeben“ (Last-Minute-Reservierung)",
+            text: "Anzeige: „ggf. freigeben“",
             iconName: "tag",
             rarity: .common,
             category: "Technik",
@@ -1161,7 +1154,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "conductor_helps_connection",
-            text: "Zugbegleiter gibt Tipps für den besten Umsteigeweg",
+            text: "Umsteigetipp vom Personal",
             iconName: "person.wave.2.fill",
             rarity: .common,
             category: "Service",
@@ -1170,13 +1163,12 @@ public struct BingoCatalog {
 
         // =========================================================================
         // MARK: - 3. GELEGENTLICH / UNGEWÖHNLICH (Uncommon, 12–32% Wahrscheinlichkeit)
-        // Einprägsame Vorfälle, Pannen & Klassiker, die ab und zu passieren
         // =========================================================================
 
         // --- Verspätung & Betrieb (Gelegentlich) ---
         BingoIncident(
             id: "delay_30_min",
-            text: "Mindestens 30 Min. Verspätung",
+            text: "Mind. 30 Min. Verspätung",
             iconName: "clock.badge.xmark",
             rarity: .uncommon,
             category: "Verspätung",
@@ -1185,7 +1177,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "delay_45_min",
-            text: "Mindestens 45 Min. Verspätung",
+            text: "Mind. 45 Min. Verspätung",
             iconName: "exclamationmark.triangle.fill",
             rarity: .uncommon,
             category: "Verspätung",
@@ -1194,7 +1186,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "connection_missed",
-            text: "Geplanter Anschlusszug wird verpasst",
+            text: "Anschlusszug verpasst",
             iconName: "figure.run",
             rarity: .uncommon,
             category: "Betrieb",
@@ -1202,7 +1194,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "zugbindung_lifted",
-            text: "Ansage oder App-Hinweis: „Zugbindung aufgehoben“",
+            text: "Zugbindung aufgehoben",
             iconName: "ticket",
             rarity: .uncommon,
             category: "Service",
@@ -1210,7 +1202,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "waiting_at_signal",
-            text: "Kurz vor dem Zielbahnhof noch am Haltesignal stehen",
+            text: "Halt vorm Zielbahnhof",
             iconName: "pause.circle.fill",
             rarity: .uncommon,
             category: "Betrieb",
@@ -1218,7 +1210,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "people_on_track",
-            text: "Verzögerung wegen „Personen im Gleis“",
+            text: "„Personen im Gleis“",
             iconName: "figure.walk.diamond.fill",
             rarity: .uncommon,
             category: "Betrieb",
@@ -1226,7 +1218,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "police_operation_delay",
-            text: "Verzögerung wegen „Polizeieinsatz“ oder „Notarzteinsatz“",
+            text: "Polizei- / Notarzteinsatz",
             iconName: "light.beacon.max.fill",
             rarity: .uncommon,
             category: "Betrieb",
@@ -1234,7 +1226,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "delay_recovery_speed",
-            text: "Zug holt durch freie Strecke mindestens 10 Min. Verspätung auf",
+            text: "Über 10 Min. aufgeholt",
             iconName: "arrow.right.to.line.compact",
             rarity: .uncommon,
             category: "Betrieb",
@@ -1242,7 +1234,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "train_coupling_station",
-            text: "Zug wird am Bahnhof gekuppelt oder geflügelt (Zugteilung)",
+            text: "Zug wird geteilt / gekuppelt",
             iconName: "link",
             rarity: .uncommon,
             category: "Betrieb",
@@ -1250,7 +1242,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "waiting_for_crew",
-            text: "Warten auf verspätetes Zugpersonal aus einem anderen Zug",
+            text: "Warten auf Zugpersonal",
             iconName: "person.badge.clock.fill",
             rarity: .uncommon,
             category: "Personal",
@@ -1258,7 +1250,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "skip_intermediate_stop",
-            text: "Ein geplanter Zwischenhalt entfällt zur Verspätungsreduzierung",
+            text: "Zwischenhalt entfällt",
             iconName: "forward.end.fill",
             rarity: .uncommon,
             category: "Betrieb",
@@ -1266,7 +1258,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "bus_sev",
-            text: "Schienenersatzverkehr (SEV) auf einem Streckenabschnitt",
+            text: "Schienenersatzverkehr (SEV)",
             iconName: "bus.fill",
             rarity: .uncommon,
             category: "Betrieb",
@@ -1276,7 +1268,7 @@ public struct BingoCatalog {
         // --- Wagen, Technik & Bistro (Gelegentlich) ---
         BingoIncident(
             id: "door_defect",
-            text: "Türstörung: Eine Einstiegstür ist mit gelbem Zettel gesperrt",
+            text: "Einstiegstür defekt",
             iconName: "door.left.hand.closed",
             rarity: .uncommon,
             category: "Technik",
@@ -1284,7 +1276,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "coach_missing",
-            text: "Ein Wagen oder Zugteil fehlt („Heute ohne Wagen …“)",
+            text: "Wagen oder Zugteil fehlt",
             iconName: "train.side.rear.car",
             rarity: .uncommon,
             category: "Wagen",
@@ -1292,7 +1284,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "short_train",
-            text: "Kurzzug / Einfachtraktion statt Doppeltraktion",
+            text: "Kurzzug statt Vollzug",
             iconName: "scissors",
             rarity: .uncommon,
             category: "Wagen",
@@ -1300,7 +1292,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "replacement_train_ic_ice",
-            text: "Ersatzzug (andere Baureihe als ursprünglich geplant)",
+            text: "Ersatzzug im Einsatz",
             iconName: "arrow.triangle.2.circlepath",
             rarity: .uncommon,
             category: "Wagen",
@@ -1308,7 +1300,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "no_coffee",
-            text: "Kaffeemaschine oder Zapfanlage im Bordbistro defekt",
+            text: "Bistro-Kaffeemaschine defekt",
             iconName: "cup.and.saucer.fill",
             rarity: .uncommon,
             category: "Gastronomie",
@@ -1316,7 +1308,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "bistro_cash_only",
-            text: "Bordbistro: Kartenzahlung ausgefallen – nur Barzahlung",
+            text: "Bistro: Nur Barzahlung",
             iconName: "banknote.fill",
             rarity: .uncommon,
             category: "Gastronomie",
@@ -1324,7 +1316,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "bistro_food_out",
-            text: "Bordbistro: Beliebtes Gericht oder Snack bereits ausverkauft",
+            text: "Lieblingssnack ausverkauft",
             iconName: "tray.and.arrow.down.fill",
             rarity: .uncommon,
             category: "Gastronomie",
@@ -1332,7 +1324,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "toilet_defects",
-            text: "Mindestens 2 Toiletten in der Nähe gleichzeitig defekt",
+            text: "Mehrere WCs gleichzeitig zu",
             iconName: "nosign",
             rarity: .uncommon,
             category: "Komfort",
@@ -1341,7 +1333,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "display_broken",
-            text: "Zugzielanzeiger am Bahnsteig oder Wagen fällt aus",
+            text: "Zugzielanzeiger ausgefallen",
             iconName: "display.trianglebadge.exclamationmark",
             rarity: .uncommon,
             category: "Bahnhof",
@@ -1349,7 +1341,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "ticket_machine_broken",
-            text: "Fahrkartenautomat am Bahnhof ist außer Betrieb",
+            text: "Ticketautomat außer Betrieb",
             iconName: "creditcard.trianglebadge.exclamationmark",
             rarity: .uncommon,
             category: "Bahnhof",
@@ -1357,7 +1349,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "freezing_ac",
-            text: "Klimaanlage im Wagen ist komplett ausgefallen oder eiskalt",
+            text: "Klimaanlage fällt aus",
             iconName: "thermometer.snowflake",
             rarity: .uncommon,
             category: "Komfort",
@@ -1365,7 +1357,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "switch_defect",
-            text: "Weichen- oder Stellwerksstörung wird durchgesagt",
+            text: "Stellwerksstörung gemeldet",
             iconName: "point.bottomleft.forward.to.point.topright.filled.scurvepath",
             rarity: .uncommon,
             category: "Infrastruktur",
@@ -1373,7 +1365,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "catenary_damage",
-            text: "Störung an der Oberleitung oder Stromversorgung",
+            text: "Oberleitungsstörung",
             iconName: "bolt.horizontal.fill",
             rarity: .uncommon,
             category: "Infrastruktur",
@@ -1383,7 +1375,7 @@ public struct BingoCatalog {
         // --- Durchsagen, Service & Mitreisende (Gelegentlich) ---
         BingoIncident(
             id: "senk_ju",
-            text: "Klassiker-Akzent: „Senk ju vor träwelling…“",
+            text: "„Senk ju vor träwelling…“",
             iconName: "megaphone.fill",
             rarity: .uncommon,
             category: "Ansage",
@@ -1391,7 +1383,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "honest_conductor",
-            text: "Herrlich ehrliche oder humorvolle Durchsage des Zugchefs",
+            text: "Humorvolle Zugchef-Ansage",
             iconName: "quote.bubble.fill",
             rarity: .uncommon,
             category: "Ansage",
@@ -1399,7 +1391,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "ticket_inspector_cheer",
-            text: "Besonders gut gelaunter & witziger Zugbegleiter",
+            text: "Gut gelaunter Zugbegleiter",
             iconName: "face.smiling.fill",
             rarity: .uncommon,
             category: "Service",
@@ -1407,7 +1399,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "no_ticket_check_whole_ride",
-            text: "Ticket wird während der gesamten Fahrt nicht kontrolliert",
+            text: "Ganze Fahrt ohne Kontrolle",
             iconName: "person.badge.shield.checkmark.fill",
             rarity: .uncommon,
             category: "Service",
@@ -1415,7 +1407,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "ticket_invalid_complaint",
-            text: "Diskussion bei Kontrolle: Falsches Ticket / Nahverkehrsticket im ICE",
+            text: "Diskussion über Ticket-Geltung",
             iconName: "ticket.fill",
             rarity: .uncommon,
             category: "Service",
@@ -1423,7 +1415,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "wrong_train_boarded",
-            text: "Fahrgast merkt nach Abfahrt: Er sitzt im falschen Zug!",
+            text: "Fahrgast im falschen Zug",
             iconName: "exclamationmark.questionmark",
             rarity: .uncommon,
             category: "Fahrgäste",
@@ -1431,7 +1423,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "wrong_wagon_reservation",
-            text: "Reservierungsstreit: Einer hat den falschen Tag oder Zug gebucht",
+            text: "Falscher Tag / Zug reserviert",
             iconName: "calendar.badge.exclamationmark",
             rarity: .uncommon,
             category: "Fahrgäste",
@@ -1439,7 +1431,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "sitting_on_floor_stairs",
-            text: "Zug so voll, dass Leute im Türbereich oder auf dem Boden sitzen",
+            text: "Sitzen im Gang / Türbereich",
             iconName: "person.crop.rectangle.stack.fill",
             rarity: .uncommon,
             category: "Betrieb",
@@ -1447,7 +1439,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "advent_calendar_doors",
-            text: "Durchsage bittet, alle Türen zum Einsteigen zu nutzen",
+            text: "„Bitte alle Türen nutzen“",
             iconName: "door.left.hand.open",
             rarity: .uncommon,
             category: "Ansage",
@@ -1455,7 +1447,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "spilled_coffee_curve",
-            text: "Getränk schwappt bei Weichenfahrt auf den Tisch",
+            text: "Getränk schwappt über",
             iconName: "drop.triangle.fill",
             rarity: .uncommon,
             category: "Komfort",
@@ -1463,7 +1455,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "forgotten_bag",
-            text: "Durchsage oder Hektik wegen eines vergessenen Gepäckstücks",
+            text: "Herrenloses Gepäckstück",
             iconName: "bag.badge.questionmark",
             rarity: .uncommon,
             category: "Fahrgäste",
@@ -1471,7 +1463,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "family_area_business",
-            text: "Geschäftsleute mit Laptop sitzen mitten im Familienbereich",
+            text: "Laptop-Arbeit im Familienabteil",
             iconName: "briefcase.fill",
             rarity: .uncommon,
             category: "Fahrgäste",
@@ -1479,7 +1471,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "bike_area_overfilled",
-            text: "Mehrzweck-/Fahrradabteil komplett mit Koffern zugestellt",
+            text: "Radabteil voller Koffer",
             iconName: "suitcase.cart.fill",
             rarity: .uncommon,
             category: "Wagen",
@@ -1487,7 +1479,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "spotter_at_platform",
-            text: "Trainspotter fotografiert Züge am Bahnsteigende",
+            text: "Trainspotter am Bahnsteig",
             iconName: "camera.fill",
             rarity: .uncommon,
             category: "Sichtung",
@@ -1495,7 +1487,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "conductor_asks_patience",
-            text: "Zugchef bedankt sich für Geduld und Verständnis",
+            text: "Dank für Geduld & Verständnis",
             iconName: "heart.fill",
             rarity: .uncommon,
             category: "Ansage",
@@ -1504,12 +1496,11 @@ public struct BingoCatalog {
 
         // =========================================================================
         // MARK: - 4. SELTEN / KURIOSITÄTEN & LEGENDEN (Rare, 2–10% Wahrscheinlichkeit)
-        // Seltene Highlights, von denen man noch nach der Reise erzählt
         // =========================================================================
 
         BingoIncident(
             id: "delay_60_min",
-            text: "Über 60 Min. Verspätung (Fahrgastrechte-Jackpot!)",
+            text: "Über 60 Min. Verspätung",
             iconName: "eurosign.circle.fill",
             rarity: .rare,
             category: "Verspätung",
@@ -1518,7 +1509,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "free_chocolate",
-            text: "Zugbegleiter verteilt DB-Schokolade oder Gummibärchen",
+            text: "Gratis DB-Schokolade",
             iconName: "gift.fill",
             rarity: .rare,
             category: "Service",
@@ -1526,7 +1517,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "free_water",
-            text: "Kostenloses Wasser oder Heißgetränk wegen großer Verspätung",
+            text: "Gratis Wasser / Heißgetränk",
             iconName: "drop.fill",
             rarity: .rare,
             category: "Service",
@@ -1534,7 +1525,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "on_time_miracle",
-            text: "Ankunft am Zielbahnhof mindestens 2 Min. VOR Fahrplan!",
+            text: "Ankunft mind. 2 Min. zu früh",
             iconName: "star.fill",
             rarity: .rare,
             category: "Wunder",
@@ -1542,7 +1533,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "special_rainbow_view",
-            text: "Sonder-ICE (Regenbogen-, Europa- oder BRD-ICE) gesehen",
+            text: "Sonder-ICE gesichtet",
             iconName: "rainbow",
             rarity: .rare,
             category: "Sichtung",
@@ -1550,7 +1541,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "doctor_call",
-            text: "Durchsage: „Befindet sich ein Arzt oder Sanitäter im Zug?“",
+            text: "„Arzt im Zug gesucht“",
             iconName: "cross.case.fill",
             rarity: .rare,
             category: "Vorfälle",
@@ -1558,7 +1549,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "train_reboot",
-            text: "Zug-Neustart im Stand: Licht & Lüftung gehen kurz komplett aus",
+            text: "Zug-Neustart im Stand",
             iconName: "arrow.clockwise.circle.fill",
             rarity: .rare,
             category: "Technik",
@@ -1566,7 +1557,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "double_booked_seat",
-            text: "Sitzplatz doppelt reserviert – beide haben denselben Beleg",
+            text: "Sitzplatz doppelt vergeben",
             iconName: "tag.fill",
             rarity: .rare,
             category: "Technik",
@@ -1574,7 +1565,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "lost_driver",
-            text: "Warten auf Ablöse-Lokführer, der selbst im Stau/Zug steckt",
+            text: "Ablöse-Lokführer verspätet",
             iconName: "person.crop.circle.badge.questionmark",
             rarity: .rare,
             category: "Personal",
@@ -1582,7 +1573,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "driver_rhyme_farewell",
-            text: "Lokführer oder Zugchef verabschiedet sich mit Reim oder Stand-up-Witz",
+            text: "Durchsage mit Reim / Witz",
             iconName: "theatermasks.fill",
             rarity: .rare,
             category: "Ansage",
@@ -1590,7 +1581,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "bundesliga_announcement",
-            text: "Zugpersonal gibt Fußball-Zwischenstand über Lautsprecher durch",
+            text: "Fußball-Ergebnis angesagt",
             iconName: "sportscourt.fill",
             rarity: .rare,
             category: "Ansage",
@@ -1598,7 +1589,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "first_class_upgrade",
-            text: "1. Klasse wird wegen Überfüllung für alle freigegeben",
+            text: "1. Klasse freigegeben",
             iconName: "crown.fill",
             rarity: .rare,
             category: "Service",
@@ -1606,7 +1597,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "stranded_nowhere",
-            text: "Zug endet vorzeitig an einem Unterwegsbahnhof („Alle aussteigen!“)",
+            text: "Zug endet vorzeitig",
             iconName: "signpost.right.and.left.fill",
             rarity: .rare,
             category: "Betrieb",
@@ -1614,7 +1605,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "wrong_turn",
-            text: "Zug wird spontan über eine andere Strecke umgeleitet",
+            text: "Spontane Streckenumleitung",
             iconName: "arrow.uturn.backward",
             rarity: .rare,
             category: "Betrieb",
@@ -1622,7 +1613,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "animals_on_track",
-            text: "Streckensperrung wegen Tieren (Schafe, Kühe, Schwan) im Gleis",
+            text: "Tiere im Gleisbereich",
             iconName: "hare",
             rarity: .rare,
             category: "Natur",
@@ -1630,7 +1621,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "tree_on_track",
-            text: "Ast oder Baum im Gleisbett / in der Oberleitung",
+            text: "Ast / Baum im Gleis",
             iconName: "tree.fill",
             rarity: .rare,
             category: "Infrastruktur",
@@ -1638,7 +1629,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "fire_alarm_smoke",
-            text: "Heimlicher Raucher löst Rauchmelder auf der Zugtoilette aus",
+            text: "Rauchmelder im WC ausgelöst",
             iconName: "smoke.fill",
             rarity: .rare,
             category: "Vorfälle",
@@ -1646,7 +1637,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "beer_crate_party",
-            text: "Junggesellenabschied oder Fußballfans feiern mit Musikbox im Gang",
+            text: "Partytruppe mit Musikbox",
             iconName: "party.popper.fill",
             rarity: .rare,
             category: "Fahrgäste",
@@ -1654,7 +1645,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "steam_locomotive_view",
-            text: "Historische Dampflok, Messzug (ICE S) oder Sonderzug gesichtet",
+            text: "Dampflok / Messzug gesehen",
             iconName: "sparkles",
             rarity: .rare,
             category: "Sichtung",
@@ -1662,7 +1653,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "emergency_braking",
-            text: "Spürbare Zwangsbremsung auf offener Strecke",
+            text: "Zwangsbremsung auf Strecke",
             iconName: "exclamationmark.octagon.fill",
             rarity: .rare,
             category: "Betrieb",
@@ -1670,7 +1661,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "applause_on_arrival",
-            text: "Ironischer oder echter Applaus im Wagen bei der Ankunft",
+            text: "Applaus bei der Ankunft",
             iconName: "hands.clap.fill",
             rarity: .rare,
             category: "Fahrgäste",
@@ -1678,7 +1669,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "child_shout_announcement",
-            text: "Kind darf eine Durchsage ins Bordmikrofon sprechen",
+            text: "Kind spricht ins Bordmikro",
             iconName: "mic.fill",
             rarity: .rare,
             category: "Ansage",
@@ -1686,7 +1677,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "taxi_hotel_voucher",
-            text: "Taxi- oder Hotelgutschein wegen gestrandeter Spätverbindung",
+            text: "Taxi- oder Hotelgutschein",
             iconName: "bed.double.fill",
             rarity: .rare,
             category: "Service",
@@ -1694,7 +1685,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "announcement_loop_bug",
-            text: "Automatische Ansage oder Anzeige hängt in einer Endlosschleife",
+            text: "Anzeige / Ansage in Schleife",
             iconName: "repeat",
             rarity: .rare,
             category: "Technik",
