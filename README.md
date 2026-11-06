@@ -4,7 +4,7 @@
 [![Swift 5.9+](https://img.shields.io/badge/Swift-5.9%2B-orange?logo=swift&style=flat-square)](https://swift.org/)
 [![SwiftUI](https://img.shields.io/badge/UI-SwiftUI-purple?style=flat-square)](https://developer.apple.com/xcode/swiftui/)
 [![SwiftData](https://img.shields.io/badge/Storage-SwiftData-green?style=flat-square)](https://developer.apple.com/documentation/swiftdata)
-[![Version](https://img.shields.io/badge/Version-1.7%20(Build%206)-teal?style=flat-square)](Info.plist)
+[![Version](https://img.shields.io/badge/Version-1.7%20(Build%207)-teal?style=flat-square)](Info.plist)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
 Das „Autokennzeichen-Sammeln“ für den Bahnverkehr in Deutschland! **TrainSammler** ist eine native, moderne und gamifizierte iOS-App zum Spotten von DB-Zügen, ICE-Baureihen, Regionalverkehr-Triebzügen, Triebzugnummern (Tz), seltenen Sonderzügen (wie dem Regenbogen- oder Europa-ICE) – inklusive interaktivem **DB-Bingo** für unterwegs.
