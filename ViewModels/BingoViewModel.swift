@@ -18,9 +18,9 @@ public enum BingoDifficultyMode: String, CaseIterable, Identifiable, Sendable {
     public var description: String {
         switch self {
         case .realistic:
-            return "Hohe Trefferquote mit normalen Vorfällen (Verspätungen, Durchsagen, Alltag im Wagen) – ideal für jede normale Fahrt."
+            return "Ausgewogener Mix aus typischen Bahn-Beobachtungen, Klassikern und echten DB-Highlights – jede Reihe bleibt fair lösbar."
         case .classic:
-            return "Mehr seltene DB-Kuriositäten und Pannen für lange Fernverkehrsreisen."
+            return "Noch mehr kuriose DB-Momente, Pannen und seltene Jackpots für ereignisreiche Fernverkehrsreisen."
         }
     }
 }
@@ -56,8 +56,33 @@ public final class BingoViewModel {
             self.selectedGridSize = active.gridSize
             self.tripName = active.travelTitle ?? ""
 
-            // Migriere ältere oder entfernte Kacheln auf aktuelle Vorfälle
             let validTexts = Set(BingoCatalog.incidents.map(\.text))
+            let hasInvalidCells = active.cells.contains { !$0.isJoker && !validTexts.contains($0.text) }
+            let hasRareHighlight = active.cells.contains { $0.rarity == .rare }
+
+            // Falls mehr als ein unarchiviertes Spiel existiert, die älteren archivieren
+            if games.count > 1 {
+                for extra in games.dropFirst() {
+                    extra.isArchived = true
+                    if extra.completedAt == nil {
+                        extra.completedAt = Date()
+                    }
+                }
+                try? context.save()
+            }
+
+            // Wenn noch kein Feld angekreuzt wurde und das Brett noch aus dem alten Generator stammt
+            // (entfernte Low-Level-Texte oder 0 Rare-Highlights), direkt ein frisches, ausgewogenes Brett erzeugen.
+            if active.checkedIncidentsCount == 0 && (hasInvalidCells || !hasRareHighlight) {
+                let preservedSize = active.gridSize
+                let preservedTitle = active.travelTitle
+                context.delete(active)
+                self.activeGame = nil
+                startNewGame(context: context, size: preservedSize, title: preservedTitle, archiveOld: false)
+                return
+            }
+
+            // Migriere ältere oder entfernte Kacheln bei bereits angefangenen Spielen
             var migrated = false
             for cell in active.cells {
                 if cell.isJoker && cell.text != "FREIFELD" {
@@ -82,16 +107,6 @@ public final class BingoViewModel {
                 }
             }
 
-            // Falls mehr als ein unarchiviertes Spiel existiert, die älteren archivieren
-            if games.count > 1 {
-                for extra in games.dropFirst() {
-                    extra.isArchived = true
-                    if extra.completedAt == nil {
-                        extra.completedAt = Date()
-                    }
-                }
-                migrated = true
-            }
             if migrated {
                 try? context.save()
             }
@@ -219,14 +234,18 @@ public final class BingoViewModel {
         self.winningLineType = nil
     }
 
-    /// Tauscht ein einzelnes unpassendes Feld gegen ein neues alltagsnahes Feld aus
+    /// Tauscht ein einzelnes unpassendes Feld gegen ein neues Feld derselben Seltenheitsstufe aus
     public func replaceSingleCell(_ cell: BingoCell, context: ModelContext) {
         guard !cell.isJoker, let game = activeGame else { return }
 
         let existingTexts = Set(game.cells.map(\.text))
-        let candidates = BingoCatalog.incidents.filter {
-            !existingTexts.contains($0.text) && ($0.rarity == .everyday || $0.rarity == .common)
+        let sameRarityCandidates = BingoCatalog.incidents.filter {
+            !existingTexts.contains($0.text) && $0.rarity == cell.rarity
         }
+        let fallbackCandidates = BingoCatalog.incidents.filter {
+            !existingTexts.contains($0.text)
+        }
+        let candidates = sameRarityCandidates.isEmpty ? fallbackCandidates : sameRarityCandidates
 
         guard let replacement = weightedSample(from: candidates, count: 1, maxPerExclusivityGroup: 1).first else {
             return
@@ -256,7 +275,9 @@ public final class BingoViewModel {
         let uncommonPool = BingoCatalog.incidents.filter { $0.rarity == .uncommon }
         let rarePool = BingoCatalog.incidents.filter { $0.rarity == .rare }
 
-        // Zielverteilung nach Brettgröße und Schwierigkeitsmodus
+        // Ausgewogener Mix aus lösbaren Alltagsbeobachtungen und witzigen High-Level-Momenten:
+        // Durch die Anti-Cluster-Platzierung landet maximal 1 seltenes Feld in einer Zeile/Spalte,
+        // sodass jede Karte sowohl spannende Highlights bietet als auch fair gewinnbar bleibt.
         let targetEveryday: Int
         let targetCommon: Int
         let targetUncommon: Int
@@ -264,41 +285,44 @@ public final class BingoViewModel {
 
         switch (size, difficultyMode) {
         case (3, .realistic):
-            // 3x3 Alltag: 5 sehr häufige, 3 häufige, max 1 gelegentliches, 0 seltene -> Jede Reihe gut machbar!
-            targetEveryday = 5
-            targetCommon = 3
-            targetUncommon = 1
-            targetRare = 0
-        case (3, .classic):
-            targetEveryday = 4
-            targetCommon = 3
+            // 3x3 Alltag (9 Felder): 3 Alltag, 4 Klassiker, 1 Gelegentlich, 1 Seltenes Highlight
+            targetEveryday = 3
+            targetCommon = 4
             targetUncommon = 1
             targetRare = 1
-        case (4, .realistic):
-            // 4x4 Alltag: 9 sehr häufige, 5 häufige, 2 gelegentliche, 0-1 seltenes
-            targetEveryday = 9
-            targetCommon = 5
+        case (3, .classic):
+            // 3x3 Chaos-Mix (9 Felder): 2 Alltag, 3 Klassiker, 2 Gelegentlich, 2 Seltene Highlights
+            targetEveryday = 2
+            targetCommon = 3
             targetUncommon = 2
-            targetRare = 0
-        case (4, .classic):
-            targetEveryday = 6
-            targetCommon = 5
+            targetRare = 2
+        case (4, .realistic):
+            // 4x4 Alltag (16 Felder): 5 Alltag, 6 Klassiker, 3 Gelegentlich, 2 Seltene Highlights
+            targetEveryday = 5
+            targetCommon = 6
             targetUncommon = 3
             targetRare = 2
-        case (_, .realistic):
-            // 5x5 Alltag (24 Felder): 12 sehr häufige, 8 häufige, 3 gelegentliche, 1 seltenes
-            targetEveryday = 12
-            targetCommon = 8
-            targetUncommon = 3
-            targetRare = 1
-        case (_, .classic):
-            targetEveryday = 9
-            targetCommon = 8
+        case (4, .classic):
+            // 4x4 Chaos-Mix (16 Felder): 4 Alltag, 5 Klassiker, 4 Gelegentlich, 3 Seltene Highlights
+            targetEveryday = 4
+            targetCommon = 5
             targetUncommon = 4
             targetRare = 3
+        case (_, .realistic):
+            // 5x5 Alltag (24 Felder + Joker): 7 Alltag, 9 Klassiker, 5 Gelegentlich, 3 Seltene Highlights
+            targetEveryday = 7
+            targetCommon = 9
+            targetUncommon = 5
+            targetRare = 3
+        case (_, .classic):
+            // 5x5 Chaos-Mix (24 Felder + Joker): 5 Alltag, 8 Klassiker, 6 Gelegentlich, 5 Seltene Highlights
+            targetEveryday = 5
+            targetCommon = 8
+            targetUncommon = 6
+            targetRare = 5
         }
 
-        let maxDelayCards = (size == 3) ? 1 : 2
+        let maxDelayCards = (size == 5) ? 2 : 1
         var groupCounts: [String: Int] = [:]
 
         var selected: [BingoIncident] = []
@@ -392,7 +416,8 @@ public final class BingoViewModel {
         return result
     }
 
-    /// Verteilt seltenere Felder auf verschiedene Zeilen und Spalten, damit keine unlösbaren Reihen entstehen
+    /// Verteilt seltene und gelegentliche Felder gleichmäßig über Zeilen und Spalten,
+    /// damit keine Zeile/Spalte durch mehrere Jackpot-Felder blockiert wird.
     private func distributeFairlyAcrossGrid(
         incidents: [BingoIncident],
         size: Int,
@@ -403,8 +428,10 @@ public final class BingoViewModel {
             return shuffledAll
         }
 
-        // Trenne schwere (rare/uncommon) und leichte (everyday/common) Vorfälle
-        let harder = shuffledAll.filter { $0.rarity == .rare || $0.rarity == .uncommon }
+        // Platziere zuerst die seltenen (.rare), danach die gelegentlichen (.uncommon) Vorfälle
+        let rareItems = shuffledAll.filter { $0.rarity == .rare }
+        let uncommonItems = shuffledAll.filter { $0.rarity == .uncommon }
+        let harder = rareItems + uncommonItems
         var easier = shuffledAll.filter { $0.rarity == .everyday || $0.rarity == .common }.shuffled()
 
         guard !harder.isEmpty else { return shuffledAll }
@@ -412,21 +439,39 @@ public final class BingoViewModel {
         let totalSlots = size * size
         let middleSlot = isFiveByFive ? 12 : -1
         var slotMap: [Int: BingoIncident] = [:]
-        var usedRows = Set<Int>()
-        var usedCols = Set<Int>()
+        var rowHardCount = Array(repeating: 0, count: size)
+        var colHardCount = Array(repeating: 0, count: size)
+        var rowRareCount = Array(repeating: 0, count: size)
+        var colRareCount = Array(repeating: 0, count: size)
 
         let candidateSlots = (0..<totalSlots).filter { $0 != middleSlot }.shuffled()
 
         for hardItem in harder {
-            // Suche einen Slot in einer Zeile & Spalte, die noch kein schweres Item hat
-            if let idealSlot = candidateSlots.first(where: { slot in
-                slotMap[slot] == nil && !usedRows.contains(slot / size) && !usedCols.contains(slot % size)
-            }) {
-                slotMap[idealSlot] = hardItem
-                usedRows.insert(idealSlot / size)
-                usedCols.insert(idealSlot % size)
-            } else if let fallbackSlot = candidateSlots.first(where: { slotMap[$0] == nil }) {
-                slotMap[fallbackSlot] = hardItem
+            let emptySlots = candidateSlots.filter { slotMap[$0] == nil }
+            guard !emptySlots.isEmpty else { break }
+
+            // Wähle den Slot, dessen Zeile & Spalte bisher die wenigsten seltenen/schweren Felder hat
+            let bestSlot = emptySlots.min { lhs, rhs in
+                let lhsRow = lhs / size, lhsCol = lhs % size
+                let rhsRow = rhs / size, rhsCol = rhs % size
+
+                let lhsScore = (rowRareCount[lhsRow] + colRareCount[lhsCol]) * 10
+                    + (rowHardCount[lhsRow] + colHardCount[lhsCol]) * 3
+                    + max(rowHardCount[lhsRow], colHardCount[lhsCol]) * 2
+                let rhsScore = (rowRareCount[rhsRow] + colRareCount[rhsCol]) * 10
+                    + (rowHardCount[rhsRow] + colHardCount[rhsCol]) * 3
+                    + max(rowHardCount[rhsRow], colHardCount[rhsCol]) * 2
+                return lhsScore < rhsScore
+            } ?? emptySlots[0]
+
+            slotMap[bestSlot] = hardItem
+            let r = bestSlot / size
+            let c = bestSlot % size
+            rowHardCount[r] += 1
+            colHardCount[c] += 1
+            if hardItem.rarity == .rare {
+                rowRareCount[r] += 1
+                colRareCount[c] += 1
             }
         }
 

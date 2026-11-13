@@ -81,19 +81,12 @@ public struct BingoIncident: Identifiable, Sendable {
 public struct BingoCatalog {
     public static let incidents: [BingoIncident] = [
         // =========================================================================
-        // MARK: - 1. SEHR HÄUFIG / ALLTAG (Everyday, 65–95% Wahrscheinlichkeit)
+        // MARK: - 1. SEHR HÄUFIG / ALLTAG (Everyday, 60–85% Wahrscheinlichkeit)
+        // Solide Basis für machbare Reihen, aber keine 100%-Selbstläufer wie
+        // automatische Standard-Bandansagen („Nächster Halt“ / „Ausstieg links“).
         // =========================================================================
 
         // --- Verspätung & Fahrplan (Alltag) ---
-        BingoIncident(
-            id: "delay_3_min",
-            text: "Mind. 3 Min. Verspätung",
-            iconName: "clock",
-            rarity: .everyday,
-            category: "Verspätung",
-            likelihoodPercent: 85,
-            exclusivityGroup: "delay_minutes"
-        ),
         BingoIncident(
             id: "delay_5_min",
             text: "Mind. 5 Min. Verspätung",
@@ -118,7 +111,7 @@ public struct BingoCatalog {
             iconName: "checkmark.circle",
             rarity: .everyday,
             category: "Fahrplan",
-            likelihoodPercent: 72
+            likelihoodPercent: 70
         ),
         BingoIncident(
             id: "longer_station_dwell",
@@ -126,15 +119,7 @@ public struct BingoCatalog {
             iconName: "timer",
             rarity: .everyday,
             category: "Verspätung",
-            likelihoodPercent: 80
-        ),
-        BingoIncident(
-            id: "db_nav_refresh",
-            text: "Blick in den DB Navigator",
-            iconName: "iphone.gen3",
-            rarity: .everyday,
-            category: "Fahrplan",
-            likelihoodPercent: 92
+            likelihoodPercent: 76
         ),
         BingoIncident(
             id: "red_time_in_app",
@@ -142,48 +127,14 @@ public struct BingoCatalog {
             iconName: "exclamationmark.circle",
             rarity: .everyday,
             category: "Verspätung",
-            likelihoodPercent: 82
+            likelihoodPercent: 80
         ),
         BingoIncident(
             id: "stop_before_station",
-            text: "Langsame Bahnhofseinfahrt",
+            text: "Schleichfahrt vorm Bahnhof",
             iconName: "tortoise",
             rarity: .everyday,
             category: "Betrieb",
-            likelihoodPercent: 88
-        ),
-
-        // --- Durchsagen & Service (Alltag) ---
-        BingoIncident(
-            id: "next_stop_announcement",
-            text: "Ansage: „Nächster Halt …“",
-            iconName: "speaker.wave.2.fill",
-            rarity: .everyday,
-            category: "Ansage",
-            likelihoodPercent: 95
-        ),
-        BingoIncident(
-            id: "exit_direction_left_right",
-            text: "„Ausstieg links / rechts“",
-            iconName: "arrow.left.and.right.square",
-            rarity: .everyday,
-            category: "Ansage",
-            likelihoodPercent: 92
-        ),
-        BingoIncident(
-            id: "welcome_announcement",
-            text: "Begrüßung per Durchsage",
-            iconName: "hand.wave.fill",
-            rarity: .everyday,
-            category: "Ansage",
-            likelihoodPercent: 82
-        ),
-        BingoIncident(
-            id: "english_announcement",
-            text: "Durchsage auf Englisch",
-            iconName: "globe.europe.africa.fill",
-            rarity: .everyday,
-            category: "Ansage",
             likelihoodPercent: 78
         ),
         BingoIncident(
@@ -194,31 +145,15 @@ public struct BingoCatalog {
             category: "Service",
             likelihoodPercent: 75
         ),
-        BingoIncident(
-            id: "connection_announcement",
-            text: "Ansage der Anschlüsse",
-            iconName: "arrow.triangle.branch",
-            rarity: .everyday,
-            category: "Ansage",
-            likelihoodPercent: 80
-        ),
-        BingoIncident(
-            id: "farewell_announcement",
-            text: "Verabschiedung am Halt",
-            iconName: "megaphone",
-            rarity: .everyday,
-            category: "Ansage",
-            likelihoodPercent: 76
-        ),
 
-        // --- Alltag im Wagen & Mitreisende ---
+        // --- Typische Beobachtungen im Wagen & am Gleis (Alltag) ---
         BingoIncident(
             id: "seat_free_question",
             text: "„Ist hier noch frei?“",
             iconName: "bubble.left.and.bubble.right.fill",
             rarity: .everyday,
             category: "Fahrgäste",
-            likelihoodPercent: 85
+            likelihoodPercent: 82
         ),
         BingoIncident(
             id: "backpack_on_seat",
@@ -226,15 +161,7 @@ public struct BingoCatalog {
             iconName: "bag.fill",
             rarity: .everyday,
             category: "Fahrgäste",
-            likelihoodPercent: 90
-        ),
-        BingoIncident(
-            id: "laptop_worker",
-            text: "Arbeiten am Laptop",
-            iconName: "laptopcomputer",
-            rarity: .everyday,
-            category: "Fahrgäste",
-            likelihoodPercent: 88
+            likelihoodPercent: 84
         ),
         BingoIncident(
             id: "sleeping_passenger",
@@ -242,7 +169,7 @@ public struct BingoCatalog {
             iconName: "zzz",
             rarity: .everyday,
             category: "Fahrgäste",
-            likelihoodPercent: 78
+            likelihoodPercent: 74
         ),
         BingoIncident(
             id: "bakery_bag_snack",
@@ -250,28 +177,12 @@ public struct BingoCatalog {
             iconName: "takeoutbag.and.cup.and.straw.fill",
             rarity: .everyday,
             category: "Verpflegung",
-            likelihoodPercent: 86
-        ),
-        BingoIncident(
-            id: "coffee_to_go_cup",
-            text: "Coffee-to-go am Platz",
-            iconName: "cup.and.saucer.fill",
-            rarity: .everyday,
-            category: "Verpflegung",
-            likelihoodPercent: 88
+            likelihoodPercent: 78
         ),
         BingoIncident(
             id: "searching_seat_number",
             text: "Suche nach Sitzplatznummer",
             iconName: "magnifyingglass",
-            rarity: .everyday,
-            category: "Fahrgäste",
-            likelihoodPercent: 85
-        ),
-        BingoIncident(
-            id: "luggage_rack_lift",
-            text: "Koffer ins Gepäckfach",
-            iconName: "suitcase.rolling.fill",
             rarity: .everyday,
             category: "Fahrgäste",
             likelihoodPercent: 80
@@ -290,39 +201,7 @@ public struct BingoCatalog {
             iconName: "figure.stand",
             rarity: .everyday,
             category: "Fahrgäste",
-            likelihoodPercent: 86
-        ),
-        BingoIncident(
-            id: "Bahncard_shown",
-            text: "BahnCard / D-Ticket gezeigt",
-            iconName: "creditcard.fill",
-            rarity: .everyday,
-            category: "Service",
-            likelihoodPercent: 85
-        ),
-        BingoIncident(
-            id: "graffiti_noise_wall",
-            text: "Graffiti an Lärmschutzwand",
-            iconName: "paintbrush.pointed.fill",
-            rarity: .everyday,
-            category: "Strecke",
-            likelihoodPercent: 90
-        ),
-        BingoIncident(
-            id: "yellow_bauzug_parked",
-            text: "Gelber Bauzug am Gleis",
-            iconName: "wrench.and.screwdriver.fill",
-            rarity: .everyday,
-            category: "Strecke",
-            likelihoodPercent: 74
-        ),
-        BingoIncident(
-            id: "s_bahn_parallel_drive",
-            text: "Parallelfahrt mit S-Bahn/RB",
-            iconName: "tram",
-            rarity: .everyday,
-            category: "Strecke",
-            likelihoodPercent: 72
+            likelihoodPercent: 82
         ),
         BingoIncident(
             id: "door_button_pressed_early",
@@ -330,41 +209,31 @@ public struct BingoCatalog {
             iconName: "hand.point.up.left.fill",
             rarity: .everyday,
             category: "Fahrgäste",
-            likelihoodPercent: 84
+            likelihoodPercent: 78
         ),
         BingoIncident(
-            id: "step_gap_announcement",
-            text: "Ansage: „Bahnsteigkante“",
-            iconName: "figure.step.training",
+            id: "yellow_bauzug_parked",
+            text: "Gelber Bauzug am Gleis",
+            iconName: "wrench.and.screwdriver.fill",
             rarity: .everyday,
-            category: "Ansage",
-            likelihoodPercent: 75
+            category: "Strecke",
+            likelihoodPercent: 72
         ),
         BingoIncident(
-            id: "conductor_walks_past",
-            text: "Zugbegleiter läuft vorbei",
-            iconName: "figure.walk",
+            id: "s_bahn_parallel_drive",
+            text: "Parallelfahrt mit S-Bahn/RB",
+            iconName: "tram",
             rarity: .everyday,
-            category: "Service",
-            likelihoodPercent: 90
+            category: "Strecke",
+            likelihoodPercent: 68
         ),
-
-        // --- Technik, Bahnhof & Strecke (Alltag) ---
         BingoIncident(
             id: "mobile_dead_zone",
             text: "Funkloch unterwegs",
             iconName: "antenna.radiowaves.left.and.right.slash",
             rarity: .everyday,
             category: "Technik",
-            likelihoodPercent: 85
-        ),
-        BingoIncident(
-            id: "oncoming_train_whoosh",
-            text: "Gegenzug rauscht vorbei",
-            iconName: "wind",
-            rarity: .everyday,
-            category: "Strecke",
-            likelihoodPercent: 88
+            likelihoodPercent: 82
         ),
         BingoIncident(
             id: "freight_train_seen",
@@ -372,7 +241,7 @@ public struct BingoCatalog {
             iconName: "shippingbox.fill",
             rarity: .everyday,
             category: "Strecke",
-            likelihoodPercent: 82
+            likelihoodPercent: 76
         ),
         BingoIncident(
             id: "tunnel_ear_pressure",
@@ -380,7 +249,7 @@ public struct BingoCatalog {
             iconName: "ear.fill",
             rarity: .everyday,
             category: "Strecke",
-            likelihoodPercent: 74
+            likelihoodPercent: 70
         ),
         BingoIncident(
             id: "platform_crowd_one_door",
@@ -388,7 +257,7 @@ public struct BingoCatalog {
             iconName: "person.3.sequence.fill",
             rarity: .everyday,
             category: "Bahnhof",
-            likelihoodPercent: 80
+            likelihoodPercent: 78
         ),
         BingoIncident(
             id: "pigeon_on_platform",
@@ -396,7 +265,7 @@ public struct BingoCatalog {
             iconName: "bird.fill",
             rarity: .everyday,
             category: "Bahnhof",
-            likelihoodPercent: 75
+            likelihoodPercent: 72
         ),
         BingoIncident(
             id: "commuter_door_sprint",
@@ -404,23 +273,7 @@ public struct BingoCatalog {
             iconName: "figure.run",
             rarity: .everyday,
             category: "Bahnhof",
-            likelihoodPercent: 78
-        ),
-        BingoIncident(
-            id: "screen_shows_speed",
-            text: "Anzeige zeigt Tempo / Route",
-            iconName: "tv",
-            rarity: .everyday,
-            category: "Technik",
-            likelihoodPercent: 84
-        ),
-        BingoIncident(
-            id: "trash_collector_walk",
-            text: "Müllsammlung im Wagen",
-            iconName: "trash",
-            rarity: .everyday,
-            category: "Service",
-            likelihoodPercent: 66
+            likelihoodPercent: 76
         ),
         BingoIncident(
             id: "bike_or_stroller_boarded",
@@ -428,7 +281,39 @@ public struct BingoCatalog {
             iconName: "bicycle",
             rarity: .everyday,
             category: "Wagen",
-            likelihoodPercent: 74
+            likelihoodPercent: 72
+        ),
+        BingoIncident(
+            id: "aisle_blocked_suitcases",
+            text: "Koffer blockiert den Gang",
+            iconName: "suitcase.fill",
+            rarity: .everyday,
+            category: "Komfort",
+            likelihoodPercent: 70
+        ),
+        BingoIncident(
+            id: "overhead_rack_full",
+            text: "Gepäckablage komplett voll",
+            iconName: "tray.full.fill",
+            rarity: .everyday,
+            category: "Komfort",
+            likelihoodPercent: 68
+        ),
+        BingoIncident(
+            id: "wrong_direction_seat",
+            text: "Sitzplatz rückwärts",
+            iconName: "arrow.uturn.left.circle",
+            rarity: .everyday,
+            category: "Komfort",
+            likelihoodPercent: 66
+        ),
+        BingoIncident(
+            id: "backpack_hit_aisle",
+            text: "Rucksack streift Sitzlehne",
+            iconName: "figure.walk.arrival",
+            rarity: .everyday,
+            category: "Fahrgäste",
+            likelihoodPercent: 68
         ),
 
         // =========================================================================
@@ -468,7 +353,8 @@ public struct BingoCatalog {
             iconName: "hourglass",
             rarity: .common,
             category: "Verspätung",
-            likelihoodPercent: 58
+            likelihoodPercent: 58,
+            exclusivityGroup: "delay_minutes"
         ),
         BingoIncident(
             id: "delay_made_up",
@@ -533,14 +419,6 @@ public struct BingoCatalog {
             rarity: .common,
             category: "Fahrplan",
             likelihoodPercent: 48
-        ),
-        BingoIncident(
-            id: "polite_apology",
-            text: "Entschuldigungs-Durchsage",
-            iconName: "hand.raised.fill",
-            rarity: .common,
-            category: "Ansage",
-            likelihoodPercent: 60
         ),
         BingoIncident(
             id: "abrupt_braking",
@@ -685,22 +563,6 @@ public struct BingoCatalog {
             likelihoodPercent: 46
         ),
         BingoIncident(
-            id: "aisle_blocked_suitcases",
-            text: "Koffer blockiert den Gang",
-            iconName: "suitcase.fill",
-            rarity: .common,
-            category: "Komfort",
-            likelihoodPercent: 58
-        ),
-        BingoIncident(
-            id: "overhead_rack_full",
-            text: "Gepäckablage komplett voll",
-            iconName: "tray.full.fill",
-            rarity: .common,
-            category: "Komfort",
-            likelihoodPercent: 56
-        ),
-        BingoIncident(
             id: "trash_overflow",
             text: "Platz-Mülleimer randvoll",
             iconName: "trash.fill",
@@ -749,14 +611,6 @@ public struct BingoCatalog {
             rarity: .common,
             category: "Fahrgäste",
             likelihoodPercent: 52
-        ),
-        BingoIncident(
-            id: "loud_typing",
-            text: "Lautes Laptop-Tippen",
-            iconName: "keyboard.fill",
-            rarity: .common,
-            category: "Fahrgäste",
-            likelihoodPercent: 50
         ),
         BingoIncident(
             id: "smell_of_food",
@@ -849,16 +703,8 @@ public struct BingoCatalog {
             likelihoodPercent: 54
         ),
         BingoIncident(
-            id: "bistro_coffee_carried",
-            text: "Bordbistro-Kaffee balanciert",
-            iconName: "cup.and.saucer",
-            rarity: .common,
-            category: "Verpflegung",
-            likelihoodPercent: 55
-        ),
-        BingoIncident(
             id: "headphone_bleed",
-            text: "laute Kopfhörer-Musik hörbar",
+            text: "Laute Kopfhörer-Musik hörbar",
             iconName: "ear.badge.waveform",
             rarity: .common,
             category: "Fahrgäste",
@@ -886,7 +732,7 @@ public struct BingoCatalog {
             iconName: "waveform.path.ecg",
             rarity: .common,
             category: "Betrieb",
-            likelihoodPercent: 60
+            likelihoodPercent: 58
         ),
         BingoIncident(
             id: "horn_honk_track",
@@ -905,14 +751,6 @@ public struct BingoCatalog {
             likelihoodPercent: 48
         ),
         BingoIncident(
-            id: "wrong_direction_seat",
-            text: "Sitzplatz rückwärts",
-            iconName: "arrow.uturn.left.circle",
-            rarity: .common,
-            category: "Komfort",
-            likelihoodPercent: 55
-        ),
-        BingoIncident(
             id: "pillar_window_seat",
             text: "Wandfensterplatz erwischt",
             iconName: "rectangle.split.2x1.slash",
@@ -929,28 +767,12 @@ public struct BingoCatalog {
             likelihoodPercent: 50
         ),
         BingoIncident(
-            id: "display_scroll_reasons",
-            text: "Laufschrift am Bahnsteig",
-            iconName: "text.line.first.and.arrowtriangle.forward",
-            rarity: .common,
-            category: "Bahnhof",
-            likelihoodPercent: 58
-        ),
-        BingoIncident(
             id: "security_walkthrough",
             text: "DB-Sicherheit läuft vorbei",
             iconName: "shield.fill",
             rarity: .common,
             category: "Service",
             likelihoodPercent: 40
-        ),
-        BingoIncident(
-            id: "backpack_hit_aisle",
-            text: "Rucksack streift Sitzlehne",
-            iconName: "figure.walk.arrival",
-            rarity: .common,
-            category: "Fahrgäste",
-            likelihoodPercent: 56
         ),
         BingoIncident(
             id: "seat_reservation_last_minute",
@@ -1157,11 +979,11 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "freezing_ac",
-            text: "Klimaanlage fällt aus",
+            text: "Klimaanlage: Eiskalt / Sauna",
             iconName: "thermometer.snowflake",
             rarity: .uncommon,
             category: "Komfort",
-            likelihoodPercent: 20
+            likelihoodPercent: 22
         ),
         BingoIncident(
             id: "switch_defect",
@@ -1178,6 +1000,22 @@ public struct BingoCatalog {
             rarity: .uncommon,
             category: "Infrastruktur",
             likelihoodPercent: 14
+        ),
+        BingoIncident(
+            id: "wagon_order_sprint",
+            text: "Sprint wegen Wagenreihung",
+            iconName: "figure.run",
+            rarity: .uncommon,
+            category: "Bahnhof",
+            likelihoodPercent: 26
+        ),
+        BingoIncident(
+            id: "seat_defective_taped",
+            text: "Sitzplatz als defekt gesperrt",
+            iconName: "xmark.seal.fill",
+            rarity: .uncommon,
+            category: "Wagen",
+            likelihoodPercent: 20
         ),
 
         // --- Durchsagen, Service & Mitreisende (Gelegentlich) ---
@@ -1198,12 +1036,28 @@ public struct BingoCatalog {
             likelihoodPercent: 28
         ),
         BingoIncident(
+            id: "clear_door_area_call",
+            text: "„Türbereich freimachen!“",
+            iconName: "door.left.hand.open",
+            rarity: .uncommon,
+            category: "Ansage",
+            likelihoodPercent: 26
+        ),
+        BingoIncident(
+            id: "announcement_cut_off",
+            text: "Ansage bricht im Satz ab",
+            iconName: "mic.slash.fill",
+            rarity: .uncommon,
+            category: "Ansage",
+            likelihoodPercent: 24
+        ),
+        BingoIncident(
             id: "ticket_inspector_cheer",
             text: "Gut gelaunter Zugbegleiter",
             iconName: "face.smiling.fill",
             rarity: .uncommon,
             category: "Service",
-            likelihoodPercent: 32
+            likelihoodPercent: 30
         ),
         BingoIncident(
             id: "no_ticket_check_whole_ride",
@@ -1211,7 +1065,7 @@ public struct BingoCatalog {
             iconName: "person.badge.shield.checkmark.fill",
             rarity: .uncommon,
             category: "Service",
-            likelihoodPercent: 30
+            likelihoodPercent: 28
         ),
         BingoIncident(
             id: "ticket_invalid_complaint",
@@ -1246,12 +1100,36 @@ public struct BingoCatalog {
             likelihoodPercent: 26
         ),
         BingoIncident(
-            id: "advent_calendar_doors",
-            text: "„Bitte alle Türen nutzen“",
-            iconName: "door.left.hand.open",
+            id: "speakerphone_call",
+            text: "Telefonat auf Lautsprecher",
+            iconName: "speaker.wave.3.fill",
             rarity: .uncommon,
-            category: "Ansage",
-            likelihoodPercent: 28
+            category: "Fahrgäste",
+            likelihoodPercent: 26
+        ),
+        BingoIncident(
+            id: "egg_meatball_smell",
+            text: "Ei / Frikadelle ausgepackt",
+            iconName: "takeoutbag.and.cup.and.straw.fill",
+            rarity: .uncommon,
+            category: "Verpflegung",
+            likelihoodPercent: 22
+        ),
+        BingoIncident(
+            id: "jga_party_group",
+            text: "Junggesellenabschied im Zug",
+            iconName: "party.popper",
+            rarity: .uncommon,
+            category: "Fahrgäste",
+            likelihoodPercent: 18
+        ),
+        BingoIncident(
+            id: "football_fans_boarded",
+            text: "Fußballfans im Trikot",
+            iconName: "sportscourt",
+            rarity: .uncommon,
+            category: "Fahrgäste",
+            likelihoodPercent: 25
         ),
         BingoIncident(
             id: "spilled_coffee_curve",
@@ -1283,7 +1161,7 @@ public struct BingoCatalog {
             iconName: "suitcase.cart.fill",
             rarity: .uncommon,
             category: "Wagen",
-            likelihoodPercent: 30
+            likelihoodPercent: 28
         ),
         BingoIncident(
             id: "spotter_at_platform",
@@ -1293,17 +1171,9 @@ public struct BingoCatalog {
             category: "Sichtung",
             likelihoodPercent: 24
         ),
-        BingoIncident(
-            id: "conductor_asks_patience",
-            text: "Dank für Geduld & Verständnis",
-            iconName: "heart.fill",
-            rarity: .uncommon,
-            category: "Ansage",
-            likelihoodPercent: 32
-        ),
 
         // =========================================================================
-        // MARK: - 4. SELTEN / KURIOSITÄTEN & LEGENDEN (Rare, 2–10% Wahrscheinlichkeit)
+        // MARK: - 4. SELTEN / KURIOSITÄTEN & LEGENDEN (Rare, 3–10% Wahrscheinlichkeit)
         // =========================================================================
 
         BingoIncident(
@@ -1325,7 +1195,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "free_water",
-            text: "Gratis Wasser / Heißgetränk",
+            text: "Gratis DB-Notfallwasser",
             iconName: "drop.fill",
             rarity: .rare,
             category: "Service",
@@ -1388,6 +1258,14 @@ public struct BingoCatalog {
             likelihoodPercent: 8
         ),
         BingoIncident(
+            id: "driver_blames_infrago",
+            text: "Personal lästert in Ansage",
+            iconName: "quote.bubble.fill",
+            rarity: .rare,
+            category: "Ansage",
+            likelihoodPercent: 7
+        ),
+        BingoIncident(
             id: "bundesliga_announcement",
             text: "Fußball-Ergebnis angesagt",
             iconName: "sportscourt.fill",
@@ -1420,6 +1298,14 @@ public struct BingoCatalog {
             likelihoodPercent: 8
         ),
         BingoIncident(
+            id: "missed_scheduled_stop",
+            text: "Geplanten Halt durchgefahren",
+            iconName: "forward.frame.fill",
+            rarity: .rare,
+            category: "Betrieb",
+            likelihoodPercent: 4
+        ),
+        BingoIncident(
             id: "animals_on_track",
             text: "Tiere im Gleisbereich",
             iconName: "hare",
@@ -1442,6 +1328,22 @@ public struct BingoCatalog {
             rarity: .rare,
             category: "Vorfälle",
             likelihoodPercent: 5
+        ),
+        BingoIncident(
+            id: "police_escorts_passenger",
+            text: "Bundespolizei begleitet Gast",
+            iconName: "shield.lefthalf.filled",
+            rarity: .rare,
+            category: "Vorfälle",
+            likelihoodPercent: 5
+        ),
+        BingoIncident(
+            id: "weird_bulky_item",
+            text: "Kurioses Sperrgepäck an Bord",
+            iconName: "shippingbox.and.arrow.backward.fill",
+            rarity: .rare,
+            category: "Fahrgäste",
+            likelihoodPercent: 8
         ),
         BingoIncident(
             id: "beer_crate_party",
@@ -1469,7 +1371,7 @@ public struct BingoCatalog {
         ),
         BingoIncident(
             id: "applause_on_arrival",
-            text: "Applaus bei der Ankunft",
+            text: "Ironischer Applaus am Ziel",
             iconName: "hands.clap.fill",
             rarity: .rare,
             category: "Fahrgäste",
