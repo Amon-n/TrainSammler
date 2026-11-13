@@ -36,23 +36,19 @@ platform :ios do
       output_path: "fastlane"
     )
 
-    update_code_signing_settings(
-      use_automatic_signing: false,
-      path: "trainSammler.xcodeproj",
-      team_id: "79T386JC4J",
-      code_sign_identity: "Apple Distribution",
-      profile_name: lane_context[SharedValues::SIGH_NAME]
-    )
+    profile_name = lane_context[SharedValues::SIGH_NAME]
+    profile_uuid = lane_context[SharedValues::SIGH_UUID]
 
     build_app(
       scheme: "trainSammler",
       project: "trainSammler.xcodeproj",
       export_method: "app-store",
       clean: true,
+      xcargs: "CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY='Apple Distribution' DEVELOPMENT_TEAM=79T386JC4J PROVISIONING_PROFILE_SPECIFIER='#{profile_uuid}'",
       export_options: {
         signingStyle: "manual",
         provisioningProfiles: {
-          "de.amon.trainSammler" => lane_context[SharedValues::SIGH_NAME]
+          "de.amon.trainSammler" => profile_name
         }
       }
     )
