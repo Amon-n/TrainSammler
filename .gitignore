@@ -22,3 +22,13 @@ DerivedData/
 # Scripts & temporary downloads
 __pycache__/
 *.pyc
+
+# Fastlane & CI Signing Artifacts
+*.p12
+*.p8
+*.mobileprovision
+*.ipa
+*.dSYM.zip
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
