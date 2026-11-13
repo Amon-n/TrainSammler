@@ -4,7 +4,7 @@
 [![Swift 5.9+](https://img.shields.io/badge/Swift-5.9%2B-orange?logo=swift&style=flat-square)](https://swift.org/)
 [![SwiftUI](https://img.shields.io/badge/UI-SwiftUI-purple?style=flat-square)](https://developer.apple.com/xcode/swiftui/)
 [![SwiftData](https://img.shields.io/badge/Storage-SwiftData-green?style=flat-square)](https://developer.apple.com/documentation/swiftdata)
-[![Version](https://img.shields.io/badge/Version-1.7%20(Build%207)-teal?style=flat-square)](Info.plist)
+[![Version](https://img.shields.io/badge/Version-1.7%20(Build%208)-teal?style=flat-square)](Info.plist)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
 Das „Autokennzeichen-Sammeln“ für den Bahnverkehr in Deutschland! **TrainSammler** ist eine native, moderne und gamifizierte iOS-App zum Spotten von DB-Zügen, ICE-Baureihen, Regionalverkehr-Triebzügen, Triebzugnummern (Tz), seltenen Sonderzügen (wie dem Regenbogen- oder Europa-ICE) – inklusive interaktivem **DB-Bingo** für unterwegs.
@@ -15,10 +15,11 @@ Das „Autokennzeichen-Sammeln“ für den Bahnverkehr in Deutschland! **TrainSa
 
 - ⚡ **Schnell-Sichtung am Bahnsteig:** 1-Tap-Schnellauswahl der häufigsten Alltags-Baureihen, automatischer GPS-Standort-Stamp via CoreLocation (oder manuelle Eingabe im Tiefbahnhof) und optimierte Einhand-Bedienung.
 - 🎲 **DB-Bingo mit Wahrscheinlichkeits-Engine:**
-  - Über **140+ abwechslungsreiche Bahn-Erlebnisse** in 4 realistischen Wahrscheinlichkeitsstufen: *Alltag (65–95 %)*, *Häufig (35–60 %)*, *Gelegentlich (12–32 %)* und *Selten (< 10 %)*.
-  - **Alltagsnaher Algorithmus:** Faire Verteilung mit Fokus auf normale Vorfälle (z. B. +5 Min. Verspätung, Ticketkontrolle, Durchsagen, Alltag im Wagen), sodass keine unlösbaren Reihen entstehen.
+  - **155+ kuratierte Bahn-Momente:** Keine trivialen 100%-Selbstverständlichkeiten mehr, sondern echte Beobachtungen und unterhaltsame Bahn-Klassiker in 4 Stufen: *Alltag (65–90 %)*, *Häufig (35–60 %)*, *Gelegentlich (12–32 %)* und *Selten / Jackpot (< 10 %)*.
+  - **Anti-Cluster-Mix & garantierte Highlights:** Jedes Spielfeld (3×3, 4×4, 5×5) erhält in beiden Modi (*Alltagsnah* & *Chaos-Mix*) einen ausgewogenen Mix mit garantierten High-Level-Highlights (z. B. *„Personal lästert in Ansage“*, *„Sprint wegen Wagenreihung“*, *„Ironischer Applaus am Ziel“*, *„Gratis DB-Notfallwasser“*), die gleichmäßig über Zeilen und Spalten verteilt werden, sodass jede Reihe fair gewinnbar bleibt.
+  - **Einzel-Feld-Tausch mit Seltenheitserhalt:** Halte ein beliebiges Feld gedrückt, um die genaue Wahrscheinlichkeit zu sehen oder es gegen ein anderes Ereignis derselben Seltenheitsstufe auszutauschen.
   - **„Reise beenden & speichern“:** Schließe deine Zugfahrt jederzeit ab, vergib einen Reisenamen, sammle Bahn-XP für erlebte Vorfälle (+150 XP Bingo-Bonus) und speichere das Brett dauerhaft im Logbuch.
-  - **Einzel-Feld-Tausch:** Halte ein beliebiges Feld gedrückt, um die genaue Wahrscheinlichkeit zu sehen oder ein einzelnes Feld auszutauschen.
+  - **Echtes Minimalistisches Apple-Design:** Klare Typografie mit automatischer Skalierung ohne Textabschnitte auf allen Spielfeldgrößen.
 - 🗂️ **Train-Dex (34 Baureihen):** Vollständiger Katalog über Fernverkehr (ICE 1 bis ICE 3neo, ICE L, ICE T, IC 1/2, ÖBB Railjet, SBB Giruno, Siemens Vectron, Nightjet), Regionalverkehr (FLIRT, Talent 2, Desiro HC, Mireo, Twindexx, KISS, LINT, ET 423/425) sowie Test- und Sonderzüge (ICE S, advanced TrainLab, Regenbogen-ICE, Europa-ICE, BRD-ICE, Female ICE).
 - 📸 **Multi-Bildergalerie & Eigene Fotos:**
   - Wische interaktiv durch 70+ hochauflösende Perspektiven (Frontansicht, Seitenprofil, Streckenfahrt, Führerstand, Innenraum) inklusive Vollbild-Zoom.

@@ -197,7 +197,7 @@ public struct SettingsView: View {
 
     private var appVersionString: String {
         let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.7"
-        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "7"
+        let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "8"
         return "Version \(version) (Build \(build))"
     }
 
