@@ -399,6 +399,14 @@ public struct DataSeeder {
                             train.maxSpeedKmH = updated.maxSpeedKmH
                             changesMade = true
                         }
+                        if train.rarity != updated.rarity {
+                            train.rarity = updated.rarity
+                            changesMade = true
+                        }
+                        if train.category != updated.category {
+                            train.category = updated.category
+                            changesMade = true
+                        }
                     }
                 }
                 

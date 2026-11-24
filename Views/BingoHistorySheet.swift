@@ -19,55 +19,17 @@ struct BingoHistorySheet: View {
                     ContentUnavailableView(
                         "Keine beendeten Spiele",
                         systemImage: "checkerboard.rectangle",
-                        description: Text("Sobald du eine Fahrt über „Reise beenden“ abschließt, wird dein Bingo-Blatt hier im Logbuch gespeichert.")
+                        description: Text("Sobald du eine Fahrt aktiv im Logbuch speicherst, erscheint dein Bingo-Blatt hier.")
                     )
                 } else {
-                    List {
-                        Section {
-                            HStack(spacing: 12) {
-                                BingoStatPill(
-                                    title: "Fahrten",
-                                    value: "\(pastGames.count)",
-                                    icon: "flag.checkered",
-                                    color: .blue
-                                )
-                                BingoStatPill(
-                                    title: "Bingos",
-                                    value: "\(pastGames.filter(\.isBingoAchieved).count)",
-                                    icon: "trophy.fill",
-                                    color: .yellow
-                                )
-                                BingoStatPill(
-                                    title: "Vorfälle",
-                                    value: "\(pastGames.reduce(0) { $0 + $1.checkedIncidentsCount })",
-                                    icon: "checkmark.seal.fill",
-                                    color: .green
-                                )
-                                BingoStatPill(
-                                    title: "Bingo-XP",
-                                    value: "\(pastGames.reduce(0) { $0 + $1.earnedXP })",
-                                    icon: "bolt.fill",
-                                    color: .orange
-                                )
-                            }
-                            .padding(.vertical, 4)
-                        }
-                        .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-
-                        Section(header: Text("Gespeicherte Fahrten (\(pastGames.count))")) {
-                            ForEach(pastGames) { game in
-                                Button {
-                                    inspectedGame = game
-                                } label: {
-                                    BingoHistoryRow(game: game)
-                                }
-                                .tint(.primary)
-                            }
-                            .onDelete(perform: deleteGames)
-                        }
-                    }
-                    .listStyle(.insetGrouped)
+                    BingoLogbookContentView(
+                        allGames: pastGames,
+                        filteredGames: pastGames,
+                        onInspect: { game in
+                            inspectedGame = game
+                        },
+                        onDelete: deleteGames
+                    )
                 }
             }
             .navigationTitle("Bingo-Logbuch 📜")
@@ -92,6 +54,63 @@ struct BingoHistorySheet: View {
             modelContext.delete(game)
         }
         try? modelContext.save()
+    }
+}
+
+/// Wiederverwendbare Logbuch-Listenansicht für gespeicherte DB-Bingo-Fahrten
+struct BingoLogbookContentView: View {
+    let allGames: [BingoGame]
+    let filteredGames: [BingoGame]
+    let onInspect: (BingoGame) -> Void
+    let onDelete: (IndexSet) -> Void
+
+    var body: some View {
+        List {
+            Section {
+                HStack(spacing: 10) {
+                    BingoStatPill(
+                        title: "Fahrten",
+                        value: "\(allGames.count)",
+                        icon: "flag.checkered",
+                        color: .blue
+                    )
+                    BingoStatPill(
+                        title: "Bingos",
+                        value: "\(allGames.filter(\.isBingoAchieved).count)",
+                        icon: "trophy.fill",
+                        color: .yellow
+                    )
+                    BingoStatPill(
+                        title: "Vorfälle",
+                        value: "\(allGames.reduce(0) { $0 + $1.checkedIncidentsCount })",
+                        icon: "checkmark.seal.fill",
+                        color: .green
+                    )
+                    BingoStatPill(
+                        title: "Bingo-XP",
+                        value: "\(allGames.reduce(0) { $0 + $1.earnedXP })",
+                        icon: "bolt.fill",
+                        color: .orange
+                    )
+                }
+                .padding(.vertical, 4)
+            }
+            .listRowBackground(Color.clear)
+            .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+
+            Section(header: Text("Gespeicherte Fahrten (\(filteredGames.count))")) {
+                ForEach(filteredGames) { game in
+                    Button {
+                        onInspect(game)
+                    } label: {
+                        BingoHistoryRow(game: game)
+                    }
+                    .tint(.primary)
+                }
+                .onDelete(perform: onDelete)
+            }
+        }
+        .listStyle(.insetGrouped)
     }
 }
 
@@ -333,6 +352,18 @@ struct BingoArchiveDetailSheet: View {
             .navigationTitle("Fahrt-Details")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                if let cardImage = ShareCardRenderer.renderBingoCard(game: game) {
+                    ToolbarItem(placement: .topBarLeading) {
+                        ShareLink(
+                            item: cardImage,
+                            subject: Text(game.travelTitle ?? "Mein DB-Bingo"),
+                            preview: SharePreview("DB-Bingo Karte", image: Image(uiImage: cardImage.uiImage))
+                        ) {
+                            Label("Teilen", systemImage: "square.and.arrow.up")
+                        }
+                    }
+                }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Schließen") { dismiss() }
                 }

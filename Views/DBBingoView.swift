@@ -6,6 +6,9 @@ public struct DBBingoView: View {
     @State private var viewModel = BingoViewModel()
     @State private var showingEditTitleSheet = false
     @State private var showingHistorySheet = false
+    @State private var showDiscardOnSwitchAlert = false
+    @State private var pendingGridSize: Int?
+    @State private var pendingDifficulty: BingoDifficultyMode?
     @State private var tempTitle = ""
     @FocusState private var isTitleFocused: Bool
 
@@ -13,6 +16,43 @@ public struct DBBingoView: View {
 
     public init(onOpenLogbook: (() -> Void)? = nil) {
         self.onOpenLogbook = onOpenLogbook
+    }
+
+    private var gridSizeBinding: Binding<Int> {
+        Binding(
+            get: { viewModel.selectedGridSize },
+            set: { newSize in
+                guard newSize != viewModel.selectedGridSize else { return }
+                if (viewModel.activeGame?.checkedIncidentsCount ?? 0) > 0 {
+                    pendingGridSize = newSize
+                    pendingDifficulty = nil
+                    showDiscardOnSwitchAlert = true
+                } else {
+                    withAnimation(.snappy) {
+                        viewModel.startNewGame(context: modelContext, size: newSize, title: viewModel.tripName)
+                    }
+                }
+            }
+        )
+    }
+
+    private var difficultyBinding: Binding<BingoDifficultyMode> {
+        Binding(
+            get: { viewModel.difficultyMode },
+            set: { newMode in
+                guard newMode != viewModel.difficultyMode else { return }
+                if (viewModel.activeGame?.checkedIncidentsCount ?? 0) > 0 {
+                    pendingDifficulty = newMode
+                    pendingGridSize = nil
+                    showDiscardOnSwitchAlert = true
+                } else {
+                    viewModel.difficultyMode = newMode
+                    withAnimation(.snappy) {
+                        viewModel.startNewGame(context: modelContext, size: viewModel.selectedGridSize, title: viewModel.tripName)
+                    }
+                }
+            }
+        )
     }
 
     public var body: some View {
@@ -61,12 +101,23 @@ public struct DBBingoView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Menu {
                         if let game = viewModel.activeGame {
-                            ShareLink(
-                                item: shareText(for: game),
-                                subject: Text("Mein DB-Bingo Zwischenstand"),
-                                message: Text(shareText(for: game))
-                            ) {
-                                Label("Spielstand teilen", systemImage: "square.and.arrow.up")
+                            if let cardImage = ShareCardRenderer.renderBingoCard(game: game) {
+                                ShareLink(
+                                    item: cardImage,
+                                    subject: Text("Mein DB-Bingo Zwischenstand"),
+                                    message: Text(shareText(for: game)),
+                                    preview: SharePreview("DB-Bingo Karte", image: Image(uiImage: cardImage.uiImage))
+                                ) {
+                                    Label("Als Bild-Karte teilen", systemImage: "square.and.arrow.up")
+                                }
+                            } else {
+                                ShareLink(
+                                    item: shareText(for: game),
+                                    subject: Text("Mein DB-Bingo Zwischenstand"),
+                                    message: Text(shareText(for: game))
+                                ) {
+                                    Label("Spielstand teilen", systemImage: "square.and.arrow.up")
+                                }
                             }
                         }
 
@@ -77,7 +128,7 @@ public struct DBBingoView: View {
                             Label("Reise umbenennen", systemImage: "pencil")
                         }
 
-                        Picker("Modus", selection: $viewModel.difficultyMode) {
+                        Picker("Modus", selection: difficultyBinding) {
                             ForEach(BingoDifficultyMode.allCases) { mode in
                                 Label(
                                     mode.shortTitle,
@@ -106,13 +157,45 @@ public struct DBBingoView: View {
                         viewModel.startNewGame(
                             context: modelContext,
                             size: viewModel.selectedGridSize,
-                            title: viewModel.tripName,
-                            archiveOld: false
+                            title: viewModel.tripName
                         )
                     }
                 }
             } message: {
-                Text("Dein aktuelles Spielfeld wird frisch gemischt. Um deine Fahrt stattdessen im Logbuch zu sichern, wähle unten „Reise beenden“.")
+                Text("Dein aktuelles Spielfeld wird frisch gemischt und nicht im Logbuch gespeichert.")
+            }
+            .alert("Runde ohne Speichern zurücksetzen?", isPresented: $viewModel.showDiscardRoundAlert) {
+                Button("Abbrechen", role: .cancel) {}
+                Button("Zurücksetzen", role: .destructive) {
+                    withAnimation(.snappy) {
+                        viewModel.discardCurrentRound(context: modelContext)
+                    }
+                }
+            } message: {
+                Text("Alle markierten Felder dieser Fahrt werden zurückgesetzt, ohne einen Eintrag im Logbuch anzulegen.")
+            }
+            .alert("Laufende Runde verwerfen?", isPresented: $showDiscardOnSwitchAlert) {
+                Button("Abbrechen", role: .cancel) {
+                    pendingGridSize = nil
+                    pendingDifficulty = nil
+                }
+                Button("Verwerfen & wechseln", role: .destructive) {
+                    if let targetDiff = pendingDifficulty {
+                        viewModel.difficultyMode = targetDiff
+                    }
+                    let targetSize = pendingGridSize ?? viewModel.selectedGridSize
+                    pendingGridSize = nil
+                    pendingDifficulty = nil
+                    withAnimation(.snappy) {
+                        viewModel.startNewGame(
+                            context: modelContext,
+                            size: targetSize,
+                            title: viewModel.tripName
+                        )
+                    }
+                }
+            } message: {
+                Text("Du hast bereits Treffer markiert. Beim Wechsel wird ein neues Brett erstellt, ohne die aktuelle Runde im Logbuch zu speichern.")
             }
             .sheet(isPresented: $showingEditTitleSheet) {
                 editTitleSheet
@@ -130,14 +213,11 @@ public struct DBBingoView: View {
                 }
             }
             .animation(.spring(response: 0.35, dampingFraction: 0.8), value: viewModel.showTripSavedToast)
-            .onChange(of: viewModel.difficultyMode) { _, _ in
-                withAnimation(.snappy) {
-                    viewModel.startNewGame(
-                        context: modelContext,
-                        size: viewModel.selectedGridSize,
-                        title: viewModel.tripName,
-                        archiveOld: false
-                    )
+            .task(id: viewModel.showTripSavedToast) {
+                guard viewModel.showTripSavedToast else { return }
+                try? await Task.sleep(for: .seconds(3.5))
+                withAnimation {
+                    viewModel.showTripSavedToast = false
                 }
             }
             .onAppear {
@@ -246,23 +326,12 @@ public struct DBBingoView: View {
                 .accessibilityLabel("Brett neu mischen")
             }
 
-            Picker("Rastergröße", selection: $viewModel.selectedGridSize) {
+            Picker("Rastergröße", selection: gridSizeBinding) {
                 Text("3×3").tag(3)
                 Text("4×4").tag(4)
                 Text("5×5").tag(5)
             }
             .pickerStyle(.segmented)
-            .onChange(of: viewModel.selectedGridSize) { _, newSize in
-                guard let active = viewModel.activeGame, active.gridSize != newSize else { return }
-                withAnimation(.snappy) {
-                    viewModel.startNewGame(
-                        context: modelContext,
-                        size: newSize,
-                        title: viewModel.tripName,
-                        archiveOld: false
-                    )
-                }
-            }
         }
         .padding(14)
         .background(
@@ -300,53 +369,65 @@ public struct DBBingoView: View {
         )
     }
 
-    // MARK: - 3. Dezenter „Reise beenden“-Button
+    // MARK: - 3. Dezenter Abschluss-Bereich (Option A1: Speichern nur auf Wunsch)
     private var finishTripButton: some View {
         let checkedCount = viewModel.activeGame?.checkedIncidentsCount ?? 0
         let isBingo = viewModel.activeGame?.isBingoAchieved == true
         let xp = viewModel.activeGame?.earnedXP ?? 0
         let hasProgress = checkedCount > 0 || isBingo
 
-        return Button {
-            let impact = UIImpactFeedbackGenerator(style: .light)
-            impact.impactOccurred()
-            tempTitle = viewModel.activeGame?.travelTitle ?? ""
-            viewModel.showFinishTripSheet = true
-        } label: {
-            HStack(spacing: 10) {
-                Image(systemName: isBingo ? "trophy.fill" : "flag.checkered")
-                    .font(.subheadline.weight(.semibold))
+        return Group {
+            if hasProgress {
+                VStack(spacing: 10) {
+                    Button {
+                        let impact = UIImpactFeedbackGenerator(style: .light)
+                        impact.impactOccurred()
+                        tempTitle = viewModel.activeGame?.travelTitle ?? ""
+                        viewModel.showFinishTripSheet = true
+                    } label: {
+                        HStack(spacing: 10) {
+                            Image(systemName: isBingo ? "trophy.fill" : "flag.checkered")
+                                .font(.subheadline.weight(.semibold))
 
-                Text("Reise beenden & speichern")
-                    .font(.subheadline.weight(.semibold))
+                            Text("Fahrt im Logbuch speichern")
+                                .font(.subheadline.weight(.semibold))
 
-                Spacer()
+                            Spacer()
 
-                if hasProgress {
-                    Text("+\(xp) XP")
-                        .font(.caption.weight(.bold))
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 3)
-                        .background(.white.opacity(0.2), in: Capsule())
-                } else {
-                    Image(systemName: "chevron.right")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.tertiary)
+                            Text("+\(xp) XP")
+                                .font(.caption.weight(.bold))
+                                .padding(.horizontal, 8)
+                                .padding(.vertical, 3)
+                                .background(.white.opacity(0.2), in: Capsule())
+                        }
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 14)
+                        .background(
+                            RoundedRectangle(cornerRadius: 14, style: .continuous)
+                                .fill(isBingo ? Color.green : Color.accentColor)
+                        )
+                    }
+                    .buttonStyle(.plain)
+
+                    Button(role: .destructive) {
+                        viewModel.showDiscardRoundAlert = true
+                    } label: {
+                        Label("Runde ohne Speichern zurücksetzen", systemImage: "arrow.counterclockwise")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.secondary)
+                            .padding(.vertical, 6)
+                    }
                 }
+            } else {
+                Text("Tippe erlebte Vorfälle an • Gedrückt halten für Details & Tausch • Speichern im Logbuch ist optional")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 12)
+                    .padding(.vertical, 6)
             }
-            .foregroundStyle(hasProgress ? .white : .primary)
-            .padding(.horizontal, 16)
-            .padding(.vertical, 14)
-            .background(
-                RoundedRectangle(cornerRadius: 14, style: .continuous)
-                    .fill(
-                        isBingo
-                            ? Color.green
-                            : (hasProgress ? Color.accentColor : Color(uiColor: .secondarySystemGroupedBackground))
-                    )
-            )
         }
-        .buttonStyle(.plain)
     }
 
     // MARK: - 4. Gewinn-Overlay
@@ -392,12 +473,29 @@ public struct DBBingoView: View {
                         tempTitle = viewModel.activeGame?.travelTitle ?? ""
                         viewModel.showFinishTripSheet = true
                     } label: {
-                        Text("Reise beenden & speichern")
+                        Text("Im Logbuch speichern")
                             .font(.subheadline.weight(.semibold))
                             .foregroundStyle(.white)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 13)
                             .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+
+                    if let game = viewModel.activeGame,
+                       let cardImage = ShareCardRenderer.renderBingoCard(game: game) {
+                        ShareLink(
+                            item: cardImage,
+                            subject: Text("DB-Bingo gewonnen!"),
+                            message: Text(shareText(for: game)),
+                            preview: SharePreview("DB-Bingo Karte", image: Image(uiImage: cardImage.uiImage))
+                        ) {
+                            Label("Bingo-Karte teilen", systemImage: "square.and.arrow.up")
+                                .font(.subheadline.weight(.medium))
+                                .foregroundStyle(Color.accentColor)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 10)
+                                .background(Color.accentColor.opacity(0.1), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        }
                     }
 
                     Button {
@@ -409,7 +507,20 @@ public struct DBBingoView: View {
                             .font(.subheadline.weight(.medium))
                             .foregroundStyle(.secondary)
                             .frame(maxWidth: .infinity)
-                            .padding(.vertical, 8)
+                            .padding(.vertical, 6)
+                    }
+
+                    Button {
+                        withAnimation(.snappy) {
+                            viewModel.showWinAnimation = false
+                            viewModel.discardCurrentRound(context: modelContext)
+                        }
+                    } label: {
+                        Text("Ohne Speichern neu starten")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.tertiary)
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 4)
                     }
                 }
             }
@@ -533,6 +644,20 @@ public struct DBBingoView: View {
                         .foregroundStyle(.white)
                     }
                     .listRowBackground(Color.accentColor)
+
+                    Button(role: .destructive) {
+                        viewModel.showFinishTripSheet = false
+                        withAnimation(.snappy) {
+                            viewModel.discardCurrentRound(context: modelContext)
+                        }
+                    } label: {
+                        HStack {
+                            Spacer()
+                            Text("Runde verwerfen (nicht speichern)")
+                                .font(.subheadline)
+                            Spacer()
+                        }
+                    }
                 }
             }
             .scrollDismissesKeyboard(.interactively)
@@ -558,11 +683,6 @@ public struct DBBingoView: View {
     private func completeAndSaveTrip() {
         viewModel.showFinishTripSheet = false
         viewModel.finishCurrentTrip(context: modelContext, customTitle: tempTitle)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 3.5) {
-            withAnimation {
-                viewModel.showTripSavedToast = false
-            }
-        }
     }
 
     // MARK: - Edit Title Sheet
@@ -694,20 +814,22 @@ struct BingoCellView: View {
         .buttonStyle(.plain)
         .contextMenu {
             if !cell.isJoker {
-                Button {
-                    onTap()
-                } label: {
-                    Label(
-                        cell.isChecked ? "Markierung aufheben" : "Abhaken (+\(cell.rarity.xpPoints) XP)",
-                        systemImage: cell.isChecked ? "xmark.circle" : "checkmark.circle"
-                    )
-                }
-
-                if let onReplace {
+                Section("\(cell.rarity.displayName) • ca. \(cell.likelihoodPercent)% Chance • \(cell.category)") {
                     Button {
-                        onReplace()
+                        onTap()
                     } label: {
-                        Label("Feld tauschen", systemImage: "arrow.triangle.2.circlepath")
+                        Label(
+                            cell.isChecked ? "Markierung aufheben" : "Abhaken (+\(cell.rarity.xpPoints) XP)",
+                            systemImage: cell.isChecked ? "xmark.circle" : "checkmark.circle"
+                        )
+                    }
+
+                    if let onReplace {
+                        Button {
+                            onReplace()
+                        } label: {
+                            Label("Feld tauschen", systemImage: "arrow.triangle.2.circlepath")
+                        }
                     }
                 }
             }

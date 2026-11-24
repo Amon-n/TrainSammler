@@ -28,11 +28,23 @@ public enum BingoDifficultyMode: String, CaseIterable, Identifiable, Sendable {
 @MainActor
 @Observable
 public final class BingoViewModel {
+    private static let gridSizeDefaultsKey = "bingo.selectedGridSize"
+    private static let difficultyDefaultsKey = "bingo.difficultyMode"
+
     public var activeGame: BingoGame?
-    public var selectedGridSize: Int = 3
-    public var difficultyMode: BingoDifficultyMode = .realistic
+    public var selectedGridSize: Int {
+        didSet {
+            UserDefaults.standard.set(selectedGridSize, forKey: Self.gridSizeDefaultsKey)
+        }
+    }
+    public var difficultyMode: BingoDifficultyMode {
+        didSet {
+            UserDefaults.standard.set(difficultyMode.rawValue, forKey: Self.difficultyDefaultsKey)
+        }
+    }
     public var tripName: String = ""
     public var showNewGameAlert: Bool = false
+    public var showDiscardRoundAlert: Bool = false
     public var showFinishTripSheet: Bool = false
     public var showWinAnimation: Bool = false
     public var winningLineType: String? = nil
@@ -42,7 +54,17 @@ public final class BingoViewModel {
     public var lastSavedTripXP: Int = 0
     public var lastSavedTripTitle: String = ""
 
-    public init() {}
+    public init() {
+        let savedSize = UserDefaults.standard.integer(forKey: Self.gridSizeDefaultsKey)
+        self.selectedGridSize = (3...5).contains(savedSize) ? savedSize : 3
+
+        if let rawDiff = UserDefaults.standard.string(forKey: Self.difficultyDefaultsKey),
+           let savedDiff = BingoDifficultyMode(rawValue: rawDiff) {
+            self.difficultyMode = savedDiff
+        } else {
+            self.difficultyMode = .realistic
+        }
+    }
 
     public func loadOrCreateGame(context: ModelContext) {
         let descriptor = FetchDescriptor<BingoGame>(
@@ -60,15 +82,13 @@ public final class BingoViewModel {
             let hasInvalidCells = active.cells.contains { !$0.isJoker && !validTexts.contains($0.text) }
             let hasRareHighlight = active.cells.contains { $0.rarity == .rare }
 
-            // Falls mehr als ein unarchiviertes Spiel existiert, die älteren archivieren
+            // Überzählige unarchivierte Entwürfe verwerfen (niemals stillschweigend ins Logbuch archivieren!)
+            var didModify = false
             if games.count > 1 {
                 for extra in games.dropFirst() {
-                    extra.isArchived = true
-                    if extra.completedAt == nil {
-                        extra.completedAt = Date()
-                    }
+                    context.delete(extra)
                 }
-                try? context.save()
+                didModify = true
             }
 
             // Wenn noch kein Feld angekreuzt wurde und das Brett noch aus dem alten Generator stammt
@@ -76,25 +96,22 @@ public final class BingoViewModel {
             if active.checkedIncidentsCount == 0 && (hasInvalidCells || !hasRareHighlight) {
                 let preservedSize = active.gridSize
                 let preservedTitle = active.travelTitle
-                context.delete(active)
-                self.activeGame = nil
-                startNewGame(context: context, size: preservedSize, title: preservedTitle, archiveOld: false)
+                startNewGame(context: context, size: preservedSize, title: preservedTitle)
                 return
             }
 
             // Migriere ältere oder entfernte Kacheln bei bereits angefangenen Spielen
-            var migrated = false
             for cell in active.cells {
                 if cell.isJoker && cell.text != "FREIFELD" {
                     cell.text = "FREIFELD"
-                    migrated = true
+                    didModify = true
                 } else if !cell.isJoker && !validTexts.contains(cell.text) {
                     if let match = BingoCatalog.incidents.first(where: {
                         $0.iconName == cell.iconName && $0.category == cell.category && !active.cells.map(\.text).contains($0.text)
                     }) {
                         cell.text = match.text
                         cell.likelihoodPercent = match.likelihoodPercent
-                        migrated = true
+                        didModify = true
                     } else if let fallback = BingoCatalog.incidents.first(where: {
                         $0.rarity == cell.rarity && !active.cells.map(\.text).contains($0.text)
                     }) {
@@ -102,23 +119,26 @@ public final class BingoViewModel {
                         cell.iconName = fallback.iconName
                         cell.category = fallback.category
                         cell.likelihoodPercent = fallback.likelihoodPercent
-                        migrated = true
+                        didModify = true
                     }
                 }
             }
 
-            if migrated {
+            if didModify {
                 try? context.save()
             }
         } else {
-            startNewGame(context: context, size: selectedGridSize, title: tripName, archiveOld: false)
+            startNewGame(context: context, size: selectedGridSize, title: tripName)
         }
     }
 
     /// Beendet die aktuelle Reise explizit, speichert sie dauerhaft im Logbuch und bereitet ein neues Brett vor.
     @discardableResult
     public func finishCurrentTrip(context: ModelContext, customTitle: String? = nil) -> BingoGame? {
-        guard let current = activeGame else { return nil }
+        guard let current = activeGame,
+              current.checkedIncidentsCount > 0 || current.isBingoAchieved else {
+            return nil
+        }
 
         let trimmedCustom = customTitle?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
         let trimmedExisting = current.travelTitle?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
@@ -148,7 +168,7 @@ public final class BingoViewModel {
         // Frisches Spiel für die nächste Fahrt anlegen (ohne das gerade archivierte nochmal anzufassen)
         self.activeGame = nil
         self.tripName = ""
-        startNewGame(context: context, size: selectedGridSize, title: nil, archiveOld: false)
+        startNewGame(context: context, size: selectedGridSize, title: nil)
 
         withAnimation(.spring(response: 0.35, dampingFraction: 0.8)) {
             self.showTripSavedToast = true
@@ -157,23 +177,27 @@ public final class BingoViewModel {
         return current
     }
 
+    /// Verwirft die laufende Runde ohne Eintrag im Logbuch und startet direkt ein neues Brett.
+    public func discardCurrentRound(context: ModelContext) {
+        self.tripName = ""
+        startNewGame(context: context, size: selectedGridSize, title: nil)
+    }
+
     public func startNewGame(
         context: ModelContext,
         size: Int,
-        title: String? = nil,
-        archiveOld: Bool = true
+        title: String? = nil
     ) {
-        if let old = activeGame {
-            if archiveOld {
-                let hasCheckedCells = old.cells.contains { $0.isChecked && !$0.isJoker }
-                if hasCheckedCells || old.isBingoAchieved {
-                    old.isArchived = true
-                    if old.completedAt == nil {
-                        old.completedAt = Date()
-                    }
-                } else {
-                    context.delete(old)
-                }
+        // Alle bisherigen unarchivierten Entwürfe verwerfen — Logbuch-Speicherung erfolgt ausschließlich über finishCurrentTrip()
+        if let old = activeGame, !old.isArchived {
+            context.delete(old)
+        }
+        let staleDescriptor = FetchDescriptor<BingoGame>(
+            predicate: #Predicate { !$0.isArchived }
+        )
+        if let staleDrafts = try? context.fetch(staleDescriptor) {
+            for draft in staleDrafts {
+                context.delete(draft)
             }
         }
 

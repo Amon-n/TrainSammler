@@ -4,7 +4,7 @@
 [![Swift 5.9+](https://img.shields.io/badge/Swift-5.9%2B-orange?logo=swift&style=flat-square)](https://swift.org/)
 [![SwiftUI](https://img.shields.io/badge/UI-SwiftUI-purple?style=flat-square)](https://developer.apple.com/xcode/swiftui/)
 [![SwiftData](https://img.shields.io/badge/Storage-SwiftData-green?style=flat-square)](https://developer.apple.com/documentation/swiftdata)
-[![Version](https://img.shields.io/badge/Version-1.8-teal?style=flat-square)](Info.plist)
+[![Version](https://img.shields.io/badge/Version-1.9-teal?style=flat-square)](Info.plist)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 
 Das „Autokennzeichen-Sammeln“ für den Bahnverkehr in Deutschland! **TrainSammler** ist eine native, moderne und gamifizierte iOS-App zum Spotten von DB-Zügen, ICE-Baureihen, Regionalverkehr-Triebzügen, Triebzugnummern (Tz), seltenen Sonderzügen (wie dem Regenbogen- oder Europa-ICE) – inklusive interaktivem **DB-Bingo** für unterwegs.
@@ -13,21 +13,21 @@ Das „Autokennzeichen-Sammeln“ für den Bahnverkehr in Deutschland! **TrainSa
 
 ## ✨ Features
 
-- ⚡ **Schnell-Sichtung am Bahnsteig:** 1-Tap-Schnellauswahl der häufigsten Alltags-Baureihen, automatischer GPS-Standort-Stamp via CoreLocation (oder manuelle Eingabe im Tiefbahnhof) und optimierte Einhand-Bedienung.
+- ⚡ **Schnell-Sichtung am Bahnsteig:** Dynamische 1-Tap-Schnellauswahl (deine zuletzt gesichteten Baureihen + Klassiker), automatischer GPS-Standort-Stamp via CoreLocation (oder manuelle Eingabe im Tiefbahnhof), **Live-Kamera & Mediathek** mit automatischer Bildkomprimierung sowie optimierter Einhand-Bedienung.
 - 🎲 **DB-Bingo mit Wahrscheinlichkeits-Engine:**
   - **155+ kuratierte Bahn-Momente:** Keine trivialen 100%-Selbstverständlichkeiten mehr, sondern echte Beobachtungen und unterhaltsame Bahn-Klassiker in 4 Stufen: *Alltag (65–90 %)*, *Häufig (35–60 %)*, *Gelegentlich (12–32 %)* und *Selten / Jackpot (< 10 %)*.
-  - **Anti-Cluster-Mix & garantierte Highlights:** Jedes Spielfeld (3×3, 4×4, 5×5) erhält in beiden Modi (*Alltagsnah* & *Chaos-Mix*) einen ausgewogenen Mix mit garantierten High-Level-Highlights (z. B. *„Personal lästert in Ansage“*, *„Sprint wegen Wagenreihung“*, *„Ironischer Applaus am Ziel“*, *„Gratis DB-Notfallwasser“*), die gleichmäßig über Zeilen und Spalten verteilt werden, sodass jede Reihe fair gewinnbar bleibt.
-  - **Einzel-Feld-Tausch mit Seltenheitserhalt:** Halte ein beliebiges Feld gedrückt, um die genaue Wahrscheinlichkeit zu sehen oder es gegen ein anderes Ereignis derselben Seltenheitsstufe auszutauschen.
-  - **„Reise beenden & speichern“:** Schließe deine Zugfahrt jederzeit ab, vergib einen Reisenamen, sammle Bahn-XP für erlebte Vorfälle (+150 XP Bingo-Bonus) und speichere das Brett dauerhaft im Logbuch.
-  - **Echtes Minimalistisches Apple-Design:** Klare Typografie mit automatischer Skalierung ohne Textabschnitte auf allen Spielfeldgrößen.
-- 🗂️ **Train-Dex (34 Baureihen):** Vollständiger Katalog über Fernverkehr (ICE 1 bis ICE 3neo, ICE L, ICE T, IC 1/2, ÖBB Railjet, SBB Giruno, Siemens Vectron, Nightjet), Regionalverkehr (FLIRT, Talent 2, Desiro HC, Mireo, Twindexx, KISS, LINT, ET 423/425) sowie Test- und Sonderzüge (ICE S, advanced TrainLab, Regenbogen-ICE, Europa-ICE, BRD-ICE, Female ICE).
+  - **Anti-Cluster-Mix & garantierte Highlights:** Jedes Spielfeld (3×3, 4×4, 5×5) erhält in beiden Modi (*Alltagsnah* & *Chaos-Mix*) einen ausgewogenen Mix mit garantierten High-Level-Highlights, die gleichmäßig über Zeilen und Spalten verteilt werden.
+  - **Logbuch-Speicherung nur auf Wunsch:** Laufende Runden bleiben während der Fahrt erhalten, landen aber erst dann im Logbuch, wenn du aktiv *„Fahrt im Logbuch speichern“* wählst – inklusive Schutzabfrage vor versehentlichem Verwerfen beim Größenwechsel.
+  - **Einzel-Feld-Tausch & Details:** Halte ein beliebiges Feld gedrückt, um Wahrscheinlichkeit und Kategorie zu sehen oder es gegen ein anderes Ereignis derselben Seltenheitsstufe auszutauschen.
+  - **Visuelle Share-Cards:** Teile gewonnene Bingo-Karten und Zugsichtungen direkt als gerenderte Bild-Karte (`ImageRenderer`).
+- 🗂️ **Train-Dex (34 Baureihen):** Vollständiger Katalog über Fernverkehr (ICE 1 bis ICE 3neo, ICE L, ICE T, IC 1/2, ÖBB Railjet, SBB Giruno, Siemens Vectron, Nightjet), Regionalverkehr (FLIRT, Talent 2, Desiro HC, Mireo, Twindexx, KISS, LINT, ET 423/425) sowie Test- und Sonderzüge (ICE S, advanced TrainLab, Regenbogen-ICE, Europa-ICE, BRD-ICE, Female ICE) inklusive **Triebzugnummern-Sammlung**.
 - 📸 **Multi-Bildergalerie & Eigene Fotos:**
   - Wische interaktiv durch 70+ hochauflösende Perspektiven (Frontansicht, Seitenprofil, Streckenfahrt, Führerstand, Innenraum) inklusive Vollbild-Zoom.
-  - Persönliche Beweisfotos deiner Sichtungen werden direkt in die Detail-Galerie des jeweiligen Zuges integriert.
+  - Persönliche Beweisfotos deiner Sichtungen werden direkt in die Detail-Galerie und in dein Statistiken-Showcase integriert.
 - 🔍 **Spotter-Guide & Erkennungsmerkmale:** Ausführliche Identifikationstipps pro Zug (Scheinwerferform, Frontnase, Stromabnehmer, Türanordnung) für zielsicheres Erkennen am Gleis.
-- 🏆 **Gamification & Rangsystem:** Bahn-XP aus Zugsichtungen (mit 2x First-Catch-Bonus für Erstfunde) und DB-Bingo-Runden. Steige vom *Bahnsteig-Neuling* bis zur *ICE-Legende* auf.
-- 📜 **Vereintes Logbuch & MapKit-Karte:** Durchsuchbares Logbuch für alle Zugsichtungen (Liste & interaktive Karte) sowie alle abgeschlossenen DB-Bingo-Reisen.
-- 🔒 **100% Offline & Privat (DSGVO-konform):** Alle Daten, Notizen, Fotos und Standorte verbleiben ausschließlich lokal auf dem iPhone (SwiftData). Kein Tracking, keine Werbung, keine Benutzerkonten.
+- 🏆 **Gamification, Tz-Bonus & Meilensteine:** Bahn-XP aus Zugsichtungen (mit 2x First-Catch-Bonus, **+25 XP Triebzug-Sammlerbonus** für neue Tz-Nummern und **8 Meilensteinen**). Steige vom *Bahnsteig-Neuling* bis zur *ICE-Legende* auf.
+- 📜 **Editierbares Logbuch & interaktive MapKit-Karte:** Durchsuchbares Logbuch für alle Zugsichtungen (mit nachträglicher Bearbeitung per Swipe/Kontextmenü und anklickbaren Karten-Pins) sowie alle gespeicherten DB-Bingo-Fahrten.
+- 💾 **Lokales JSON-Backup & 100% Offline (DSGVO-konform):** Alle Daten, Notizen, Fotos und Standorte verbleiben ausschließlich lokal auf dem iPhone (SwiftData) und lassen sich optional als lokale JSON-Datei exportieren/wiederherstellen. Kein Tracking, keine Werbung, keine Benutzerkonten.
 
 ---
 
@@ -53,25 +53,29 @@ trainsammler/
 │   └── BingoItem.swift                    // Wahrscheinlichkeits-Stufen & Vorfalls-Katalog
 ├── Services/
 │   ├── LocationManager.swift              // CoreLocation Service mit async Reverse-Geocoding
-│   └── DataSeeder.swift                   // Lokales Catalog-Seeding (34 Züge) & Bildmapping
+│   ├── DataSeeder.swift                   // Lokales Catalog-Seeding (34 Züge) & Bildmapping
+│   ├── ImageCompressor.swift              // JPEG-Downsampling & ImageIO Thumbnail-Cache
+│   └── BackupService.swift                // Lokaler JSON-Backup Export & Import
 ├── ViewModels/
-│   ├── QuickSpotViewModel.swift           // Bahnsteig-Workflow, Validierung & Feedback
-│   ├── BingoViewModel.swift               // Gewichtete Brett-Generierung & Reise-Speicherung
-│   └── StatsViewModel.swift               // Gamification-Engine, TrainStats & UserRank
+│   ├── QuickSpotViewModel.swift           // Bahnsteig-Workflow, Tz-Bonus & Feedback
+│   ├── BingoViewModel.swift               // Gewichtete Brett-Generierung & Option-A1-Logbuch
+│   └── StatsViewModel.swift               // Gamification-Engine, Meilensteine & UserRank
 ├── Views/
 │   ├── ContentView.swift                  // Root TabView Navigation (5 Tabs)
-│   ├── QuickSpotView.swift                // High-Speed Bahnsteig-Erfassung
+│   ├── QuickSpotView.swift                // High-Speed Bahnsteig-Erfassung mit Live-Kamera
 │   ├── TrainCatalogView.swift             // "Train-Dex" Sammel-Katalog mit Filter & Sortierung
 │   ├── TrainDetailView.swift              // Detailliertes Baureihen-Datenblatt mit Galerie
-│   ├── DBBingoView.swift                  // Interaktives DB-Bingo mit „Reise beenden“-Workflow
-│   ├── BingoHistorySheet.swift            // Archiv-Ansicht & Detail-Blatt für Bingo-Fahrten
-│   ├── SpottedHistoryView.swift           // Vereintes Logbuch (Sichtungen, Karte & Bingo)
-│   ├── PhotoPreviewSheet.swift            // Vollbild-Foto-Lightbox mit Pinch-to-Zoom
-│   ├── StatsView.swift                    // Gamification-Dashboard, Level, XP & Bingo-Bilanz
-│   ├── SettingsView.swift                 // Datenschutz (DSGVO), Datenverwaltung & Urheber-Sheet
+│   ├── DBBingoView.swift                  // Interaktives DB-Bingo mit optionaler Speicherung
+│   ├── BingoHistorySheet.swift            // Wiederverwendbare Bingo-Logbuch-Komponente
+│   ├── SpottedHistoryView.swift           // Editierbares Logbuch & interaktive MapKit-Karte
+│   ├── PhotoPreviewSheet.swift            // Vollbild-Foto-Lightbox mit Pinch-to-Zoom & Share
+│   ├── StatsView.swift                    // Gamification-Dashboard, Meilensteine & Bingo-Bilanz
+│   ├── SettingsView.swift                 // Datenschutz (DSGVO), JSON-Backup & Bildnachweise
 │   └── Components/
 │       ├── RarityBadgeView.swift          // Seltenheits-Badges mit Glow & Animation
-│       └── TrainImageView.swift           // Native Bildkomponente mit Silhouette-Modus
+│       ├── TrainImageView.swift           // Native Bildkomponente mit Silhouette-Modus
+│       ├── CameraPickerView.swift         // Native UIImagePickerController Live-Kamera
+│       └── ShareCardRenderer.swift        // ImageRenderer-Karten für Bingo & Sichtungen
 └── scripts/
     ├── curate_train_images.py             // Wikimedia Commons Kuratierung & Metadaten
     ├── download_train_images.py           // Asset-Download & Vorbereitung

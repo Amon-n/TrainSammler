@@ -52,4 +52,17 @@ public final class SpottedTrain: Identifiable {
     public var pointsEarned: Int {
         trainModel?.rarity.points ?? 50
     }
+
+    /// Normalisiert eingegebene Triebzugnummern (z. B. "tz 8012" -> "8012"), damit Sammlerboni konsistent gezählt werden.
+    public static func normalizedTz(_ raw: String?) -> String? {
+        guard let raw else { return nil }
+        var cleaned = raw.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleaned.isEmpty else { return nil }
+        if cleaned.lowercased().hasPrefix("tz.") {
+            cleaned = String(cleaned.dropFirst(3)).trimmingCharacters(in: .whitespacesAndNewlines)
+        } else if cleaned.lowercased().hasPrefix("tz") {
+            cleaned = String(cleaned.dropFirst(2)).trimmingCharacters(in: .whitespacesAndNewlines)
+        }
+        return cleaned.isEmpty ? nil : cleaned.uppercased()
+    }
 }

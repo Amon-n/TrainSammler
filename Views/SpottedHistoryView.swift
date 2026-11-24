@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import MapKit
+import PhotosUI
 
 @MainActor
 public struct SpottedHistoryView: View {
@@ -17,6 +18,8 @@ public struct SpottedHistoryView: View {
     @State private var inspectedTrain: TrainModel?
     @State private var inspectedBingoGame: BingoGame?
     @State private var selectedPhotoSpot: SpottedTrain?
+    @State private var editingSpot: SpottedTrain?
+    @State private var selectedMapSpot: SpottedTrain?
     @State private var searchText: String = ""
 
     private var filteredSpottings: [SpottedTrain] {
@@ -101,6 +104,28 @@ public struct SpottedHistoryView: View {
             .sheet(item: $selectedPhotoSpot) { spot in
                 PhotoPreviewSheet(spot: spot)
             }
+            .sheet(item: $editingSpot) { spot in
+                EditSpottingSheet(spot: spot)
+            }
+            .sheet(item: $selectedMapSpot) { spot in
+                MapSpotDetailSheet(
+                    spot: spot,
+                    onEdit: {
+                        selectedMapSpot = nil
+                        editingSpot = spot
+                    },
+                    onOpenCatalog: {
+                        selectedMapSpot = nil
+                        if let model = spot.trainModel {
+                            inspectedTrain = model
+                        }
+                    },
+                    onPreviewPhoto: {
+                        selectedMapSpot = nil
+                        selectedPhotoSpot = spot
+                    }
+                )
+            }
         }
     }
 
@@ -132,6 +157,8 @@ public struct SpottedHistoryView: View {
                                 Button {
                                     if let model = spot.trainModel {
                                         inspectedTrain = model
+                                    } else {
+                                        editingSpot = spot
                                     }
                                 } label: {
                                     SpottingRow(spot: spot, onPhotoTap: {
@@ -139,32 +166,128 @@ public struct SpottedHistoryView: View {
                                     })
                                 }
                                 .tint(.primary)
+                                .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                                    Button {
+                                        editingSpot = spot
+                                    } label: {
+                                        Label("Bearbeiten", systemImage: "pencil")
+                                    }
+                                    .tint(.blue)
+                                }
+                                .contextMenu {
+                                    Button {
+                                        editingSpot = spot
+                                    } label: {
+                                        Label("Sichtung bearbeiten", systemImage: "pencil")
+                                    }
+
+                                    if let model = spot.trainModel {
+                                        Button {
+                                            inspectedTrain = model
+                                        } label: {
+                                            Label("Im Train-Dex öffnen", systemImage: "tram.fill")
+                                        }
+                                    }
+
+                                    if let cardImage = ShareCardRenderer.renderSpottingCard(spot: spot) {
+                                        ShareLink(
+                                            item: cardImage,
+                                            subject: Text("\(spot.trainModel?.seriesCode ?? "Zug") gespottet!"),
+                                            preview: SharePreview(spot.trainModel?.seriesCode ?? "Zugsichtung", image: Image(uiImage: cardImage.uiImage))
+                                        ) {
+                                            Label("Als Bild-Karte teilen", systemImage: "square.and.arrow.up")
+                                        }
+                                    }
+
+                                    Divider()
+
+                                    Button(role: .destructive) {
+                                        deleteSingleSpotting(spot)
+                                    } label: {
+                                        Label("Löschen", systemImage: "trash")
+                                    }
+                                }
                             }
                             .onDelete(perform: deleteSpotting)
                         }
                         .listStyle(.insetGrouped)
                     } else {
-                        Map {
-                            ForEach(filteredSpottings) { spot in
-                                if let coord = spot.coordinate {
-                                    Annotation(
-                                        spot.trainModel?.seriesCode ?? "Zug",
-                                        coordinate: coord
-                                    ) {
-                                        Image(systemName: "tram.fill")
-                                            .padding(6)
-                                            .background(spot.trainModel?.rarity.color ?? .accentColor)
-                                            .foregroundColor(.white)
-                                            .clipShape(Circle())
-                                            .shadow(radius: 4)
+                        let spotsWithCoords = filteredSpottings.filter { $0.coordinate != nil }
+
+                        ZStack(alignment: .topTrailing) {
+                            Map(initialPosition: initialCameraPosition(for: spotsWithCoords)) {
+                                ForEach(spotsWithCoords) { spot in
+                                    if let coord = spot.coordinate {
+                                        Annotation(
+                                            spot.trainModel?.seriesCode ?? "Zug",
+                                            coordinate: coord
+                                        ) {
+                                            Button {
+                                                let impact = UIImpactFeedbackGenerator(style: .light)
+                                                impact.impactOccurred()
+                                                selectedMapSpot = spot
+                                            } label: {
+                                                Image(systemName: "tram.fill")
+                                                    .font(.caption.weight(.bold))
+                                                    .padding(7)
+                                                    .background(spot.trainModel?.rarity.color ?? .accentColor)
+                                                    .foregroundColor(.white)
+                                                    .clipShape(Circle())
+                                                    .overlay(
+                                                        Circle()
+                                                            .strokeBorder(.white, lineWidth: 2)
+                                                    )
+                                                    .shadow(color: .black.opacity(0.25), radius: 4, y: 2)
+                                            }
+                                            .buttonStyle(.plain)
+                                        }
                                     }
                                 }
                             }
+
+                            Text(spotsWithCoords.isEmpty
+                                 ? "Keine GPS-Koordinaten vorhanden"
+                                 : "\(spotsWithCoords.count) Sichtungen auf Karte")
+                                .font(.caption2.weight(.semibold))
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 6)
+                                .background(.regularMaterial, in: Capsule())
+                                .padding(12)
                         }
                     }
                 }
             }
         }
+    }
+
+    private func initialCameraPosition(for spots: [SpottedTrain]) -> MapCameraPosition {
+        let coords = spots.compactMap(\.coordinate)
+        guard !coords.isEmpty else {
+            // Deutschland-Zentrum
+            return .region(
+                MKCoordinateRegion(
+                    center: CLLocationCoordinate2D(latitude: 51.1657, longitude: 10.4515),
+                    span: MKCoordinateSpan(latitudeDelta: 6.5, longitudeDelta: 6.5)
+                )
+            )
+        }
+
+        let lats = coords.map(\.latitude)
+        let lons = coords.map(\.longitude)
+        let minLat = lats.min() ?? 51.1657
+        let maxLat = lats.max() ?? 51.1657
+        let minLon = lons.min() ?? 10.4515
+        let maxLon = lons.max() ?? 10.4515
+
+        let center = CLLocationCoordinate2D(
+            latitude: (minLat + maxLat) / 2.0,
+            longitude: (minLon + maxLon) / 2.0
+        )
+        let span = MKCoordinateSpan(
+            latitudeDelta: max(0.15, (maxLat - minLat) * 1.4),
+            longitudeDelta: max(0.15, (maxLon - minLon) * 1.4)
+        )
+        return .region(MKCoordinateRegion(center: center, span: span))
     }
 
     // MARK: - DB-Bingo Logbuch Sektion
@@ -174,59 +297,29 @@ public struct SpottedHistoryView: View {
                 ContentUnavailableView(
                     "Keine Bingo-Runden archiviert",
                     systemImage: "checkerboard.rectangle",
-                    description: Text("Sobald du eine Fahrt im DB-Bingo über „Reise beenden“ abschließt, wird deine Runde hier dauerhaft gespeichert.")
+                    description: Text("Sobald du eine Fahrt im DB-Bingo über „Fahrt im Logbuch speichern“ sicherst, erscheint sie hier dauerhaft.")
                 )
             } else if filteredBingoGames.isEmpty {
                 ContentUnavailableView.search(text: searchText)
             } else {
-                List {
-                    Section {
-                        HStack(spacing: 10) {
-                            BingoStatPill(
-                                title: "Fahrten",
-                                value: "\(pastBingoGames.count)",
-                                icon: "flag.checkered",
-                                color: .blue
-                            )
-                            BingoStatPill(
-                                title: "Bingos",
-                                value: "\(pastBingoGames.filter(\.isBingoAchieved).count)",
-                                icon: "trophy.fill",
-                                color: .yellow
-                            )
-                            BingoStatPill(
-                                title: "Vorfälle",
-                                value: "\(pastBingoGames.reduce(0) { $0 + $1.checkedIncidentsCount })",
-                                icon: "checkmark.seal.fill",
-                                color: .green
-                            )
-                            BingoStatPill(
-                                title: "Bingo-XP",
-                                value: "\(pastBingoGames.reduce(0) { $0 + $1.earnedXP })",
-                                icon: "bolt.fill",
-                                color: .orange
-                            )
-                        }
-                        .padding(.vertical, 4)
-                    }
-                    .listRowBackground(Color.clear)
-                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
-
-                    Section(header: Text("Gespeicherte Fahrten (\(filteredBingoGames.count))")) {
-                        ForEach(filteredBingoGames) { game in
-                            Button {
-                                inspectedBingoGame = game
-                            } label: {
-                                BingoHistoryRow(game: game)
-                            }
-                            .tint(.primary)
-                        }
-                        .onDelete(perform: deleteBingoGames)
-                    }
-                }
-                .listStyle(.insetGrouped)
+                BingoLogbookContentView(
+                    allGames: pastBingoGames,
+                    filteredGames: filteredBingoGames,
+                    onInspect: { game in
+                        inspectedBingoGame = game
+                    },
+                    onDelete: deleteBingoGames
+                )
             }
         }
+    }
+
+    private func deleteSingleSpotting(_ spot: SpottedTrain) {
+        let generator = UIImpactFeedbackGenerator(style: .medium)
+        generator.impactOccurred()
+        ImageCompressor.invalidateThumbnail(id: spot.id)
+        modelContext.delete(spot)
+        try? modelContext.save()
     }
 
     private func deleteSpotting(at offsets: IndexSet) {
@@ -234,6 +327,7 @@ public struct SpottedHistoryView: View {
         generator.impactOccurred()
         for index in offsets {
             let spot = filteredSpottings[index]
+            ImageCompressor.invalidateThumbnail(id: spot.id)
             modelContext.delete(spot)
         }
         try? modelContext.save()
@@ -261,7 +355,8 @@ public struct SpottingRow: View {
 
     public var body: some View {
         HStack(spacing: 14) {
-            if let photoData = spot.photoData, let uiImage = UIImage(data: photoData) {
+            if let photoData = spot.photoData,
+               let uiImage = ImageCompressor.thumbnail(id: spot.id, data: photoData, maxPixelSize: 180) {
                 Button {
                     onPhotoTap?()
                 } label: {
@@ -324,5 +419,269 @@ public struct SpottingRow: View {
             }
         }
         .padding(.vertical, 4)
+    }
+}
+
+// MARK: - Sheet: Bestehende Sichtung bearbeiten
+@MainActor
+public struct EditSpottingSheet: View {
+    public let spot: SpottedTrain
+
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \TrainModel.seriesCode) private var allTrains: [TrainModel]
+
+    @State private var selectedTrain: TrainModel?
+    @State private var stationInput: String
+    @State private var tzInput: String
+    @State private var notesInput: String
+    @State private var spottedDate: Date
+    @State private var photoData: Data?
+    @State private var selectedPhotoItem: PhotosPickerItem?
+    @State private var showingCamera = false
+    @State private var showCameraUnavailableAlert = false
+
+    public init(spot: SpottedTrain) {
+        self.spot = spot
+        self._selectedTrain = State(initialValue: spot.trainModel)
+        self._stationInput = State(initialValue: spot.stationOrLocationName ?? "")
+        self._tzInput = State(initialValue: spot.tzNumber ?? "")
+        self._notesInput = State(initialValue: spot.notes ?? "")
+        self._spottedDate = State(initialValue: spot.spottedAt)
+        self._photoData = State(initialValue: spot.photoData)
+    }
+
+    public var body: some View {
+        NavigationStack {
+            Form {
+                Section("Zug-Baureihe") {
+                    Picker("Baureihe", selection: $selectedTrain) {
+                        ForEach(allTrains) { train in
+                            Text("\(train.seriesCode) · \(train.commercialName)")
+                                .tag(Optional(train))
+                        }
+                    }
+                }
+
+                Section("Ort & Zeitpunkt") {
+                    TextField("Bahnhof / Ort (z. B. Köln Hbf)", text: $stationInput)
+
+                    DatePicker(
+                        "Zeitpunkt",
+                        selection: $spottedDate,
+                        displayedComponents: [.date, .hourAndMinute]
+                    )
+                }
+
+                Section("Details") {
+                    TextField("Triebzug-Nummer (z. B. 8012)", text: $tzInput)
+                        .keyboardType(.numbersAndPunctuation)
+
+                    TextField("Notiz (Gleis, Verspätung, Fahrtziel)", text: $notesInput, axis: .vertical)
+                        .lineLimit(2...4)
+                }
+
+                Section("Beweisfoto") {
+                    if let data = photoData,
+                       let uiImage = UIImage(data: data) {
+                        ZStack(alignment: .topTrailing) {
+                            Image(uiImage: uiImage)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(maxWidth: .infinity)
+                                .frame(height: 170)
+                                .clipped()
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                            Button {
+                                photoData = nil
+                                selectedPhotoItem = nil
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.title2)
+                                    .foregroundStyle(.white, .black.opacity(0.6))
+                                    .padding(8)
+                            }
+                        }
+                    } else {
+                        Button {
+                            if CameraPickerView.isCameraAvailable {
+                                showingCamera = true
+                            } else {
+                                showCameraUnavailableAlert = true
+                            }
+                        } label: {
+                            Label("Kamera aufnehmen", systemImage: "camera.fill")
+                        }
+
+                        PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                            Label("Foto aus Mediathek wählen", systemImage: "photo.on.rectangle")
+                        }
+                        .onChange(of: selectedPhotoItem) { _, newItem in
+                            Task {
+                                if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                                    let compressed = ImageCompressor.compress(imageData: data) ?? data
+                                    await MainActor.run {
+                                        photoData = compressed
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            .scrollDismissesKeyboard(.interactively)
+            .fullScreenCover(isPresented: $showingCamera) {
+                CameraPickerView { compressedData in
+                    photoData = compressedData
+                }
+                .ignoresSafeArea()
+            }
+            .alert("Kamera nicht verfügbar", isPresented: $showCameraUnavailableAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Auf diesem Gerät steht aktuell keine Live-Kamera zur Verfügung.")
+            }
+            .navigationTitle("Sichtung bearbeiten")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Abbrechen") { dismiss() }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Speichern") {
+                        saveChanges()
+                    }
+                    .fontWeight(.semibold)
+                }
+            }
+        }
+    }
+
+    private func saveChanges() {
+        let trimmedStation = stationInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedTz = tzInput.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedNotes = notesInput.trimmingCharacters(in: .whitespacesAndNewlines)
+
+        spot.trainModel = selectedTrain
+        spot.stationOrLocationName = trimmedStation.isEmpty ? nil : trimmedStation
+        spot.tzNumber = trimmedTz.isEmpty ? nil : trimmedTz
+        spot.notes = trimmedNotes.isEmpty ? nil : trimmedNotes
+        spot.spottedAt = spottedDate
+        spot.photoData = photoData
+
+        ImageCompressor.invalidateThumbnail(id: spot.id)
+        try? modelContext.save()
+
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
+        dismiss()
+    }
+}
+
+// MARK: - Sheet: Karten-Pin Detailvorschau
+private struct MapSpotDetailSheet: View {
+    let spot: SpottedTrain
+    let onEdit: () -> Void
+    let onOpenCatalog: () -> Void
+    let onPreviewPhoto: () -> Void
+
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            VStack(alignment: .leading, spacing: 14) {
+                HStack(spacing: 14) {
+                    if let photoData = spot.photoData,
+                       let uiImg = ImageCompressor.thumbnail(id: spot.id, data: photoData, maxPixelSize: 220) {
+                        Button(action: onPreviewPhoto) {
+                            Image(uiImage: uiImg)
+                                .resizable()
+                                .scaledToFill()
+                                .frame(width: 78, height: 60)
+                                .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        }
+                        .buttonStyle(.plain)
+                    } else {
+                        TrainImageView(assetName: spot.trainModel?.assetName ?? "tram.fill")
+                            .frame(width: 78, height: 60)
+                            .clipShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+
+                    VStack(alignment: .leading, spacing: 4) {
+                        HStack {
+                            Text(spot.trainModel?.seriesCode ?? "Zugsichtung")
+                                .font(.headline.weight(.bold))
+                            Spacer()
+                            if let rarity = spot.trainModel?.rarity {
+                                RarityBadgeView(rarity: rarity, style: .minimal)
+                            }
+                        }
+
+                        if let name = spot.trainModel?.commercialName {
+                            Text(name)
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        if let tz = spot.tzNumber, !tz.isEmpty {
+                            Text("Tz \(tz)")
+                                .font(.caption.weight(.semibold))
+                                .foregroundStyle(Color.accentColor)
+                        }
+                    }
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    if let location = spot.stationOrLocationName {
+                        Label(location, systemImage: "location.fill")
+                            .font(.caption.weight(.medium))
+                            .foregroundStyle(.secondary)
+                    }
+                    Label(spot.spottedAt.formatted(date: .abbreviated, time: .shortened), systemImage: "clock")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                    if let notes = spot.notes, !notes.isEmpty {
+                        Text(notes)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .padding(.top, 2)
+                    }
+                }
+
+                HStack(spacing: 10) {
+                    Button(action: onEdit) {
+                        Label("Bearbeiten", systemImage: "pencil")
+                            .font(.subheadline.weight(.semibold))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 11)
+                            .background(Color(uiColor: .secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+
+                    if spot.trainModel != nil {
+                        Button(action: onOpenCatalog) {
+                            Label("Im Train-Dex", systemImage: "tram.fill")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.white)
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 11)
+                                .background(Color.accentColor, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+            }
+            .padding(16)
+            .background(Color(uiColor: .systemGroupedBackground))
+            .navigationTitle("Sichtung auf Karte")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Schließen") { dismiss() }
+                }
+            }
+        }
+        .presentationDetents([.height(290), .medium])
     }
 }

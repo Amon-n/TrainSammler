@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import UniformTypeIdentifiers
 
 @MainActor
 public struct SettingsView: View {
@@ -11,13 +12,25 @@ public struct SettingsView: View {
     @State private var showDeleteAllAlert = false
     @State private var showDeleteBingoAlert = false
     @State private var showAttributionSheet = false
-    
+
+    // Backup-Zustände
+    @State private var backupDocument = BackupFileDocument()
+    @State private var showingExporter = false
+    @State private var showingImporter = false
+    @State private var backupStatusTitle = ""
+    @State private var backupStatusMessage: String?
+
     public init() {}
-    
+
+    private var defaultBackupFilename: String {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy-MM-dd"
+        return "TrainSammler-Backup-\(formatter.string(from: Date()))"
+    }
+
     public var body: some View {
         NavigationStack {
             List {
-                
                 // 1. App Info Header
                 Section {
                     HStack(spacing: 16) {
@@ -34,15 +47,15 @@ public struct SettingsView: View {
                             )
                             .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
                             .shadow(color: Color.red.opacity(0.3), radius: 8, y: 4)
-                        
+
                         VStack(alignment: .leading, spacing: 4) {
                             Text("TrainSammler")
                                 .font(.title3.weight(.bold))
-                            
+
                             Text(appVersionString)
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
-                            
+
                             Text("Offenes Trainspotting für iOS")
                                 .font(.caption2.weight(.medium))
                                 .foregroundStyle(Color.accentColor)
@@ -50,7 +63,7 @@ public struct SettingsView: View {
                     }
                     .padding(.vertical, 4)
                 }
-                
+
                 // 2. Datenschutz & Privatsphäre (DSGVO / GDPR)
                 Section(header: Text("Datenschutz & Privatsphäre")) {
                     HStack(spacing: 12) {
@@ -66,7 +79,7 @@ public struct SettingsView: View {
                         }
                     }
                     .padding(.vertical, 4)
-                    
+
                     HStack(spacing: 12) {
                         Image(systemName: "network.slash")
                             .foregroundColor(.blue)
@@ -81,7 +94,7 @@ public struct SettingsView: View {
                     }
                     .padding(.vertical, 4)
                 }
-                
+
                 // 3. Open Source & Community
                 Section(header: Text("Open Source & Lizenzen")) {
                     Link(destination: URL(string: "https://github.com/Amon-n/TrainSammler")!) {
@@ -98,7 +111,7 @@ public struct SettingsView: View {
                                 .foregroundStyle(.tertiary)
                         }
                     }
-                    
+
                     Button {
                         showAttributionSheet = true
                     } label: {
@@ -115,7 +128,7 @@ public struct SettingsView: View {
                                 .foregroundStyle(.tertiary)
                         }
                     }
-                    
+
                     HStack {
                         Image(systemName: "doc.plaintext")
                             .foregroundColor(.secondary)
@@ -125,8 +138,62 @@ public struct SettingsView: View {
                         Spacer()
                     }
                 }
-                
-                // 4. Datenverwaltung
+
+                // 4. Lokales Backup & Wiederherstellung
+                Section(
+                    header: Text("Lokales Backup"),
+                    footer: Text("Exportiert deine Sichtungen (inkl. Fotos) und gespeicherten Bingo-Fahrten als lokale JSON-Datei in die Dateien-App – komplett ohne Cloud-Konto.")
+                ) {
+                    Button {
+                        exportBackup()
+                    } label: {
+                        HStack {
+                            Image(systemName: "square.and.arrow.up")
+                                .foregroundColor(.accentColor)
+                                .frame(width: 24)
+                            Text("Backup exportieren (.json)")
+                                .font(.subheadline)
+                                .foregroundStyle(.primary)
+                        }
+                    }
+                    .disabled(spottings.isEmpty && archivedBingos.isEmpty)
+                    .fileExporter(
+                        isPresented: $showingExporter,
+                        document: backupDocument,
+                        contentType: .json,
+                        defaultFilename: defaultBackupFilename
+                    ) { result in
+                        switch result {
+                        case .success:
+                            backupStatusTitle = "Backup exportiert"
+                            backupStatusMessage = "\(spottings.count) Sichtungen und \(archivedBingos.count) Bingo-Fahrten wurden lokal gesichert."
+                        case .failure(let error):
+                            backupStatusTitle = "Export fehlgeschlagen"
+                            backupStatusMessage = error.localizedDescription
+                        }
+                    }
+
+                    Button {
+                        showingImporter = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "square.and.arrow.down")
+                                .foregroundColor(.accentColor)
+                                .frame(width: 24)
+                            Text("Backup importieren…")
+                                .font(.subheadline)
+                                .foregroundStyle(.primary)
+                        }
+                    }
+                    .fileImporter(
+                        isPresented: $showingImporter,
+                        allowedContentTypes: [.json]
+                    ) { result in
+                        handleImportResult(result)
+                    }
+                }
+
+                // 5. Datenverwaltung
                 Section(header: Text("Datenverwaltung")) {
                     Button(role: .destructive) {
                         showDeleteAllAlert = true
@@ -150,8 +217,8 @@ public struct SettingsView: View {
                     }
                     .disabled(archivedBingos.isEmpty)
                 }
-                
-                // 5. Footer / Credits
+
+                // 6. Footer / Credits
                 Section {
                     VStack(alignment: .center, spacing: 6) {
                         Text("Entwickelt mit ❤️ für alle Bahn-Fans.")
@@ -189,6 +256,14 @@ public struct SettingsView: View {
             } message: {
                 Text("Möchtest du alle gespeicherten DB-Bingo-Fahrten aus dem Logbuch löschen?")
             }
+            .alert(backupStatusTitle, isPresented: Binding(
+                get: { backupStatusMessage != nil },
+                set: { if !$0 { backupStatusMessage = nil } }
+            )) {
+                Button("OK") { backupStatusMessage = nil }
+            } message: {
+                Text(backupStatusMessage ?? "")
+            }
             .sheet(isPresented: $showAttributionSheet) {
                 AttributionSheetView()
             }
@@ -196,15 +271,53 @@ public struct SettingsView: View {
     }
 
     private var appVersionString: String {
-        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.8"
+        let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.9"
         let build = Bundle.main.infoDictionary?["CFBundleVersion"] as? String ?? "1"
         return "Version \(version) (Build \(build))"
+    }
+
+    private func exportBackup() {
+        do {
+            let data = try BackupService.createBackupData(spottings: spottings, archivedBingos: archivedBingos)
+            backupDocument = BackupFileDocument(data: data)
+            showingExporter = true
+        } catch {
+            backupStatusTitle = "Export fehlgeschlagen"
+            backupStatusMessage = error.localizedDescription
+        }
+    }
+
+    private func handleImportResult(_ result: Result<URL, Error>) {
+        switch result {
+        case .success(let url):
+            let accessing = url.startAccessingSecurityScopedResource()
+            defer {
+                if accessing {
+                    url.stopAccessingSecurityScopedResource()
+                }
+            }
+            do {
+                let data = try Data(contentsOf: url)
+                let summary = try BackupService.importBackup(from: data, context: modelContext)
+                let generator = UINotificationFeedbackGenerator()
+                generator.notificationOccurred(.success)
+                backupStatusTitle = "Backup importiert"
+                backupStatusMessage = "\(summary.importedSpottings) neue Sichtungen und \(summary.importedBingos) Bingo-Fahrten wiederhergestellt (Duplikate übersprungen)."
+            } catch {
+                backupStatusTitle = "Import fehlgeschlagen"
+                backupStatusMessage = "Die ausgewählte Datei konnte nicht eingelesen werden: \(error.localizedDescription)"
+            }
+        case .failure(let error):
+            backupStatusTitle = "Import fehlgeschlagen"
+            backupStatusMessage = error.localizedDescription
+        }
     }
 
     private func deleteAllSpottings() {
         let generator = UINotificationFeedbackGenerator()
         generator.notificationOccurred(.warning)
         for spot in spottings {
+            ImageCompressor.invalidateThumbnail(id: spot.id)
             modelContext.delete(spot)
         }
         try? modelContext.save()
@@ -220,568 +333,92 @@ public struct SettingsView: View {
     }
 }
 
-// MARK: - Bildnachweise Datenmodell & Modal
-struct TrainImageAttribution: Identifiable, Sendable {
-    let id = UUID()
+// MARK: - Bildnachweise (Dynamisch aus TrainModel.photoCatalog)
+private struct TrainImageAttribution: Identifiable {
+    let id: String
     let category: String
     let train: String
     let perspective: String
     let author: String
     let license: String
+    let commonsUrl: String?
 }
 
 struct AttributionSheetView: View {
     @Environment(\.dismiss) private var dismiss
+    @Query(sort: \TrainModel.seriesCode) private var trains: [TrainModel]
     @State private var searchText = ""
-    
-    private let attributions: [TrainImageAttribution] = [
-        // MARK: 1. Sonderzüge & Erprobung
-        TrainImageAttribution(
-            category: "Sonderzüge & Erprobung",
-            train: "Regenbogen-ICE (BR 403 · Tz 304)",
-            perspective: "Hauptansicht (Strecke)",
-            author: "Johannes Maximilian",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Sonderzüge & Erprobung",
-            train: "Regenbogen-ICE (BR 403 · Tz 304)",
-            perspective: "Regenbogen-Zierstreifen & Front",
-            author: "Jedesto",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Sonderzüge & Erprobung",
-            train: "Europa-ICE (BR 406 · Tz 4601)",
-            perspective: "Hauptansicht (Europa-Zierstreifen)",
-            author: "LWChris",
-            license: "CC BY 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Sonderzüge & Erprobung",
-            train: "Europa-ICE (BR 406 · Tz 4601)",
-            perspective: "Europa-Sterne & Flagge",
-            author: "universalamateur / LWChris",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Sonderzüge & Erprobung",
-            train: "ICE Bundesrepublik Deutschland (BR 412 · Tz 9457)",
-            perspective: "Jubiläumsdesign (Schwarz-Rot-Gold)",
-            author: "Geogast",
-            license: "CC BY 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Sonderzüge & Erprobung",
-            train: "Female ICE (BR 412 · Tz 9015)",
-            perspective: "Female ICE Triebkopf",
-            author: "Foobian",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Sonderzüge & Erprobung",
-            train: "Female ICE (BR 412 · Tz 9015)",
-            perspective: "Bordrestaurant Tz 9015",
-            author: "Foobian",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Sonderzüge & Erprobung",
-            train: "ICE S (BR 410)",
-            perspective: "Hochgeschwindigkeits-Messzug",
-            author: "Bvcmz248.5 / DB Systemtechnik",
-            license: "CC0 / Public Domain"
-        ),
-        TrainImageAttribution(
-            category: "Sonderzüge & Erprobung",
-            train: "ICE S (BR 410)",
-            perspective: "Messfahrt bei 300+ km/h",
-            author: "Sebastian Terfloth User:Sese_Ingolstadt",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Sonderzüge & Erprobung",
-            train: "advanced TrainLab (BR 605)",
-            perspective: "Fahrendes Digitallabor",
-            author: "Anton B. Krüger",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Sonderzüge & Erprobung",
-            train: "advanced TrainLab (BR 605)",
-            perspective: "Messfahrt & Sensorik",
-            author: "Bybbisch94, Christian Gebhardt",
-            license: "CC BY-SA 4.0"
-        ),
-        // MARK: 2. ICE-Flotte (Fernverkehr)
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 1 (BR 401)",
-            perspective: "Hauptansicht (Berlin Hbf)",
-            author: "Matti Blume",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 1 (BR 401)",
-            perspective: "Klassischer Triebkopf",
-            author: "Yannick Bammert",
-            license: "CC BY 2.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 1 (BR 401)",
-            perspective: "Buckelspeisewagen",
-            author: "Ra Boe / Wikipedia",
-            license: "CC BY-SA 3.0 de"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 1 (BR 401)",
-            perspective: "Fahrgastabteil Redesign",
-            author: "MaxEmanuel",
-            license: "CC0 / Public Domain"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 2 (BR 402)",
-            perspective: "Hauptansicht (Berlin Hbf)",
-            author: "RAIL P / Matti Blume",
-            license: "CC0 / CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 2 (BR 402)",
-            perspective: "Steuerwagen 808 Front",
-            author: "Falk2",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 2 (BR 402)",
-            perspective: "Fahrgastraum Steuerwagen",
-            author: "L. Willms",
-            license: "CC BY 3.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 3 (BR 403)",
-            perspective: "Schnellfahrstrecke 300 km/h",
-            author: "Mylius / Joachim Seyferth",
-            license: "CC BY-SA 3.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 3 (BR 403)",
-            perspective: "Lounge mit Lokführerblick",
-            author: "Sebastian Terfloth User:Sese_Ingolstadt",
-            license: "CC BY-SA 3.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 3M (BR 406)",
-            perspective: "Mehrsystem-Dachausrüstung",
-            author: "InterCityExpress / Felix O",
-            license: "CC BY-SA 2.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 3D / Velaro D (BR 407)",
-            perspective: "Aerodynamische Front",
-            author: "Stephan Preißler",
-            license: "CC BY-SA 3.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 3D / Velaro D (BR 407)",
-            perspective: "Velaro D Fahrgastraum",
-            author: "Florian Bausch",
-            license: "CC BY-SA 3.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 3neo (BR 408)",
-            perspective: "Hauptansicht (Köln Messe/Deutz)",
-            author: "TheFrog001",
-            license: "CC0 / Public Domain"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 3neo (BR 408)",
-            perspective: "Neues DB-Innendesign",
-            author: "MaxEmanuel",
-            license: "CC0 / Public Domain"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE T (BR 411 / 415)",
-            perspective: "Streckenfahrt (Maria Anzbach)",
-            author: "Linie29",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 4 (BR 412)",
-            perspective: "Hauptansicht (Berlin Hbf)",
-            author: "Peter Nath / Reinhold Möller",
-            license: "CC BY 4.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 4 (BR 412)",
-            perspective: "Kantige Frontpartie",
-            author: "Martin Lechler",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 4 (BR 412)",
-            perspective: "Streckenfahrt bei Altengronau",
-            author: "Joachim Seyferth",
-            license: "CC BY 4.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE 4 (BR 412)",
-            perspective: "ICE 4 Fahrgastbereich",
-            author: "Robot8A / Joachim Seyferth",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE L (BR 105)",
-            perspective: "Lokomotive 105 019",
-            author: "Sven-IngCH",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE L (BR 105)",
-            perspective: "ICE L Steuerwagen",
-            author: "E235JREMU",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE L (BR 105)",
-            perspective: "Talgo-Niederflurwagen",
-            author: "Sven-IngCH",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "ICE-Flotte (Fernverkehr)",
-            train: "ICE L (BR 105)",
-            perspective: "Stufenloser Niederflur-Einstieg",
-            author: "Pablo Lopez Estape",
-            license: "CC BY-SA 4.0"
-        ),
-        // MARK: 3. Intercity & Lokomotiven
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "BR 101",
-            perspective: "Hauptansicht Streckenlok",
-            author: "Lars Steffens",
-            license: "CC BY-SA 2.0"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "BR 101",
-            perspective: "BR 101 Führerstand",
-            author: "Sebastian Terfloth User:Sese_Ingolstadt",
-            license: "CC BY 2.5"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "IC 2 Twindexx (BR 146 / 147)",
-            perspective: "Doppelstock-Wendezug",
-            author: "UMO1 / Foobian",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "IC 2 Twindexx (BR 146 / 147)",
-            perspective: "Weißer IC2 Steuerwagen",
-            author: "Falk2",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "IC 2 KISS (BR 4110)",
-            perspective: "Stadler KISS auf Strecke",
-            author: "Mirkone",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "IC 2 KISS (BR 4110)",
-            perspective: "Stadler KISS Front",
-            author: "Zug Videos Bilder",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "IC 2 KISS (BR 4110)",
-            perspective: "BR 4110 Doppelstockzug",
-            author: "Rosso Robot",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "Nightjet Viaggio NextGen",
-            perspective: "ÖBB Nightjet (Viaggio)",
-            author: "TheFrog001",
-            license: "CC0 / Public Domain"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "Nightjet Viaggio NextGen",
-            perspective: "Nightjet Steuerwagen",
-            author: "TheFrog001",
-            license: "CC0 / Public Domain"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "Nightjet Viaggio NextGen",
-            perspective: "Mini-Cabin Schlafkapseln",
-            author: "TheFrog001",
-            license: "CC0 / Public Domain"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "Siemens Vectron (BR 193)",
-            perspective: "DB-Mehrsystemlokomotive",
-            author: "EM311",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "Siemens Vectron (BR 193)",
-            perspective: "Vectron im EuroCity-Dienst",
-            author: "Rainerhaufe",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "ÖBB Railjet (RJ / BR 1116)",
-            perspective: "ÖBB Railjet Wendezug",
-            author: "Manfred Kopka",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "ÖBB Railjet (RJ / BR 1116)",
-            perspective: "Taurus-Lokomotive (Rh 1116)",
-            author: "Pedalito",
-            license: "CC0 / Public Domain"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "SBB Giruno (RABe 501)",
-            perspective: "SBB Giruno in Zürich HB",
-            author: "JoachimKohler-HB",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Intercity & Lokomotiven",
-            train: "SBB Giruno (RABe 501)",
-            perspective: "Stadler Smile Niederflur-HGV",
-            author: "Plutowiki",
-            license: "CC0 / Public Domain"
-        ),
-        // MARK: 4. Regionalverkehr & S-Bahn
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Desiro HC (BR 462)",
-            perspective: "Hauptansicht (Wuppertal Hbf)",
-            author: "Gsadfaw1223",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Desiro HC (BR 462)",
-            perspective: "Hybrid-Wagenzug (Dosto & Flach)",
-            author: "Falk2",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Desiro HC (BR 462)",
-            perspective: "RRX Fahrgastraum",
-            author: "Sacrety",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Talent 2 (BR 442)",
-            perspective: "Hauptansicht (Hennigsdorf)",
-            author: "Sebastian Rittau",
-            license: "CC0 / Public Domain"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Talent 2 (BR 442)",
-            perspective: "Charakteristische Hamsterbacke",
-            author: "Matti Blume",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Talent 2 (BR 442)",
-            perspective: "Fahrgastraum & Niederflur",
-            author: "Falk2",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "FLIRT 3 (BR 1428 / 1429)",
-            perspective: "Hauptansicht Streckenfahrt",
-            author: "Johannes Maximilian",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "FLIRT 3 (BR 1428 / 1429)",
-            perspective: "FLIRT 3 Frontpartie",
-            author: "Hoff1980",
-            license: "CC BY-SA 3.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "FLIRT 3 (BR 1428 / 1429)",
-            perspective: "Großraum-Fahrgastabteil",
-            author: "JoachimKohler-HB",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Mireo (BR 463)",
-            perspective: "Hauptansicht Neufahrzeug",
-            author: "Joachim Lutz",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Mireo (BR 463)",
-            perspective: "Mireo Aerodynamik-Front",
-            author: "Kevin.B",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Mireo (BR 463)",
-            perspective: "Mireo Fahrgastraum",
-            author: "MireoDriver",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Twindexx Vario Regio (BR 445 / 446)",
-            perspective: "Twindexx Vario Triebwagen",
-            author: "Malte Hübner",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Coradia Continental (BR 1440)",
-            perspective: "Coradia Continental (BR 1440)",
-            author: "Metrophil44",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Coradia Continental (BR 1440)",
-            perspective: "Grinsekatze Frontpartie",
-            author: "Der Messer",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Coradia LINT (BR 622 / 648)",
-            perspective: "Streckenfahrt LINT 27",
-            author: "Spudgun67",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Coradia LINT (BR 622 / 648)",
-            perspective: "LINT Triebwagen-Front",
-            author: "EM311",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "Coradia LINT (BR 622 / 648)",
-            perspective: "LINT 41 Innenraum",
-            author: "Pentium1000~dewiki",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "ET 423 / 430",
-            perspective: "Streckenansicht S-Bahn",
-            author: "Paul Smith",
-            license: "CC BY 2.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "ET 423 / 430",
-            perspective: "S-Bahn Frontpartie",
-            author: "Wikimedia-User Jivee Blau",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "ET 423 / 430",
-            perspective: "S-Bahn Großraumwagen",
-            author: "User:Mattes",
-            license: "Public Domain"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "ET 425",
-            perspective: "Hauptansicht Weinheim",
-            author: "Photographs by Radosław Drożdżewski (User:Zwiadowca21)",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "ET 425",
-            perspective: "ET 425 Front & Falttüren",
-            author: "Photographs by Radosław Drożdżewski (User:Zwiadowca21)",
-            license: "CC BY-SA 4.0"
-        ),
-        TrainImageAttribution(
-            category: "Regionalverkehr & S-Bahn",
-            train: "ET 425",
-            perspective: "ET 425 Innenraum",
-            author: "Wikimedia-User Jivee Blau",
-            license: "CC BY-SA 3.0"
-        )
-    ]
-    
-    private var filteredAttributions: [TrainImageAttribution] {
-        if searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            return attributions
+
+    private var attributions: [TrainImageAttribution] {
+        var entries: [TrainImageAttribution] = []
+        var seen = Set<String>()
+
+        for train in trains {
+            let categoryTitle = train.category.rawValue
+            let trainTitle = "\(train.commercialName) (\(train.seriesCode))"
+            for photo in train.galleryPhotos {
+                let uniqueKey = "\(train.seriesCode)_\(photo.assetName)"
+                guard !seen.contains(uniqueKey) else { continue }
+                seen.insert(uniqueKey)
+
+                entries.append(
+                    TrainImageAttribution(
+                        id: uniqueKey,
+                        category: categoryTitle,
+                        train: trainTitle,
+                        perspective: photo.label,
+                        author: photo.photographer,
+                        license: photo.license,
+                        commonsUrl: photo.commonsUrl
+                    )
+                )
+            }
         }
+
+        if entries.isEmpty {
+            for photo in TrainModel.photoCatalog.values.sorted(by: { $0.assetName < $1.assetName }) {
+                entries.append(
+                    TrainImageAttribution(
+                        id: photo.assetName,
+                        category: "Gesamtkatalog",
+                        train: photo.label,
+                        perspective: photo.characteristicDescription,
+                        author: photo.photographer,
+                        license: photo.license,
+                        commonsUrl: photo.commonsUrl
+                    )
+                )
+            }
+        }
+
+        return entries
+    }
+
+    private var filteredAttributions: [TrainImageAttribution] {
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return attributions }
         return attributions.filter {
-            $0.train.localizedCaseInsensitiveContains(searchText) ||
-            $0.perspective.localizedCaseInsensitiveContains(searchText) ||
-            $0.author.localizedCaseInsensitiveContains(searchText) ||
-            $0.category.localizedCaseInsensitiveContains(searchText)
+            $0.train.localizedCaseInsensitiveContains(query) ||
+            $0.perspective.localizedCaseInsensitiveContains(query) ||
+            $0.author.localizedCaseInsensitiveContains(query) ||
+            $0.category.localizedCaseInsensitiveContains(query)
         }
     }
-    
+
     private var groupedAttributions: [String: [TrainImageAttribution]] {
         Dictionary(grouping: filteredAttributions, by: \.category)
     }
-    
-    private let categoryOrder = [
-        "Sonderzüge & Erprobung",
-        "ICE-Flotte (Fernverkehr)",
-        "Intercity & Lokomotiven",
-        "Regionalverkehr & S-Bahn"
-    ]
-    
+
+    private var orderedCategories: [String] {
+        let preferred = [
+            TrainCategory.special.rawValue,
+            TrainCategory.highSpeed.rawValue,
+            TrainCategory.regional.rawValue,
+            "Gesamtkatalog"
+        ]
+        return preferred.filter { (groupedAttributions[$0]?.isEmpty == false) }
+    }
+
     var body: some View {
         NavigationStack {
             List {
@@ -799,15 +436,15 @@ struct AttributionSheetView: View {
                     }
                     .padding(.vertical, 4)
                 }
-                
-                ForEach(categoryOrder, id: \.self) { cat in
+
+                ForEach(orderedCategories, id: \.self) { cat in
                     if let items = groupedAttributions[cat], !items.isEmpty {
                         Section(header: Text(cat)) {
                             ForEach(items) { item in
                                 VStack(alignment: .leading, spacing: 5) {
                                     Text(item.train)
                                         .font(.subheadline.weight(.semibold))
-                                    
+
                                     HStack {
                                         Text(item.perspective)
                                             .font(.caption2)
@@ -821,10 +458,20 @@ struct AttributionSheetView: View {
                                             .background(Color.accentColor.opacity(0.12))
                                             .clipShape(Capsule())
                                     }
-                                    
-                                    Text("Foto: \(item.author)")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+
+                                    HStack {
+                                        Text("Foto: \(item.author)")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                        Spacer()
+                                        if let urlStr = item.commonsUrl, let url = URL(string: urlStr) {
+                                            Link(destination: url) {
+                                                Image(systemName: "arrow.up.right.square")
+                                                    .font(.caption)
+                                                    .foregroundStyle(Color.accentColor)
+                                            }
+                                        }
+                                    }
                                 }
                                 .padding(.vertical, 3)
                             }

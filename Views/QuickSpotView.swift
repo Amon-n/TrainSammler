@@ -10,8 +10,9 @@ public struct QuickSpotView: View {
     @State private var viewModel = QuickSpotViewModel()
     @State private var showingTrainPicker = false
     @State private var showingStationAlert = false
+    @State private var showingCamera = false
+    @State private var showCameraUnavailableAlert = false
     @State private var tempStationInput = ""
-    @State private var earnedPoints: Int = 0
     enum QuickSpotField: Hashable {
         case tz
         case notes
@@ -21,10 +22,30 @@ public struct QuickSpotView: View {
     public init() {}
     
     var quickSelectTrains: [TrainModel] {
-        // Die 4 häufigsten Alltagszüge für den 1-Tap-Zugriff
-        catalogTrains.filter { train in
-            ["BR 412", "BR 408", "BR 401", "BR 445 / 446"].contains(train.seriesCode)
+        // Bis zu 3 persönlich zuletzt gespottete Baureihen, aufgefüllt mit den häufigsten Klassikern
+        let recentSpotted = catalogTrains
+            .filter(\.isSpotted)
+            .sorted { lhs, rhs in
+                let lhsDate = lhs.spottings.map(\.spottedAt).max() ?? .distantPast
+                let rhsDate = rhs.spottings.map(\.spottedAt).max() ?? .distantPast
+                return lhsDate > rhsDate
+            }
+
+        let defaultCodes = ["BR 412", "BR 408", "BR 401", "BR 445 / 446", "BR 462"]
+        let defaultTrains = defaultCodes.compactMap { code in
+            catalogTrains.first(where: { $0.seriesCode == code })
         }
+
+        var result: [TrainModel] = []
+        for train in recentSpotted.prefix(3) {
+            result.append(train)
+        }
+        for train in defaultTrains where result.count < 5 {
+            if !result.contains(where: { $0.id == train.id }) {
+                result.append(train)
+            }
+        }
+        return result
     }
     
     public var body: some View {
@@ -75,6 +96,17 @@ public struct QuickSpotView: View {
             .sheet(isPresented: $showingTrainPicker) {
                 TrainPickerSheet(trains: catalogTrains, selectedTrain: $viewModel.selectedTrainModel)
             }
+            .fullScreenCover(isPresented: $showingCamera) {
+                CameraPickerView { compressedData in
+                    viewModel.photoData = compressedData
+                }
+                .ignoresSafeArea()
+            }
+            .alert("Kamera nicht verfügbar", isPresented: $showCameraUnavailableAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Auf diesem Gerät steht aktuell keine Live-Kamera zur Verfügung. Nutze stattdessen „Mediathek“.")
+            }
             .onChange(of: viewModel.selectedPhotoItem) { _, _ in
                 Task {
                     await viewModel.loadSelectedPhoto()
@@ -110,6 +142,14 @@ public struct QuickSpotView: View {
                 }
             }
             .animation(.spring(response: 0.35, dampingFraction: 0.8), value: viewModel.showSuccessToast)
+            .task(id: viewModel.showSuccessToast) {
+                guard viewModel.showSuccessToast else { return }
+                let duration: Double = viewModel.isFirstCatch ? 4.5 : 3.0
+                try? await Task.sleep(for: .seconds(duration))
+                withAnimation {
+                    viewModel.showSuccessToast = false
+                }
+            }
         }
     }
     
@@ -396,22 +436,50 @@ public struct QuickSpotView: View {
                     }
                 }
             } else {
-                PhotosPicker(selection: $viewModel.selectedPhotoItem, matching: .images) {
-                    HStack(spacing: 10) {
-                        Image(systemName: "camera.fill")
-                            .font(.subheadline.weight(.semibold))
-                        Text("Foto aufnehmen / auswählen")
-                            .font(.subheadline.weight(.medium))
+                HStack(spacing: 10) {
+                    Button {
+                        let impact = UIImpactFeedbackGenerator(style: .light)
+                        impact.impactOccurred()
+                        if CameraPickerView.isCameraAvailable {
+                            showingCamera = true
+                        } else {
+                            showCameraUnavailableAlert = true
+                        }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Image(systemName: "camera.fill")
+                                .font(.subheadline.weight(.semibold))
+                            Text("Kamera")
+                                .font(.subheadline.weight(.medium))
+                        }
+                        .foregroundColor(.accentColor)
+                        .frame(maxWidth: .infinity)
+                        .padding(14)
+                        .background(Color(uiColor: .secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .strokeBorder(Color.accentColor.opacity(0.3), style: StrokeStyle(lineWidth: 1.5, dash: [6]))
+                        )
                     }
-                    .foregroundColor(.accentColor)
-                    .frame(maxWidth: .infinity)
-                    .padding(14)
-                    .background(Color(uiColor: .secondarySystemGroupedBackground))
-                    .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 16)
-                            .strokeBorder(Color.accentColor.opacity(0.3), style: StrokeStyle(lineWidth: 1.5, dash: [6]))
-                    )
+
+                    PhotosPicker(selection: $viewModel.selectedPhotoItem, matching: .images) {
+                        HStack(spacing: 8) {
+                            Image(systemName: "photo.on.rectangle")
+                                .font(.subheadline.weight(.semibold))
+                            Text("Mediathek")
+                                .font(.subheadline.weight(.medium))
+                        }
+                        .foregroundColor(.accentColor)
+                        .frame(maxWidth: .infinity)
+                        .padding(14)
+                        .background(Color(uiColor: .secondarySystemGroupedBackground))
+                        .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 16)
+                                .strokeBorder(Color.accentColor.opacity(0.3), style: StrokeStyle(lineWidth: 1.5, dash: [6]))
+                        )
+                    }
                 }
             }
         }
@@ -421,15 +489,7 @@ public struct QuickSpotView: View {
         Button {
             let generator = UIImpactFeedbackGenerator(style: .medium)
             generator.impactOccurred()
-            
-            if viewModel.saveSpotting(context: modelContext) {
-                let duration: Double = viewModel.isFirstCatch ? 4.5 : 3.0
-                DispatchQueue.main.asyncAfter(deadline: .now() + duration) {
-                    withAnimation {
-                        viewModel.showSuccessToast = false
-                    }
-                }
-            }
+            _ = viewModel.saveSpotting(context: modelContext)
         } label: {
             HStack(spacing: 8) {
                 Image(systemName: "checkmark.circle.fill")
@@ -470,7 +530,7 @@ public struct QuickSpotView: View {
             
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 6) {
-                    Text(viewModel.isFirstCatch ? "🎉 NEUER ZUG ENTDECKT!" : "Zug erfasst!")
+                    Text(viewModel.isFirstCatch ? "🎉 NEUER ZUG ENTDECKT!" : (viewModel.isNewTzUnit ? "Neuer Triebzug erfasst!" : "Zug erfasst!"))
                         .font(.headline.weight(.heavy))
                         .foregroundStyle(viewModel.isFirstCatch ? Color.orange : Color.primary)
                     
@@ -481,6 +541,14 @@ public struct QuickSpotView: View {
                             .padding(.horizontal, 5)
                             .padding(.vertical, 1.5)
                             .background(Color.orange)
+                            .clipShape(Capsule())
+                    } else if viewModel.isNewTzUnit {
+                        Text("+TZ-BONUS")
+                            .font(.system(size: 8, weight: .black))
+                            .foregroundStyle(.white)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 1.5)
+                            .background(Color.teal)
                             .clipShape(Capsule())
                     }
                 }

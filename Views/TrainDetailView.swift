@@ -29,6 +29,9 @@ public struct TrainDetailView: View {
     @State private var lastEarnedSpotXP: Int = 0
     @State private var selectedAttributionPhoto: TrainPhotoDetail? = nil
     @State private var previewSpot: SpottedTrain? = nil
+    @State private var editingSpot: SpottedTrain? = nil
+    @State private var showingDirectCamera = false
+    @State private var showCameraUnavailableAlert = false
     
     // Direkt-Spotting Form
     @State private var tzInput: String = ""
@@ -116,13 +119,25 @@ public struct TrainDetailView: View {
             .sheet(item: $previewSpot) { spot in
                 PhotoPreviewSheet(spot: spot)
             }
+            .sheet(item: $editingSpot) { spot in
+                EditSpottingSheet(spot: spot)
+            }
             .overlay(alignment: .top) {
                 if spotSuccessToast {
                     successToast
                 }
             }
-            .onAppear {
-                locationManager.requestLocation()
+            .onChange(of: isShowingSpotSheet) { _, showing in
+                if showing {
+                    locationManager.requestLocation()
+                }
+            }
+            .task(id: spotSuccessToast) {
+                guard spotSuccessToast else { return }
+                try? await Task.sleep(for: .seconds(2.5))
+                withAnimation {
+                    spotSuccessToast = false
+                }
             }
         }
     }
@@ -281,8 +296,8 @@ public struct TrainDetailView: View {
                                 } label: {
                                     ZStack(alignment: .bottomTrailing) {
                                         switch photo {
-                                        case .user(_, let data, _, _):
-                                            if let uiImg = UIImage(data: data) {
+                                        case .user(let uid, let data, _, _):
+                                            if let uiImg = ImageCompressor.thumbnail(id: uid, data: data, maxPixelSize: 180) {
                                                 Image(uiImage: uiImg)
                                                     .resizable()
                                                     .aspectRatio(contentMode: .fill)
@@ -527,13 +542,50 @@ public struct TrainDetailView: View {
     }
     
     // MARK: - 6. Deine Sichtungen
-    
+
+    private var collectedTzUnits: [String] {
+        var seen = Set<String>()
+        var ordered: [String] = []
+        for spot in train.spottings.sorted(by: { $0.spottedAt > $1.spottedAt }) {
+            if let tz = SpottedTrain.normalizedTz(spot.tzNumber), !seen.contains(tz) {
+                seen.insert(tz)
+                ordered.append(tz)
+            }
+        }
+        return ordered
+    }
+
     private var pastSpottingsSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        let tzUnits = collectedTzUnits
+
+        return VStack(alignment: .leading, spacing: 12) {
             Text("Deine Sichtungen (\(train.spotCount))")
                 .font(.headline)
                 .padding(.horizontal, 16)
-            
+
+            if !tzUnits.isEmpty {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Gesammelte Triebzüge (\(tzUnits.count))")
+                        .font(.caption.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                        .padding(.horizontal, 16)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(tzUnits, id: \.self) { tz in
+                                Label("Tz \(tz)", systemImage: "number")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(Color.accentColor)
+                                    .padding(.horizontal, 10)
+                                    .padding(.vertical, 5)
+                                    .background(Color.accentColor.opacity(0.12), in: Capsule())
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                    }
+                }
+            }
+
             if train.spottings.isEmpty {
                 VStack(spacing: 8) {
                     Image(systemName: "camera.viewfinder")
@@ -559,10 +611,13 @@ public struct TrainDetailView: View {
                         Button {
                             if spot.photoData != nil {
                                 previewSpot = spot
+                            } else {
+                                editingSpot = spot
                             }
                         } label: {
                             HStack(spacing: 12) {
-                                if let data = spot.photoData, let uiImg = UIImage(data: data) {
+                                if let data = spot.photoData,
+                                   let uiImg = ImageCompressor.thumbnail(id: spot.id, data: data, maxPixelSize: 160) {
                                     ZStack(alignment: .bottomTrailing) {
                                         Image(uiImage: uiImg)
                                             .resizable()
@@ -614,6 +669,31 @@ public struct TrainDetailView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
                         }
                         .buttonStyle(.plain)
+                        .contextMenu {
+                            Button {
+                                editingSpot = spot
+                            } label: {
+                                Label("Sichtung bearbeiten", systemImage: "pencil")
+                            }
+
+                            if spot.photoData != nil {
+                                Button {
+                                    previewSpot = spot
+                                } label: {
+                                    Label("Foto ansehen", systemImage: "photo")
+                                }
+                            }
+
+                            if let cardImage = ShareCardRenderer.renderSpottingCard(spot: spot) {
+                                ShareLink(
+                                    item: cardImage,
+                                    subject: Text("\(train.seriesCode) gespottet!"),
+                                    preview: SharePreview(train.seriesCode, image: Image(uiImage: cardImage.uiImage))
+                                ) {
+                                    Label("Als Bild-Karte teilen", systemImage: "square.and.arrow.up")
+                                }
+                            }
+                        }
                     }
                 }
                 .padding(.horizontal, 16)
@@ -709,18 +789,27 @@ public struct TrainDetailView: View {
                             }
                         }
                     } else {
-                        PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
-                            HStack(spacing: 8) {
-                                Image(systemName: "camera.fill")
-                                Text("Foto aufnehmen oder auswählen")
+                        Button {
+                            if CameraPickerView.isCameraAvailable {
+                                showingDirectCamera = true
+                            } else {
+                                showCameraUnavailableAlert = true
                             }
-                            .foregroundColor(.accentColor)
+                        } label: {
+                            Label("Kamera aufnehmen", systemImage: "camera.fill")
+                                .foregroundColor(.accentColor)
+                        }
+
+                        PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                            Label("Aus Mediathek wählen", systemImage: "photo.on.rectangle")
+                                .foregroundColor(.accentColor)
                         }
                         .onChange(of: selectedPhotoItem) { _, newItem in
                             Task {
                                 if let data = try? await newItem?.loadTransferable(type: Data.self) {
+                                    let compressed = ImageCompressor.compress(imageData: data) ?? data
                                     await MainActor.run {
-                                        capturedPhotoData = data
+                                        capturedPhotoData = compressed
                                     }
                                 }
                             }
@@ -729,6 +818,17 @@ public struct TrainDetailView: View {
                 }
             }
             .scrollDismissesKeyboard(.interactively)
+            .fullScreenCover(isPresented: $showingDirectCamera) {
+                CameraPickerView { compressedData in
+                    capturedPhotoData = compressedData
+                }
+                .ignoresSafeArea()
+            }
+            .alert("Kamera nicht verfügbar", isPresented: $showCameraUnavailableAlert) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text("Auf diesem Gerät steht aktuell keine Live-Kamera zur Verfügung. Nutze stattdessen „Aus Mediathek wählen“.")
+            }
             .navigationTitle("Zug erfassen")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -755,7 +855,10 @@ public struct TrainDetailView: View {
     
     private func saveDirectSpot() {
         let isFirstCatch = !train.isSpotted
-        lastEarnedSpotXP = isFirstCatch ? (train.rarity.points * 2) : train.rarity.points
+        let normalizedInputTz = SpottedTrain.normalizedTz(tzInput)
+        let existingTzUnits = Set(train.spottings.compactMap { SpottedTrain.normalizedTz($0.tzNumber) })
+        let tzBonus = (normalizedInputTz != nil && !existingTzUnits.contains(normalizedInputTz!)) ? StatsCalculator.uniqueTzBonusPoints : 0
+        lastEarnedSpotXP = (isFirstCatch ? (train.rarity.points * 2) : train.rarity.points) + tzBonus
 
         let coord = locationManager.lastLocation?.coordinate
         let newSpot = SpottedTrain(
@@ -782,11 +885,6 @@ public struct TrainDetailView: View {
             selectedPhotoIndex = 0
             withAnimation(.spring()) {
                 spotSuccessToast = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-                withAnimation {
-                    spotSuccessToast = false
-                }
             }
         } catch {
             print("Fehler beim Speichern: \(error)")

@@ -18,6 +18,7 @@ public final class QuickSpotViewModel {
     public var isSaving: Bool = false
     public var showSuccessToast: Bool = false
     public var isFirstCatch: Bool = false
+    public var isNewTzUnit: Bool = false
     public var earnedPoints: Int = 100
     public var errorMessage: String?
 
@@ -44,13 +45,13 @@ public final class QuickSpotViewModel {
         guard let item = selectedPhotoItem else { return }
         do {
             if let data = try await item.loadTransferable(type: Data.self) {
-                self.photoData = data
+                self.photoData = ImageCompressor.compress(imageData: data) ?? data
             }
         } catch {
             print("Fehler beim Laden des Bildes: \(error.localizedDescription)")
         }
     }
-    
+
     public func saveSpotting(context: ModelContext) -> Bool {
         guard let train = selectedTrainModel else {
             errorMessage = "Bitte wähle eine Baureihe aus."
@@ -60,11 +61,18 @@ public final class QuickSpotViewModel {
         isSaving = true
         let coordinate = locationManager.lastLocation?.coordinate
         
-        // Erstfund-Erkennung (2x XP Bonus analog zum StatsCalculator)
+        // Erstfund-Erkennung (2x XP Bonus) + neuer Triebzug-Bonus (+25 XP) analog zum StatsCalculator
         let wasAlreadySpotted = train.isSpotted
         self.isFirstCatch = !wasAlreadySpotted
+
+        let normalizedInputTz = SpottedTrain.normalizedTz(tzNumber)
+        let existingTzNumbers = Set(train.spottings.compactMap { SpottedTrain.normalizedTz($0.tzNumber) })
+        self.isNewTzUnit = normalizedInputTz != nil && !existingTzNumbers.contains(normalizedInputTz!)
+
         let basePoints = train.rarity.points
-        self.earnedPoints = isFirstCatch ? (basePoints * 2) : basePoints
+        let catchPoints = isFirstCatch ? (basePoints * 2) : basePoints
+        let tzBonus = isNewTzUnit ? StatsCalculator.uniqueTzBonusPoints : 0
+        self.earnedPoints = catchPoints + tzBonus
 
         let finalStation = effectiveStationName
         let stationToSave = Self.sanitizeStationName(finalStation)

@@ -37,10 +37,13 @@ public struct StatsView: View {
                     // 4. DB-Bingo Bilanz
                     bingoOverviewCard
 
-                    // 5. Fortschritt nach Kategorien
+                    // 5. Meilensteine & Abzeichen
+                    achievementsSection
+
+                    // 6. Fortschritt nach Kategorien
                     categoryProgressSection
 
-                    // 6. Seltenheits-Verteilung
+                    // 7. Seltenheits-Verteilung
                     rarityDistributionSection
                 }
                 .padding(.horizontal, 16)
@@ -123,7 +126,13 @@ public struct StatsView: View {
 
                 Spacer()
 
-                Label("\(stats.uniqueTrainsSpotted) / \(stats.totalTrainsInCatalog) Zügen", systemImage: "checkmark.seal.fill")
+                Label("\(stats.uniqueTzCount) Tz", systemImage: "number.square.fill")
+                    .font(.footnote.weight(.semibold))
+                    .foregroundStyle(.white.opacity(0.95))
+
+                Spacer()
+
+                Label("\(stats.uniqueTrainsSpotted) / \(stats.totalTrainsInCatalog)", systemImage: "checkmark.seal.fill")
                     .font(.footnote.weight(.semibold))
                     .foregroundStyle(.white.opacity(0.95))
             }
@@ -160,11 +169,31 @@ public struct StatsView: View {
             .padding(.top, 14)
             .padding(.bottom, 10)
 
-            // Large Hero Image
-            TrainImageView(assetName: train.assetName)
-                .frame(height: 140)
-                .frame(maxWidth: .infinity)
-                .clipped()
+            // Large Hero Image (bevorzugt eigenes Beweisfoto des Nutzers)
+            ZStack(alignment: .bottomLeading) {
+                if let photoData = spotted.photoData,
+                   let uiImage = ImageCompressor.thumbnail(id: spotted.id, data: photoData, maxPixelSize: 800) ?? UIImage(data: photoData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .scaledToFill()
+                        .frame(height: 150)
+                        .frame(maxWidth: .infinity)
+                        .clipped()
+
+                    Label("Dein Foto", systemImage: "camera.fill")
+                        .font(.caption2.weight(.bold))
+                        .foregroundStyle(.black)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(Color.yellow, in: Capsule())
+                        .padding(10)
+                } else {
+                    TrainImageView(assetName: train.assetName)
+                        .frame(height: 140)
+                        .frame(maxWidth: .infinity)
+                        .clipped()
+                }
+            }
 
             // Details Footer
             VStack(alignment: .leading, spacing: 4) {
@@ -264,6 +293,72 @@ public struct StatsView: View {
         .padding(16)
         .background(Color(uiColor: .secondarySystemGroupedBackground))
         .clipShape(RoundedRectangle(cornerRadius: 18, style: .continuous))
+    }
+
+    private var achievementsSection: some View {
+        let unlockedCount = stats.achievements.filter(\.isUnlocked).count
+
+        return VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Meilensteine")
+                    .font(.headline)
+                Spacer()
+                Text("\(unlockedCount) / \(stats.achievements.count) erreicht")
+                    .font(.caption.weight(.bold))
+                    .foregroundStyle(.secondary)
+            }
+            .padding(.horizontal, 4)
+
+            LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {
+                ForEach(stats.achievements) { achievement in
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Image(systemName: achievement.icon)
+                                .font(.subheadline.weight(.bold))
+                                .foregroundStyle(achievement.isUnlocked ? .white : achievement.color)
+                                .frame(width: 30, height: 30)
+                                .background(
+                                    achievement.isUnlocked ? achievement.color : achievement.color.opacity(0.14),
+                                    in: Circle()
+                                )
+
+                            Spacer()
+
+                            if achievement.isUnlocked {
+                                Image(systemName: "checkmark.seal.fill")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.green)
+                            } else {
+                                Text("\(min(achievement.currentValue, achievement.targetValue))/\(achievement.targetValue)")
+                                    .font(.caption2.weight(.bold))
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+
+                        Text(achievement.title)
+                            .font(.subheadline.weight(.semibold))
+                            .foregroundStyle(.primary)
+                            .lineLimit(1)
+
+                        Text(achievement.description)
+                            .font(.caption2)
+                            .foregroundStyle(.secondary)
+                            .lineLimit(2)
+
+                        ProgressView(value: achievement.progress, total: 1.0)
+                            .tint(achievement.isUnlocked ? .green : achievement.color)
+                    }
+                    .padding(12)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .background(Color(uiColor: .secondarySystemGroupedBackground))
+                    .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 14, style: .continuous)
+                            .strokeBorder(achievement.isUnlocked ? achievement.color.opacity(0.35) : Color.clear, lineWidth: 1)
+                    )
+                }
+            }
+        }
     }
 
     private var categoryProgressSection: some View {

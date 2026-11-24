@@ -16,6 +16,8 @@
 		DBDD4B8BFF443B0D2D0205F4 /* BingoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEA6695E372A5C7345EB3CBD /* BingoItem.swift */; };
 		063C8191C91DF1E3F556AD2D /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4264FCAA5E26947B11D1AF0B /* LocationManager.swift */; };
 		DE0F3AA7CB8907B9F3E08F7E /* DataSeeder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 871596B1E5AE114CE92F07FD /* DataSeeder.swift */; };
+		D5BC69FAD0A3C1AC9E716BC3 /* ImageCompressor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D75FC752CEE4896FB6B8AC6D /* ImageCompressor.swift */; };
+		C4E37CAA6EC425649843E106 /* BackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 49B29F6CA4A54794716C94A9 /* BackupService.swift */; };
 		0BA1A797AE92428D153DF653 /* QuickSpotViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 469620EC303F82A8B58A911F /* QuickSpotViewModel.swift */; };
 		6264A75C48F3CF0A871B414E /* StatsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F615B7CB4F879AEAA36468 /* StatsViewModel.swift */; };
 		D5D7791DCFF7AC812023AD7A /* BingoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDA13C8E6A3502A5D5FB0C7 /* BingoViewModel.swift */; };
@@ -31,6 +33,8 @@
 		05E25F0050A136CC67ACA3C5 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D536C60D6BAC7F5F2B7E397 /* SettingsView.swift */; };
 		BE567E5ED95CBDB366A61D73 /* RarityBadgeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6E3BAE78A03829DA172F0DA /* RarityBadgeView.swift */; };
 		6AEB8119D6002CEB136928BD /* TrainImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 792E401BF113E49DA90EA72E /* TrainImageView.swift */; };
+		49CA4F07274E0C924AAC1578 /* CameraPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 77312EAFFE92591D7C4F9341 /* CameraPickerView.swift */; };
+		6DE33B6007183E5731457A0C /* ShareCardRenderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20F071F8D43CDFC308D0ECEF /* ShareCardRenderer.swift */; };
 		6AFD46B5B024E2AC82162387 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1864F4BEDDAA473E6A3C82A /* Assets.xcassets */; };
 /* End PBXBuildFile section */
 
@@ -45,6 +49,8 @@
 		CEA6695E372A5C7345EB3CBD /* BingoItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Models/BingoItem.swift"; sourceTree = "<group>"; };
 		4264FCAA5E26947B11D1AF0B /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/LocationManager.swift"; sourceTree = "<group>"; };
 		871596B1E5AE114CE92F07FD /* DataSeeder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/DataSeeder.swift"; sourceTree = "<group>"; };
+		D75FC752CEE4896FB6B8AC6D /* ImageCompressor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/ImageCompressor.swift"; sourceTree = "<group>"; };
+		49B29F6CA4A54794716C94A9 /* BackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Services/BackupService.swift"; sourceTree = "<group>"; };
 		469620EC303F82A8B58A911F /* QuickSpotViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewModels/QuickSpotViewModel.swift"; sourceTree = "<group>"; };
 		65F615B7CB4F879AEAA36468 /* StatsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewModels/StatsViewModel.swift"; sourceTree = "<group>"; };
 		8CDA13C8E6A3502A5D5FB0C7 /* BingoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewModels/BingoViewModel.swift"; sourceTree = "<group>"; };
@@ -60,6 +66,8 @@
 		1D536C60D6BAC7F5F2B7E397 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/SettingsView.swift"; sourceTree = "<group>"; };
 		E6E3BAE78A03829DA172F0DA /* RarityBadgeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/Components/RarityBadgeView.swift"; sourceTree = "<group>"; };
 		792E401BF113E49DA90EA72E /* TrainImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/Components/TrainImageView.swift"; sourceTree = "<group>"; };
+		77312EAFFE92591D7C4F9341 /* CameraPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/Components/CameraPickerView.swift"; sourceTree = "<group>"; };
+		20F071F8D43CDFC308D0ECEF /* ShareCardRenderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Views/Components/ShareCardRenderer.swift"; sourceTree = "<group>"; };
 		A1864F4BEDDAA473E6A3C82A /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Assets.xcassets"; sourceTree = "<group>"; };
 		14A4531C45BB1BB9EA084FCD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -87,6 +95,8 @@
 				CEA6695E372A5C7345EB3CBD /* BingoItem.swift */,
 				4264FCAA5E26947B11D1AF0B /* LocationManager.swift */,
 				871596B1E5AE114CE92F07FD /* DataSeeder.swift */,
+				D75FC752CEE4896FB6B8AC6D /* ImageCompressor.swift */,
+				49B29F6CA4A54794716C94A9 /* BackupService.swift */,
 				469620EC303F82A8B58A911F /* QuickSpotViewModel.swift */,
 				65F615B7CB4F879AEAA36468 /* StatsViewModel.swift */,
 				8CDA13C8E6A3502A5D5FB0C7 /* BingoViewModel.swift */,
@@ -102,6 +112,8 @@
 				1D536C60D6BAC7F5F2B7E397 /* SettingsView.swift */,
 				E6E3BAE78A03829DA172F0DA /* RarityBadgeView.swift */,
 				792E401BF113E49DA90EA72E /* TrainImageView.swift */,
+				77312EAFFE92591D7C4F9341 /* CameraPickerView.swift */,
+				20F071F8D43CDFC308D0ECEF /* ShareCardRenderer.swift */,
 				A1864F4BEDDAA473E6A3C82A /* Assets.xcassets */,
 				14A4531C45BB1BB9EA084FCD /* Info.plist */,
 				B88D7E26791946AEFDCC8BB7 /* Products */,
@@ -189,6 +201,8 @@
 				DBDD4B8BFF443B0D2D0205F4 /* BingoItem.swift in Sources */,
 				063C8191C91DF1E3F556AD2D /* LocationManager.swift in Sources */,
 				DE0F3AA7CB8907B9F3E08F7E /* DataSeeder.swift in Sources */,
+				D5BC69FAD0A3C1AC9E716BC3 /* ImageCompressor.swift in Sources */,
+				C4E37CAA6EC425649843E106 /* BackupService.swift in Sources */,
 				0BA1A797AE92428D153DF653 /* QuickSpotViewModel.swift in Sources */,
 				6264A75C48F3CF0A871B414E /* StatsViewModel.swift in Sources */,
 				D5D7791DCFF7AC812023AD7A /* BingoViewModel.swift in Sources */,
@@ -204,7 +218,8 @@
 				05E25F0050A136CC67ACA3C5 /* SettingsView.swift in Sources */,
 				BE567E5ED95CBDB366A61D73 /* RarityBadgeView.swift in Sources */,
 				6AEB8119D6002CEB136928BD /* TrainImageView.swift in Sources */,
-				D73F23040427D3E50B6133DC /* Info.plist in Sources */,
+				49CA4F07274E0C924AAC1578 /* CameraPickerView.swift in Sources */,
+				6DE33B6007183E5731457A0C /* ShareCardRenderer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -265,7 +280,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "79T386JC4J";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -278,7 +293,7 @@
 					"@executable_path/Frameworks",
 				);
 				LM_FILTER_WARNINGS = YES;
-				MARKETING_VERSION = 1.8;
+				MARKETING_VERSION = 1.9;
 				PRODUCT_BUNDLE_IDENTIFIER = de.amon.trainSammler;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
@@ -294,7 +309,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = NO;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 8;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "79T386JC4J";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = NO;
@@ -307,7 +322,7 @@
 					"@executable_path/Frameworks",
 				);
 				LM_FILTER_WARNINGS = YES;
-				MARKETING_VERSION = 1.8;
+				MARKETING_VERSION = 1.9;
 				PRODUCT_BUNDLE_IDENTIFIER = de.amon.trainSammler;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;

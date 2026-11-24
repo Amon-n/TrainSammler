@@ -20,6 +20,25 @@ public struct RarityCount: Identifiable {
     public let count: Int
 }
 
+public struct SpotterAchievement: Identifiable {
+    public let id: String
+    public let title: String
+    public let description: String
+    public let icon: String
+    public let color: Color
+    public let currentValue: Int
+    public let targetValue: Int
+
+    public var isUnlocked: Bool {
+        currentValue >= targetValue
+    }
+
+    public var progress: Double {
+        guard targetValue > 0 else { return 1.0 }
+        return min(1.0, Double(currentValue) / Double(targetValue))
+    }
+}
+
 public enum UserRank: String, CaseIterable {
     case beginner = "Bahnsteig-Neuling"
     case scout = "Gleis-Scout"
@@ -71,6 +90,7 @@ public enum UserRank: String, CaseIterable {
 public struct TrainStats {
     public let totalSpottings: Int
     public let uniqueTrainsSpotted: Int
+    public let uniqueTzCount: Int
     public let totalTrainsInCatalog: Int
     public let totalScore: Int
     public let spottingScore: Int
@@ -82,6 +102,7 @@ public struct TrainStats {
     public let categoryProgress: [CategoryProgress]
     public let rarityCounts: [RarityCount]
     public let rarestSpot: SpottedTrain?
+    public let achievements: [SpotterAchievement]
 
     public var userRank: UserRank {
         UserRank.rank(for: totalScore)
@@ -111,6 +132,8 @@ public struct TrainStats {
 
 @MainActor
 public final class StatsCalculator {
+    public static let uniqueTzBonusPoints = 25
+
     public static func computeStats(
         allTrains: [TrainModel],
         allSpottings: [SpottedTrain],
@@ -124,9 +147,11 @@ public final class StatsCalculator {
             ? (Double(uniqueTrainsSpotted) / Double(totalTrainsInCatalog)) * 100.0
             : 0.0
 
-        // 1. Zugsichtungs-Score berechnen (Erstfund verdoppelt die Punkte)
+        // 1. Zugsichtungs-Score berechnen (Erstfund verdoppelt Punkte, neue Tz-Nummer +25 XP)
         var spottingScore = 0
         var creditedModels = Set<UUID>()
+        var seenTzPerModel: [UUID: Set<String>] = [:]
+        var uniqueTzCount = 0
 
         let sortedSpottings = allSpottings.sorted { $0.spottedAt < $1.spottedAt }
         for spot in sortedSpottings {
@@ -140,6 +165,13 @@ public final class StatsCalculator {
                 creditedModels.insert(model.id)
             } else {
                 spottingScore += basePoints
+            }
+
+            if let normTz = SpottedTrain.normalizedTz(spot.tzNumber),
+               !seenTzPerModel[model.id, default: []].contains(normTz) {
+                spottingScore += uniqueTzBonusPoints
+                seenTzPerModel[model.id, default: []].insert(normTz)
+                uniqueTzCount += 1
             }
         }
 
@@ -165,14 +197,110 @@ public final class StatsCalculator {
             return RarityCount(rarity: rarity, count: count)
         }
 
-        // 5. Seltenster Fund
-        let rarestSpot = allSpottings
-            .sorted { ($0.trainModel?.rarity ?? .common) > ($1.trainModel?.rarity ?? .common) }
-            .first
+        // 5. Seltenster Fund (bevorzugt seltener Zug -> eigenes Foto -> neuestes Datum)
+        let rarestSpot = allSpottings.sorted { lhs, rhs in
+            let lhsRarity = lhs.trainModel?.rarity ?? .common
+            let rhsRarity = rhs.trainModel?.rarity ?? .common
+            if lhsRarity != rhsRarity {
+                return lhsRarity > rhsRarity
+            }
+            let lhsHasPhoto = lhs.photoData != nil
+            let rhsHasPhoto = rhs.photoData != nil
+            if lhsHasPhoto != rhsHasPhoto {
+                return lhsHasPhoto && !rhsHasPhoto
+            }
+            return lhs.spottedAt > rhs.spottedAt
+        }.first
+
+        // 6. Meilensteine / Achievements
+        let spottedHighSpeed = allTrains.filter { $0.category == .highSpeed && $0.isSpotted }.count
+        let spottedRegional = allTrains.filter { $0.category == .regional && $0.isSpotted }.count
+        let spottedLegendary = allTrains.filter { $0.rarity == .legendary && $0.isSpotted }.count
+        let photoSpotCount = allSpottings.filter { $0.photoData != nil }.count
+        let uniqueStations = Set(allSpottings.compactMap { spot -> String? in
+            let s = spot.stationOrLocationName?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+            return s.isEmpty ? nil : s.lowercased()
+        }).count
+
+        let achievements: [SpotterAchievement] = [
+            SpotterAchievement(
+                id: "first_spot",
+                title: "Erster Halt",
+                description: "Erste Zugsichtung erfasst",
+                icon: "tram.fill",
+                color: .blue,
+                currentValue: totalSpottings,
+                targetValue: 1
+            ),
+            SpotterAchievement(
+                id: "tz_hunter",
+                title: "Triebzug-Jäger",
+                description: "5 verschiedene Tz-Nummern",
+                icon: "number.square.fill",
+                color: .teal,
+                currentValue: uniqueTzCount,
+                targetValue: 5
+            ),
+            SpotterAchievement(
+                id: "ice_expert",
+                title: "Fernverkehrs-Profi",
+                description: "5 Fernverkehrs-Baureihen",
+                icon: "bolt.horizontal.circle.fill",
+                color: .red,
+                currentValue: spottedHighSpeed,
+                targetValue: 5
+            ),
+            SpotterAchievement(
+                id: "regio_commuter",
+                title: "Regio-Pendler",
+                description: "5 Regional-Baureihen",
+                icon: "map.fill",
+                color: .green,
+                currentValue: spottedRegional,
+                targetValue: 5
+            ),
+            SpotterAchievement(
+                id: "special_luck",
+                title: "Sonderzug-Glück",
+                description: "Legendären Zug gesichtet",
+                icon: "crown.fill",
+                color: .orange,
+                currentValue: spottedLegendary,
+                targetValue: 1
+            ),
+            SpotterAchievement(
+                id: "photo_spotter",
+                title: "Foto-Spotter",
+                description: "5 Sichtungen mit eigenem Foto",
+                icon: "camera.aperture",
+                color: .purple,
+                currentValue: photoSpotCount,
+                targetValue: 5
+            ),
+            SpotterAchievement(
+                id: "station_hopper",
+                title: "Bahnhofs-Hopper",
+                description: "5 verschiedene Orte besucht",
+                icon: "mappin.and.ellipse",
+                color: .indigo,
+                currentValue: uniqueStations,
+                targetValue: 5
+            ),
+            SpotterAchievement(
+                id: "bingo_champ",
+                title: "Bingo-Champion",
+                description: "Ein DB-Bingo gewonnen",
+                icon: "trophy.fill",
+                color: .yellow,
+                currentValue: achievedBingos,
+                targetValue: 1
+            )
+        ]
 
         return TrainStats(
             totalSpottings: totalSpottings,
             uniqueTrainsSpotted: uniqueTrainsSpotted,
+            uniqueTzCount: uniqueTzCount,
             totalTrainsInCatalog: totalTrainsInCatalog,
             totalScore: totalScore,
             spottingScore: spottingScore,
@@ -183,7 +311,8 @@ public final class StatsCalculator {
             completionPercentage: completionPercentage,
             categoryProgress: categoryProgress,
             rarityCounts: rarityCounts,
-            rarestSpot: rarestSpot
+            rarestSpot: rarestSpot,
+            achievements: achievements
         )
     }
 }

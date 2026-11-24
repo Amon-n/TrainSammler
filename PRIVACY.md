@@ -1,6 +1,6 @@
 # Datenschutzerklärung für TrainSammler (Privacy Policy)
 
-**Stand:** Oktober 2026  
+**Stand:** November 2026  
 **Gültig für:** TrainSammler (iOS App)
 
 Der Schutz deiner persönlichen Daten ist uns ein zentrales Anliegen. Die App **TrainSammler** wurde nach dem Prinzip der Datensparsamkeit („Privacy by Design“) entwickelt: **Wir erheben, verarbeiten, übertragen oder verkaufen zu keinem Zeitpunkt personenbezogene Daten an externe Server oder Dritte.**
@@ -24,6 +24,8 @@ Alle Eingaben, die du in TrainSammler vornimmst – einschließlich:
 
 **verbleiben ausnahmslos und ausschließlich lokal auf deinem Gerät.**  
 Die Speicherung erfolgt über das iOS-eigene Framework **SwiftData** im geschützten Sandbox-Speicherbereich der App. Es existiert keine Datenbank auf externen Servern, keine Cloud-Synchronisation und kein Tracking.
+
+Über die optionale Backup-Funktion in den Einstellungen kannst du deine Daten manuell als lokale JSON-Datei über den iOS-Systemdialog exportieren und auf einem neuen Gerät wieder einlesen – auch hierbei findet keinerlei Übertragung an externe Server statt.
 
 ---
 

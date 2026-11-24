@@ -16,6 +16,8 @@ files = [
     "Models/BingoItem.swift",
     "Services/LocationManager.swift",
     "Services/DataSeeder.swift",
+    "Services/ImageCompressor.swift",
+    "Services/BackupService.swift",
     "ViewModels/QuickSpotViewModel.swift",
     "ViewModels/StatsViewModel.swift",
     "ViewModels/BingoViewModel.swift",
@@ -31,6 +33,8 @@ files = [
     "Views/SettingsView.swift",
     "Views/Components/RarityBadgeView.swift",
     "Views/Components/TrainImageView.swift",
+    "Views/Components/CameraPickerView.swift",
+    "Views/Components/ShareCardRenderer.swift",
     "Assets.xcassets",
     "Info.plist"
 ]
@@ -209,7 +213,7 @@ pbx.append("\t\t\tisa = PBXSourcesBuildPhase;")
 pbx.append("\t\t\tbuildActionMask = 2147483647;")
 pbx.append("\t\t\tfiles = (")
 for item in file_entries:
-    if not item["is_resource"]:
+    if item["is_source"]:
         pbx.append(f"\t\t\t\t{item['build_id']} /* {item['filename']} in Sources */,")
 pbx.append("\t\t\t);")
 pbx.append("\t\t\trunOnlyForDeploymentPostprocessing = 0;")
@@ -277,7 +281,7 @@ pbx.append("\t\t\t\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;")
 pbx.append("\t\t\t\tASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = NO;")
 pbx.append("\t\t\t\tCLANG_ENABLE_MODULES = YES;")
 pbx.append("\t\t\t\tCODE_SIGN_STYLE = Automatic;")
-pbx.append("\t\t\t\tCURRENT_PROJECT_VERSION = 8;")
+pbx.append("\t\t\t\tCURRENT_PROJECT_VERSION = 1;")
 pbx.append("\t\t\t\tDEVELOPMENT_TEAM = \"79T386JC4J\";")
 pbx.append("\t\t\t\tENABLE_PREVIEWS = YES;")
 pbx.append("\t\t\t\tGENERATE_INFOPLIST_FILE = NO;")
@@ -290,7 +294,7 @@ pbx.append("\t\t\t\t\t\"$(inherited)\",")
 pbx.append("\t\t\t\t\t\"@executable_path/Frameworks\",")
 pbx.append("\t\t\t\t);")
 pbx.append("\t\t\t\tLM_FILTER_WARNINGS = YES;")
-pbx.append("\t\t\t\tMARKETING_VERSION = 1.8;")
+pbx.append("\t\t\t\tMARKETING_VERSION = 1.9;")
 pbx.append(f"\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = de.amon.trainSammler;")
 pbx.append(f"\t\t\t\tPRODUCT_NAME = \"$(TARGET_NAME)\";")
 pbx.append("\t\t\t\tSWIFT_EMIT_LOC_STRINGS = NO;")
@@ -308,7 +312,7 @@ pbx.append("\t\t\t\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;")
 pbx.append("\t\t\t\tASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS = NO;")
 pbx.append("\t\t\t\tCLANG_ENABLE_MODULES = YES;")
 pbx.append("\t\t\t\tCODE_SIGN_STYLE = Automatic;")
-pbx.append("\t\t\t\tCURRENT_PROJECT_VERSION = 8;")
+pbx.append("\t\t\t\tCURRENT_PROJECT_VERSION = 1;")
 pbx.append("\t\t\t\tDEVELOPMENT_TEAM = \"79T386JC4J\";")
 pbx.append("\t\t\t\tENABLE_PREVIEWS = YES;")
 pbx.append("\t\t\t\tGENERATE_INFOPLIST_FILE = NO;")
@@ -321,7 +325,7 @@ pbx.append("\t\t\t\t\t\"$(inherited)\",")
 pbx.append("\t\t\t\t\t\"@executable_path/Frameworks\",")
 pbx.append("\t\t\t\t);")
 pbx.append("\t\t\t\tLM_FILTER_WARNINGS = YES;")
-pbx.append("\t\t\t\tMARKETING_VERSION = 1.8;")
+pbx.append("\t\t\t\tMARKETING_VERSION = 1.9;")
 pbx.append(f"\t\t\t\tPRODUCT_BUNDLE_IDENTIFIER = de.amon.trainSammler;")
 pbx.append(f"\t\t\t\tPRODUCT_NAME = \"$(TARGET_NAME)\";")
 pbx.append("\t\t\t\tSWIFT_EMIT_LOC_STRINGS = NO;")

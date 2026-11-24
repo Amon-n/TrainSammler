@@ -105,6 +105,20 @@ public struct PhotoPreviewSheet: View {
             }
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                if let data = photoData, let uiImg = UIImage(data: data) {
+                    ToolbarItem(placement: .topBarLeading) {
+                        ShareLink(
+                            item: ShareableCardImage(uiImage: uiImg),
+                            subject: Text(title),
+                            preview: SharePreview(title, image: Image(uiImage: uiImg))
+                        ) {
+                            Image(systemName: "square.and.arrow.up")
+                                .font(.subheadline.weight(.semibold))
+                                .foregroundStyle(.white)
+                        }
+                    }
+                }
+
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         dismiss()

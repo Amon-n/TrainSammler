@@ -253,13 +253,23 @@ struct TrainCatalogCard: View {
                     .frame(maxWidth: .infinity)
                     .clipped()
                 
-                // Entdeckt Badge ODER Rarity
+                // Entdeckt Badge & Kamera-Indikator
                 if train.isSpotted {
-                    Image(systemName: "checkmark.seal.fill")
-                        .font(.subheadline)
-                        .foregroundStyle(Color.green)
-                        .background(Circle().fill(.white).padding(2))
-                        .padding(8)
+                    HStack(spacing: 4) {
+                        if train.spottings.contains(where: { $0.photoData != nil }) {
+                            Image(systemName: "camera.fill")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundStyle(.black)
+                                .padding(5)
+                                .background(Color.yellow, in: Circle())
+                        }
+
+                        Image(systemName: "checkmark.seal.fill")
+                            .font(.subheadline)
+                            .foregroundStyle(Color.green)
+                            .background(Circle().fill(.white).padding(2))
+                    }
+                    .padding(8)
                 }
             }
             
